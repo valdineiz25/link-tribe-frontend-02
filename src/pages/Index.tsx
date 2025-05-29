@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -51,37 +52,37 @@ const Index: React.FC = () => {
   const partnerStores = [
     {
       name: 'Shopee',
-      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      logo: 'https://logoeps.com/wp-content/uploads/2020/08/shopee-vector-logo.png',
       alt: 'Shopee'
     },
     {
       name: 'Magazine Luiza',
-      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      logo: 'https://logoeps.com/wp-content/uploads/2013/03/magazine-luiza-vector-logo.png',
       alt: 'Magazine Luiza'
     },
     {
       name: 'Mercado Livre',
-      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      logo: 'https://logoeps.com/wp-content/uploads/2013/03/mercadolibre-vector-logo.png',
       alt: 'Mercado Livre'
     },
     {
       name: 'Amazon',
-      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      logo: 'https://logoeps.com/wp-content/uploads/2013/03/amazon-vector-logo.png',
       alt: 'Amazon'
     },
     {
       name: 'Temu',
-      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Temu_logo.svg',
       alt: 'Temu'
     },
     {
       name: 'AliExpress',
-      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      logo: 'https://logoeps.com/wp-content/uploads/2014/09/aliexpress-vector-logo.png',
       alt: 'AliExpress'
     },
     {
       name: 'Shein',
-      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Shein_logo.svg',
       alt: 'Shein'
     }
   ];
@@ -235,7 +236,7 @@ const Index: React.FC = () => {
                     <img 
                       src={store.logo} 
                       alt={store.alt}
-                      className="w-12 h-8 object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                      className="w-12 h-8 object-contain transition-all duration-300"
                     />
                   </div>
                   <div className="text-xs font-medium text-gray-600 group-hover:text-gray-800 transition-colors">
