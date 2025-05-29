@@ -98,25 +98,26 @@ const Connect: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Hero Section */}
       <section className="relative py-16 px-4 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10"></div>
+        <div className="max-w-7xl mx-auto relative">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center bg-gradient-to-r from-orange-100 to-red-100 rounded-full px-6 py-2 mb-6">
-              <Zap className="w-5 h-5 text-orange-600 mr-2" />
-              <span className="text-orange-700 font-semibold">Conecte-se ao Futuro dos Afiliados</span>
+            <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full px-6 py-3 mb-6 border border-blue-200">
+              <Zap className="w-5 h-5 text-blue-600 mr-2" />
+              <span className="text-blue-700 font-semibold">Conecte-se ao Futuro dos Afiliados</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Transforme Sua Paixão
               </span>
               <br />
-              <span className="text-gray-800">em Renda Real</span>
+              <span className="text-slate-800">em Renda Real</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-4xl mx-auto leading-relaxed">
               A AffiliateNet é mais que uma rede social - é sua plataforma completa para 
               construir um negócio de afiliados rentável e sustentável.
             </p>
@@ -124,14 +125,14 @@ const Connect: React.FC = () => {
             <Link to="/login">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-10 py-4 text-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-10 py-4 text-xl font-bold shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-xl"
               >
                 Começar Agora Mesmo - GRÁTIS
                 <ArrowRight size={24} className="ml-3" />
               </Button>
             </Link>
             
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-sm text-slate-500 mt-4">
               ✓ Sem taxa de adesão • ✓ Sem compromisso • ✓ Cancele quando quiser
             </p>
           </div>
@@ -142,10 +143,10 @@ const Connect: React.FC = () => {
       <section className="py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
               Por que a AffiliateNet é Diferente?
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-slate-600">
               A única rede social pensada 100% para afiliados
             </p>
           </div>
@@ -154,22 +155,22 @@ const Connect: React.FC = () => {
             {networkFeatures.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <Card key={index} className="overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white">
                   <div className="h-48 overflow-hidden">
                     <img 
                       src={feature.image} 
                       alt={feature.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   </div>
                   <CardHeader className="text-center pb-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 -mt-8 border-4 border-white shadow-lg">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 -mt-8 border-4 border-white shadow-lg">
                       <Icon size={28} className="text-white" />
                     </div>
-                    <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl font-bold text-slate-800">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-center text-gray-600 text-base">
+                    <CardDescription className="text-center text-slate-600 text-base">
                       {feature.description}
                     </CardDescription>
                   </CardContent>
@@ -181,10 +182,10 @@ const Connect: React.FC = () => {
       </section>
 
       {/* Benefits Grid */}
-      <section className="py-16 px-4 bg-gradient-to-r from-orange-100 to-red-100">
+      <section className="py-16 px-4 bg-gradient-to-r from-slate-100 to-blue-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
               Tudo que Você Precisa em Um Só Lugar
             </h2>
           </div>
@@ -193,14 +194,14 @@ const Connect: React.FC = () => {
             {benefits.map((benefit, index) => {
               const Icon = benefit.icon;
               return (
-                <div key={index} className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow">
+                <div key={index} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-slate-200">
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
                       <Icon size={24} className="text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold mb-2 text-gray-800">{benefit.title}</h3>
-                      <p className="text-gray-600 text-sm">{benefit.description}</p>
+                      <h3 className="text-lg font-bold mb-2 text-slate-800">{benefit.title}</h3>
+                      <p className="text-slate-600 text-sm">{benefit.description}</p>
                     </div>
                   </div>
                 </div>
@@ -214,25 +215,25 @@ const Connect: React.FC = () => {
       <section className="py-16 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
               Histórias de Sucesso Reais
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-slate-600">
               Veja como nossa comunidade está transformando vidas
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-0 shadow-lg">
+              <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all bg-white">
                 <CardHeader>
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center">
                       <Users size={20} className="text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-lg">{testimonial.name}</CardTitle>
-                      <CardDescription>{testimonial.role}</CardDescription>
+                      <CardTitle className="text-lg text-slate-800">{testimonial.name}</CardTitle>
+                      <CardDescription className="text-slate-600">{testimonial.role}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
@@ -240,7 +241,7 @@ const Connect: React.FC = () => {
                   <div className="text-2xl font-bold text-green-600 mb-3">
                     {testimonial.earnings}
                   </div>
-                  <p className="text-gray-600 italic">"{testimonial.text}"</p>
+                  <p className="text-slate-600 italic">"{testimonial.text}"</p>
                   <div className="flex items-center mt-4">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} size={16} className="text-yellow-400 fill-current" />
@@ -254,7 +255,7 @@ const Connect: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-orange-600 to-red-600">
+      <section className="py-16 px-4 bg-gradient-to-r from-blue-600 to-indigo-600">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -284,12 +285,12 @@ const Connect: React.FC = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-4 bg-gray-900">
+      <section className="py-20 px-4 bg-slate-900">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
             Sua Jornada de Sucesso Começa Agora
           </h2>
-          <p className="text-xl text-gray-300 mb-10">
+          <p className="text-xl text-slate-300 mb-10">
             Junte-se a milhares de pessoas que já descobriram como transformar 
             sua presença digital em uma fonte de renda consistente
           </p>
@@ -298,14 +299,14 @@ const Connect: React.FC = () => {
             <Link to="/login">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-12 py-4 text-xl font-bold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-12 py-4 text-xl font-bold shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 rounded-xl"
               >
                 Começar Agora Mesmo - GRÁTIS
                 <Star size={24} className="ml-3" />
               </Button>
             </Link>
             
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-slate-400">
               Cadastro grátis • Sem cartão de crédito • Suporte 24/7
             </p>
           </div>
