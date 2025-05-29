@@ -5,9 +5,11 @@ import FeedHeader from '@/components/FeedHeader';
 import CategoryFilter from '@/components/CategoryFilter';
 import PostCreation from '@/components/PostCreation';
 import PostList from '@/components/PostList';
+import { useToast } from '@/hooks/use-toast';
 
 const Feed: React.FC = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [posts, setPosts] = useState([
@@ -70,6 +72,28 @@ const Feed: React.FC = () => {
     setPosts(prev => prev.map(post => 
       post.id === updatedPost.id ? updatedPost : post
     ));
+    toast({
+      title: "Post atualizado",
+      description: "As alterações foram salvas com sucesso.",
+    });
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    toast({
+      title: "Categoria alterada",
+      description: `Exibindo posts de: ${category}`,
+    });
+  };
+
+  const handleTogglePostCreation = () => {
+    setIsCreatingPost(!isCreatingPost);
+    if (!isCreatingPost) {
+      toast({
+        title: "Criar novo post",
+        description: "Compartilhe algo interessante com a comunidade!",
+      });
+    }
   };
 
   return (
@@ -82,7 +106,7 @@ const Feed: React.FC = () => {
           <CategoryFilter 
             categories={categories}
             selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
+            onCategoryChange={handleCategoryChange}
           />
         </div>
 
@@ -90,7 +114,7 @@ const Feed: React.FC = () => {
         <div className="bg-white rounded-xl shadow-lg border border-yellow-200 p-4">
           <PostCreation 
             isCreating={isCreatingPost}
-            onToggleCreating={setIsCreatingPost}
+            onToggleCreating={handleTogglePostCreation}
           />
         </div>
 

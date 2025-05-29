@@ -8,10 +8,12 @@ import ProfileInfo from '@/components/ProfileInfo';
 import ProfileStats from '@/components/ProfileStats';
 import AffiliateLinks from '@/components/AffiliateLinks';
 import ProfileTabs from '@/components/ProfileTabs';
+import { useToast } from '@/hooks/use-toast';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const { toast } = useToast();
   const isOwnProfile = user?.id === id;
   
   const [activeTab, setActiveTab] = useState('posts');
@@ -21,9 +23,40 @@ const Profile: React.FC = () => {
   const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Validar tipo de arquivo
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erro no upload",
+          description: "Por favor, selecione apenas arquivos de imagem.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validar tamanho (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Arquivo muito grande",
+          description: "A imagem deve ter no máximo 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setProfileImage(e.target?.result as string);
+        toast({
+          title: "Foto de perfil atualizada",
+          description: "Sua foto de perfil foi alterada com sucesso!",
+        });
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Erro no upload",
+          description: "Não foi possível carregar a imagem. Tente novamente.",
+          variant: "destructive",
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -32,15 +65,61 @@ const Profile: React.FC = () => {
   const handleCoverImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Validar tipo de arquivo
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erro no upload",
+          description: "Por favor, selecione apenas arquivos de imagem.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validar tamanho (10MB max para capa)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "Arquivo muito grande",
+          description: "A imagem de capa deve ter no máximo 10MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         setCoverImage(e.target?.result as string);
+        toast({
+          title: "Foto de capa atualizada",
+          description: "Sua foto de capa foi alterada com sucesso!",
+        });
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Erro no upload",
+          description: "Não foi possível carregar a imagem. Tente novamente.",
+          variant: "destructive",
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  if (!user) return null;
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    toast({
+      title: "Aba alterada",
+      description: `Visualizando: ${tab === 'posts' ? 'Posts' : tab === 'products' ? 'Produtos' : 'Estatísticas'}`,
+    });
+  };
+
+  if (!user) {
+    return (
+      <div className="max-w-4xl mx-auto p-4 text-center">
+        <h2 className="text-2xl font-bold text-gray-700 mb-4">Usuário não encontrado</h2>
+        <p className="text-gray-500">Verifique se você está logado corretamente.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
@@ -71,7 +150,7 @@ const Profile: React.FC = () => {
       {/* Abas do Perfil */}
       <ProfileTabs
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleTabChange}
         isOwnProfile={isOwnProfile}
         user={user}
       />

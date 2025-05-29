@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const schema = yup.object({
   email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
@@ -21,6 +22,7 @@ type LoginFormData = yup.InferType<typeof schema>;
 const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = React.useState(false);
   
   const {
@@ -34,15 +36,34 @@ const Login: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
-      navigate('/');
+      toast({
+        title: "Login realizado com sucesso!",
+        description: "Bem-vindo de volta!",
+      });
+      navigate('/feed');
     } catch (error) {
       console.error('Erro no login:', error);
+      toast({
+        title: "Erro no login",
+        description: "Verifique suas credenciais e tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
   const handleSocialLogin = (provider: string) => {
-    console.log(`Login with ${provider}`);
-    // Implementar login social
+    console.log(`Iniciando login com ${provider}`);
+    toast({
+      title: `Login com ${provider}`,
+      description: "Funcionalidade em desenvolvimento. Em breve estará disponível!",
+    });
+  };
+
+  const handleForgotPassword = () => {
+    toast({
+      title: "Recuperação de senha",
+      description: "Funcionalidade em desenvolvimento. Entre em contato conosco!",
+    });
   };
 
   return (
@@ -111,12 +132,13 @@ const Login: React.FC = () => {
               </div>
 
               <div className="flex justify-end">
-                <Link 
-                  to="/forgot-password" 
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
                   className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
                 >
                   Esqueci a senha
-                </Link>
+                </button>
               </div>
 
               <Button 
@@ -141,15 +163,17 @@ const Login: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <Button 
+                type="button"
                 variant="outline" 
-                onClick={() => handleSocialLogin('google')}
+                onClick={() => handleSocialLogin('Google')}
                 className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-medium py-3 transition-all"
               >
                 Google
               </Button>
               <Button 
+                type="button"
                 variant="outline" 
-                onClick={() => handleSocialLogin('facebook')}
+                onClick={() => handleSocialLogin('Facebook')}
                 className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-medium py-3 transition-all"
               >
                 Facebook

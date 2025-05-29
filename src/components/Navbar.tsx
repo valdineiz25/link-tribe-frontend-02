@@ -17,15 +17,46 @@ import {
   Bell,
   Menu
 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleLogout = () => {
     logout();
+    toast({
+      title: "Logout realizado",
+      description: "Você foi desconectado com sucesso!",
+    });
     navigate('/');
+  };
+
+  const handleNotificationClick = () => {
+    toast({
+      title: "Notificações",
+      description: "Você não tem novas notificações.",
+    });
+  };
+
+  const handleMessageClick = () => {
+    navigate('/chat');
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const searchTerm = formData.get('search') as string;
+    
+    if (searchTerm?.trim()) {
+      toast({
+        title: "Busca realizada",
+        description: `Procurando por: "${searchTerm}"`,
+      });
+      // Aqui você pode implementar a lógica de busca
+    }
   };
 
   const navItems = [
@@ -57,21 +88,25 @@ const Navbar: React.FC = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo - Facebook style */}
             <div className="flex items-center">
-              <Link to="/feed" className="text-2xl font-bold text-blue-600">
+              <Link 
+                to="/feed" 
+                className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors"
+              >
                 AffiliateNet
               </Link>
             </div>
 
             {/* Search bar - Facebook style (desktop) */}
             <div className="hidden md:flex flex-1 max-w-xs mx-8">
-              <div className="relative w-full">
+              <form onSubmit={handleSearchSubmit} className="relative w-full">
                 <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
+                  name="search"
                   type="text"
                   placeholder="Pesquisar..."
                   className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
+              </form>
             </div>
 
             {/* Navigation Items - Desktop (Instagram/Facebook style) */}
@@ -99,11 +134,23 @@ const Navbar: React.FC = () => {
 
             {/* Right side - User actions */}
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="rounded-full w-10 h-10">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full w-10 h-10"
+                onClick={handleNotificationClick}
+                title="Notificações"
+              >
                 <Bell size={20} className="text-gray-600" />
               </Button>
               
-              <Button variant="ghost" size="icon" className="rounded-full w-10 h-10">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full w-10 h-10"
+                onClick={handleMessageClick}
+                title="Mensagens"
+              >
                 <MessageCircle size={20} className="text-gray-600" />
               </Button>
               
@@ -112,6 +159,7 @@ const Navbar: React.FC = () => {
                 <Link
                   to={`/profile/${user?.id}`}
                   className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  title="Meu Perfil"
                 >
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                     {user?.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -120,7 +168,13 @@ const Navbar: React.FC = () => {
                 </Link>
               </div>
               
-              <Button variant="ghost" size="icon" onClick={handleLogout} className="rounded-full w-10 h-10 text-gray-600 hover:text-red-600">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleLogout} 
+                className="rounded-full w-10 h-10 text-gray-600 hover:text-red-600"
+                title="Sair"
+              >
                 <LogOut size={20} />
               </Button>
             </div>
@@ -143,6 +197,7 @@ const Navbar: React.FC = () => {
                       ? 'text-blue-600'
                       : 'text-gray-600'
                   }`}
+                  title={item.label}
                 >
                   <Icon size={24} />
                 </Link>
@@ -153,6 +208,7 @@ const Navbar: React.FC = () => {
             <Link
               to={`/profile/${user?.id}`}
               className="flex flex-col items-center justify-center w-12 h-12"
+              title="Perfil"
             >
               <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
