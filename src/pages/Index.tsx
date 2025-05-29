@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -47,6 +46,44 @@ const Index: React.FC = () => {
     { value: 'R$ 2M+', label: 'Em Comissões Pagas' },
     { value: '10K+', label: 'Produtos Disponíveis' },
     { value: '98%', label: 'Satisfação dos Usuários' }
+  ];
+
+  const partnerStores = [
+    {
+      name: 'Shopee',
+      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      alt: 'Shopee'
+    },
+    {
+      name: 'Magazine Luiza',
+      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      alt: 'Magazine Luiza'
+    },
+    {
+      name: 'Mercado Livre',
+      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      alt: 'Mercado Livre'
+    },
+    {
+      name: 'Amazon',
+      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      alt: 'Amazon'
+    },
+    {
+      name: 'Temu',
+      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      alt: 'Temu'
+    },
+    {
+      name: 'AliExpress',
+      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      alt: 'AliExpress'
+    },
+    {
+      name: 'Shein',
+      logo: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=120&h=60&fit=crop',
+      alt: 'Shein'
+    }
   ];
 
   return (
@@ -175,8 +212,50 @@ const Index: React.FC = () => {
         </div>
       </section>
 
+      {/* Partner Stores Section - New */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+              Parceiros de Confiança
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Trabalhe com as maiores e mais confiáveis lojas do Brasil e do mundo
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 items-center">
+            {partnerStores.map((store, index) => (
+              <div 
+                key={index} 
+                className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center group"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-gray-50 transition-colors">
+                    <img 
+                      src={store.logo} 
+                      alt={store.alt}
+                      className="w-12 h-8 object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                    />
+                  </div>
+                  <div className="text-xs font-medium text-gray-600 group-hover:text-gray-800 transition-colors">
+                    {store.name}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-500">
+              E mais de <span className="font-semibold text-blue-600">500+ lojas parceiras</span> esperando por você
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section - Instagram style cards */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -211,7 +290,7 @@ const Index: React.FC = () => {
       </section>
 
       {/* How it Works - Instagram stories style */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
