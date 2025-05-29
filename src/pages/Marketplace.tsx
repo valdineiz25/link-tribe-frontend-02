@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { 
   Search,
   Filter,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Star,
+  Zap,
+  Gift
 } from 'lucide-react';
 
 const Marketplace: React.FC = () => {
@@ -96,103 +98,147 @@ const Marketplace: React.FC = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto p-4 space-y-6">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold mb-2">Marketplace</h1>
-        <p className="text-gray-600">Descubra produtos incríveis e ganhe comissões!</p>
-      </div>
-
-      {/* Filtros */}
-      <Card>
-        <CardContent className="p-6 space-y-4">
-          {/* Busca */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <Input
-              placeholder="Buscar produtos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-
-          {/* Categorias */}
-          <div>
-            <div className="flex items-center space-x-2 mb-3">
-              <Filter size={20} />
-              <span className="font-medium">Categorias:</span>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-orange-50 to-red-50">
+      <div className="max-w-7xl mx-auto p-4 space-y-6">
+        {/* Header Hero */}
+        <div className="text-center py-8">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 via-orange-600 to-red-600 bg-clip-text text-transparent mb-3">
+            🛍️ Marketplace Premium
+          </h1>
+          <p className="text-gray-600 text-xl mb-6">Descubra produtos incríveis e ganhe comissões fantásticas!</p>
+          
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+            <div className="bg-gradient-to-r from-green-400 to-green-500 text-white p-4 rounded-xl">
+              <Star size={24} className="mx-auto mb-2" />
+              <p className="font-bold text-lg">+50k Produtos</p>
+              <p className="text-xs opacity-90">Verificados</p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? 'default' : 'outline'}
+            <div className="bg-gradient-to-r from-blue-400 to-blue-500 text-white p-4 rounded-xl">
+              <Zap size={24} className="mx-auto mb-2" />
+              <p className="font-bold text-lg">Até 25%</p>
+              <p className="text-xs opacity-90">De Comissão</p>
+            </div>
+            <div className="bg-gradient-to-r from-pink-400 to-pink-500 text-white p-4 rounded-xl">
+              <Gift size={24} className="mx-auto mb-2" />
+              <p className="font-bold text-lg">Ofertas</p>
+              <p className="text-xs opacity-90">Exclusivas</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Filtros */}
+        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+          <CardContent className="p-6 space-y-6">
+            {/* Busca */}
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-400" size={20} />
+              <Input
+                placeholder="🔍 Buscar produtos incríveis..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 py-3 border-orange-200 focus:border-orange-400 text-lg"
+              />
+            </div>
+
+            {/* Categorias */}
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <Filter size={20} className="text-orange-600" />
+                <span className="font-bold text-gray-800">Categorias:</span>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {categories.map((category) => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category)}
+                    className={selectedCategory === category 
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 font-bold' 
+                      : 'border-orange-300 text-orange-600 hover:bg-orange-50 font-medium'
+                    }
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Filtro de Preço */}
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <SlidersHorizontal size={20} className="text-orange-600" />
+                <span className="font-bold text-gray-800">Faixa de Preço:</span>
+              </div>
+              <div className="flex space-x-3 items-center">
+                <Input
+                  placeholder="R$ Mín"
+                  type="number"
+                  value={priceRange.min}
+                  onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                  className="w-28 border-orange-200"
+                />
+                <span className="font-medium text-gray-500">até</span>
+                <Input
+                  placeholder="R$ Máx"
+                  type="number"
+                  value={priceRange.max}
+                  onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                  className="w-28 border-orange-200"
+                />
+                <Button 
+                  variant="outline" 
                   size="sm"
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => setPriceRange({ min: '', max: '' })}
+                  className="border-orange-300 text-orange-600 hover:bg-orange-50"
                 >
-                  {category}
+                  Limpar
                 </Button>
-              ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Resultados */}
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full">
+              <p className="font-bold">
+                🔥 {filteredProducts.length} produtos encontrados
+              </p>
             </div>
           </div>
 
-          {/* Filtro de Preço */}
-          <div>
-            <div className="flex items-center space-x-2 mb-3">
-              <SlidersHorizontal size={20} />
-              <span className="font-medium">Faixa de Preço:</span>
-            </div>
-            <div className="flex space-x-2">
-              <Input
-                placeholder="Mín"
-                type="number"
-                value={priceRange.min}
-                onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                className="w-24"
-              />
-              <span className="flex items-center">até</span>
-              <Input
-                placeholder="Máx"
-                type="number"
-                value={priceRange.max}
-                onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                className="w-24"
-              />
+          {/* Grid de Produtos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-16">
+              <div className="text-8xl mb-6">🤔</div>
+              <h3 className="text-2xl font-bold text-gray-700 mb-2">
+                Ops! Nenhum produto encontrado
+              </h3>
+              <p className="text-gray-500 text-lg">
+                Tente ajustar os filtros ou buscar por outros termos.
+              </p>
               <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setPriceRange({ min: '', max: '' })}
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedCategory('Todos');
+                  setPriceRange({ min: '', max: '' });
+                }}
+                className="mt-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
               >
-                Limpar
+                Limpar todos os filtros
               </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Resultados */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <p className="text-gray-600">
-            {filteredProducts.length} produtos encontrados
-          </p>
+          )}
         </div>
-
-        {/* Grid de Produtos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">
-              Nenhum produto encontrado com os filtros aplicados.
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

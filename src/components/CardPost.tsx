@@ -7,8 +7,10 @@ import {
   MessageCircle, 
   Share2, 
   User,
-  ExternalLink
+  ExternalLink,
+  ShoppingBag
 } from 'lucide-react';
+import EditPostDialog from '@/components/EditPostDialog';
 
 interface Post {
   id: string;
@@ -21,15 +23,22 @@ interface Post {
   likes: number;
   comments: number;
   timestamp: string;
+  productName?: string;
+  currentPrice?: number;
+  promotionalPrice?: number;
+  storeName?: string;
 }
 
 interface CardPostProps {
   post: Post;
+  onUpdatePost?: (updatedPost: Post) => void;
+  isOwner?: boolean;
 }
 
-const CardPost: React.FC<CardPostProps> = ({ post }) => {
+const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
+  const [currentPost, setCurrentPost] = useState(post);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -40,80 +49,139 @@ const CardPost: React.FC<CardPostProps> = ({ post }) => {
     if (navigator.share) {
       navigator.share({
         title: 'Post da AffiliateNet',
-        text: post.content,
+        text: currentPost.content,
         url: window.location.href,
       });
     } else {
-      // Fallback para copiar para clipboard
       navigator.clipboard.writeText(window.location.href);
     }
   };
 
+  const handlePostUpdate = (updatedPost: Post) => {
+    setCurrentPost(updatedPost);
+    if (onUpdatePost) {
+      onUpdatePost(updatedPost);
+    }
+  };
+
+  const discountPercentage = currentPost.currentPrice && currentPost.promotionalPrice
+    ? Math.round(((currentPost.currentPrice - currentPost.promotionalPrice) / currentPost.currentPrice) * 100)
+    : 0;
+
   return (
-    <Card className="w-full max-w-2xl mx-auto mb-6">
-      <CardHeader className="pb-3">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-            {post.authorAvatar ? (
-              <img 
-                src={post.authorAvatar} 
-                alt={post.authorName}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-            ) : (
-              <User size={20} className="text-gray-500" />
-            )}
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-sm">{post.authorName}</h3>
-            <div className="flex items-center space-x-2 text-xs text-gray-500">
-              <span>{post.timestamp}</span>
-              <span>•</span>
-              <span className="bg-primary/10 text-primary px-2 py-1 rounded-full">
-                {post.category}
-              </span>
+    <Card className="w-full max-w-2xl mx-auto mb-6 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <CardHeader className="pb-3 bg-gradient-to-r from-orange-50 to-red-50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-red-400 rounded-full flex items-center justify-center">
+              {currentPost.authorAvatar ? (
+                <img 
+                  src={currentPost.authorAvatar} 
+                  alt={currentPost.authorName}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <User size={20} className="text-white" />
+              )}
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-sm">{currentPost.authorName}</h3>
+              <div className="flex items-center space-x-2 text-xs text-gray-500">
+                <span>{currentPost.timestamp}</span>
+                <span>•</span>
+                <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-medium">
+                  {currentPost.category}
+                </span>
+              </div>
             </div>
           </div>
+          {isOwner && (
+            <EditPostDialog 
+              post={currentPost} 
+              onSave={handlePostUpdate}
+            />
+          )}
         </div>
       </CardHeader>
 
       <CardContent className="pt-0">
-        <p className="text-gray-800 mb-4 whitespace-pre-wrap">{post.content}</p>
+        {/* Informações do Produto */}
+        {currentPost.productName && (
+          <div className="mb-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border border-orange-200">
+            <div className="flex items-start justify-between mb-2">
+              <h4 className="font-bold text-lg text-orange-700 flex items-center">
+                <ShoppingBag size={18} className="mr-2" />
+                {currentPost.productName}
+              </h4>
+              {discountPercentage > 0 && (
+                <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                  -{discountPercentage}% OFF
+                </span>
+              )}
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                {currentPost.promotionalPrice && currentPost.promotionalPrice > 0 && (
+                  <span className="text-xl font-bold text-green-600">
+                    R$ {currentPost.promotionalPrice.toFixed(2)}
+                  </span>
+                )}
+                {currentPost.currentPrice && currentPost.currentPrice > 0 && (
+                  <span className={`${currentPost.promotionalPrice && currentPost.promotionalPrice > 0 ? 'line-through text-gray-500 text-sm' : 'text-xl font-bold text-orange-600'}`}>
+                    R$ {currentPost.currentPrice.toFixed(2)}
+                  </span>
+                )}
+              </div>
+              {currentPost.storeName && (
+                <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+                  {currentPost.storeName}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        <p className="text-gray-800 mb-4 whitespace-pre-wrap">{currentPost.content}</p>
         
-        {post.image && (
+        {currentPost.image && (
           <div className="mb-4">
             <img 
-              src={post.image} 
+              src={currentPost.image} 
               alt="Post image"
-              className="w-full rounded-lg object-cover max-h-96"
+              className="w-full rounded-lg object-cover max-h-96 border shadow-sm"
             />
           </div>
         )}
 
-        {post.productLink && (
-          <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-lg p-4">
+        {currentPost.productLink && (
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg p-4 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-primary">Link de Afiliado</p>
-                <p className="text-xs text-gray-600">Clique para acessar o produto</p>
+                <p className="font-bold">🔥 Link de Afiliado</p>
+                <p className="text-xs opacity-90">Clique e garante o seu!</p>
               </div>
-              <Button size="sm" className="ml-4">
+              <Button 
+                size="sm" 
+                className="bg-white text-orange-600 hover:bg-gray-100 font-bold"
+                onClick={() => window.open(currentPost.productLink, '_blank')}
+              >
                 <ExternalLink size={16} className="mr-2" />
-                Acessar
+                COMPRAR
               </Button>
             </div>
           </div>
         )}
       </CardContent>
 
-      <CardFooter className="pt-0">
+      <CardFooter className="pt-0 bg-gray-50">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center space-x-6">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleLike}
-              className={`flex items-center space-x-2 ${
+              className={`flex items-center space-x-2 hover:bg-red-50 ${
                 isLiked ? 'text-red-500' : 'text-gray-600'
               }`}
             >
@@ -121,22 +189,22 @@ const CardPost: React.FC<CardPostProps> = ({ post }) => {
                 size={18} 
                 className={isLiked ? 'fill-current' : ''} 
               />
-              <span>{likesCount}</span>
+              <span className="font-medium">{likesCount}</span>
             </Button>
 
-            <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-gray-600">
+            <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-gray-600 hover:bg-blue-50">
               <MessageCircle size={18} />
-              <span>{post.comments}</span>
+              <span className="font-medium">{currentPost.comments}</span>
             </Button>
 
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={handleShare}
-              className="flex items-center space-x-2 text-gray-600"
+              className="flex items-center space-x-2 text-gray-600 hover:bg-green-50"
             >
               <Share2 size={18} />
-              <span>Compartilhar</span>
+              <span className="font-medium">Compartilhar</span>
             </Button>
           </div>
         </div>
