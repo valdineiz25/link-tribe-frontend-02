@@ -5,82 +5,83 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 84% 5%;
+    --background: 48 100% 97%;
+    --foreground: 48 100% 5%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 84% 5%;
+    --card: 48 100% 99%;
+    --card-foreground: 48 100% 5%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 84% 5%;
+    --popover: 48 100% 99%;
+    --popover-foreground: 48 100% 5%;
 
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 45 93% 47%;
+    --primary-foreground: 48 100% 99%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 84% 5%;
+    --secondary: 48 30% 95%;
+    --secondary-foreground: 48 100% 10%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 48 30% 95%;
+    --muted-foreground: 48 20% 40%;
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 84% 5%;
+    --accent: 45 85% 85%;
+    --accent-foreground: 48 100% 10%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 48 100% 99%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 48 30% 88%;
+    --input: 48 30% 88%;
+    --ring: 45 93% 47%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5% 26%;
-    --sidebar-primary: 221 83% 53%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 216 34% 97%;
-    --sidebar-accent-foreground: 240 5% 26%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 221 83% 53%;
+    --sidebar-background: 48 50% 98%;
+    --sidebar-foreground: 48 100% 15%;
+    --sidebar-primary: 45 93% 47%;
+    --sidebar-primary-foreground: 48 100% 99%;
+    --sidebar-accent: 48 30% 94%;
+    --sidebar-accent-foreground: 48 100% 15%;
+    --sidebar-border: 48 30% 88%;
+    --sidebar-ring: 45 93% 47%;
   }
 
   .dark {
-    --background: 222 84% 5%;
-    --foreground: 210 40% 98%;
+    --background: 48 100% 3%;
+    --foreground: 48 100% 95%;
 
-    --card: 222 84% 5%;
-    --card-foreground: 210 40% 98%;
+    --card: 48 100% 5%;
+    --card-foreground: 48 100% 95%;
 
-    --popover: 222 84% 5%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 48 100% 5%;
+    --popover-foreground: 48 100% 95%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 84% 5%;
+    --primary: 45 93% 55%;
+    --primary-foreground: 48 100% 5%;
 
-    --secondary: 217 32% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 48 20% 10%;
+    --secondary-foreground: 48 100% 95%;
 
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 48 20% 10%;
+    --muted-foreground: 48 20% 60%;
 
-    --accent: 217 32% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 48 20% 15%;
+    --accent-foreground: 48 100% 95%;
 
     --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 48 100% 95%;
 
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 224 71% 4%;
-    --sidebar-background: 240 5% 6%;
-    --sidebar-foreground: 240 5% 90%;
-    --sidebar-primary: 224 71% 4%;
-    --sidebar-primary-foreground: 210 20% 98%;
-    --sidebar-accent: 240 4% 16%;
-    --sidebar-accent-foreground: 240 5% 90%;
-    --sidebar-border: 240 3% 7%;
-    --sidebar-ring: 217 91% 60%;
+    --border: 48 20% 15%;
+    --input: 48 20% 15%;
+    --ring: 45 93% 55%;
+    
+    --sidebar-background: 48 100% 4%;
+    --sidebar-foreground: 48 30% 85%;
+    --sidebar-primary: 45 93% 55%;
+    --sidebar-primary-foreground: 48 100% 5%;
+    --sidebar-accent: 48 20% 12%;
+    --sidebar-accent-foreground: 48 30% 85%;
+    --sidebar-border: 48 20% 8%;
+    --sidebar-ring: 45 93% 55%;
   }
 }
 
@@ -90,34 +91,34 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-to-br from-yellow-50 via-white to-gray-50 text-foreground;
   }
 }
 
-/* Facebook/Instagram style scrollbar */
+/* Professional scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #fef3c7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
+  background: linear-gradient(45deg, #f59e0b, #d97706);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: linear-gradient(45deg, #d97706, #b45309);
 }
 
-/* Smooth transitions like Instagram */
+/* Professional transitions */
 * {
-  transition: all 0.2s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Facebook/Instagram button hover effects */
+/* Professional link hover effects */
 .story-link {
   position: relative;
 }
@@ -126,21 +127,59 @@
   content: '';
   position: absolute;
   width: 100%;
-  height: 2px;
-  bottom: -4px;
+  height: 3px;
+  bottom: -6px;
   left: 0;
-  background-color: #1877f2;
+  background: linear-gradient(45deg, #f59e0b, #d97706);
   transform: scaleX(0);
   transition: transform 0.3s ease-in-out;
+  border-radius: 2px;
 }
 
 .story-link:hover::after {
   transform: scaleX(1);
 }
 
-/* Instagram-style gradient borders */
-.instagram-border {
-  background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
-  padding: 2px;
-  border-radius: 50%;
+/* Professional gradient borders */
+.professional-border {
+  background: linear-gradient(45deg, #f59e0b 0%, #d97706 25%, #171717 50%, #404040 75%, #f59e0b 100%);
+  padding: 3px;
+  border-radius: 12px;
+}
+
+/* Professional card shadows */
+.professional-shadow {
+  box-shadow: 
+    0 4px 6px -1px rgba(245, 158, 11, 0.1),
+    0 2px 4px -1px rgba(23, 23, 23, 0.06);
+}
+
+.professional-shadow:hover {
+  box-shadow: 
+    0 20px 25px -5px rgba(245, 158, 11, 0.1),
+    0 10px 10px -5px rgba(23, 23, 23, 0.04);
+}
+
+/* Professional button gradients */
+.btn-professional {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-professional:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+}
+
+.btn-professional-outline {
+  border: 2px solid #f59e0b;
+  color: #d97706;
+  background: transparent;
+}
+
+.btn-professional-outline:hover {
+  background: #f59e0b;
+  color: white;
 }

@@ -36,7 +36,7 @@ const App = () => (
       <Sonner />
       <AuthProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50">
             <Navbar />
             <Routes>
               <Route path="/" element={<Index />} />
