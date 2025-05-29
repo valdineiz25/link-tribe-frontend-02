@@ -62,7 +62,7 @@ const Dashboard: React.FC = () => {
           </h1>
           <p className="text-gray-600 mt-2">Acompanhe sua performance como afiliado</p>
         </div>
-        <Link to="/">
+        <Link to="/create-post">
           <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
             <Plus size={20} className="mr-2" />
             Novo Post
@@ -83,7 +83,7 @@ const Dashboard: React.FC = () => {
       <section>
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Posts Recentes</h2>
-          <Link to="/">
+          <Link to="/feed">
             <Button variant="outline">Ver Todos</Button>
           </Link>
         </div>
@@ -132,26 +132,32 @@ const Dashboard: React.FC = () => {
       <section>
         <h2 className="text-2xl font-semibold mb-6">Ações Rápidas</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="text-lg">Ver Marketplace</CardTitle>
-              <CardDescription>Encontre novos produtos para promover</CardDescription>
-            </CardHeader>
-          </Card>
+          <Link to="/marketplace">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <CardTitle className="text-lg">Ver Marketplace</CardTitle>
+                <CardDescription>Encontre novos produtos para promover</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
           
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="text-lg">Participar de Grupos</CardTitle>
-              <CardDescription>Conecte-se com outros afiliados</CardDescription>
-            </CardHeader>
-          </Card>
+          <Link to="/groups">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <CardTitle className="text-lg">Participar de Grupos</CardTitle>
+                <CardDescription>Conecte-se com outros afiliados</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
           
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <CardHeader>
-              <CardTitle className="text-lg">Configurações</CardTitle>
-              <CardDescription>Gerencie sua conta e preferências</CardDescription>
-            </CardHeader>
-          </Card>
+          <Link to="/settings">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <CardTitle className="text-lg">Configurações</CardTitle>
+                <CardDescription>Gerencie sua conta e preferências</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
         </div>
       </section>
     </div>
