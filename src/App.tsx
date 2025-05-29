@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +22,7 @@ import NotFound from "@/pages/NotFound";
 import CreatePost from "@/pages/CreatePost";
 import Reels from "@/pages/Reels";
 import AddProduct from "@/pages/AddProduct";
+import Presentation from "@/pages/Presentation";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +37,7 @@ const App = () => (
             <Navbar />
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/presentation" element={<Presentation />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/feed" element={
