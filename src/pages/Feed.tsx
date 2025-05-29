@@ -5,6 +5,7 @@ import FeedHeader from '@/components/FeedHeader';
 import CategoryFilter from '@/components/CategoryFilter';
 import PostCreation from '@/components/PostCreation';
 import PostList from '@/components/PostList';
+import Stories from '@/components/Stories';
 import { useToast } from '@/hooks/use-toast';
 
 const Feed: React.FC = () => {
@@ -100,6 +101,9 @@ const Feed: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50 pb-16 md:pb-0">
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         <FeedHeader />
+        
+        {/* Stories section */}
+        <Stories />
         
         {/* Stories-like category filter */}
         <div className="bg-white rounded-xl shadow-lg border border-yellow-200 p-4">
