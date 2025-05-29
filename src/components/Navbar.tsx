@@ -22,11 +22,11 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Feed' },
+    { path: '/feed', icon: Home, label: 'Feed' },
     { path: '/reels', icon: Video, label: 'Reels' },
     { path: '/dashboard', icon: BarChart3, label: 'Dashboard' },
     { path: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-primary">
+            <Link to="/feed" className="text-2xl font-bold text-primary">
               AffiliateNet
             </Link>
           </div>
