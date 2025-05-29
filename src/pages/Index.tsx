@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePartners } from '@/hooks/usePartners';
 import { 
   TrendingUp, 
   Users, 
@@ -15,10 +15,13 @@ import {
   BarChart3,
   Heart,
   Camera,
-  Share2
+  Share2,
+  Loader2
 } from 'lucide-react';
 
 const Index: React.FC = () => {
+  const { stores, loading: storesLoading } = usePartners();
+
   const features = [
     {
       icon: DollarSign,
@@ -47,44 +50,6 @@ const Index: React.FC = () => {
     { value: 'R$ 2M+', label: 'Em Comissões Pagas' },
     { value: '10K+', label: 'Produtos Disponíveis' },
     { value: '98%', label: 'Satisfação dos Usuários' }
-  ];
-
-  const partnerStores = [
-    {
-      name: 'Shopee',
-      logo: 'https://logoeps.com/wp-content/uploads/2020/08/shopee-vector-logo.png',
-      alt: 'Shopee'
-    },
-    {
-      name: 'Magazine Luiza',
-      logo: 'https://logoeps.com/wp-content/uploads/2013/03/magazine-luiza-vector-logo.png',
-      alt: 'Magazine Luiza'
-    },
-    {
-      name: 'Mercado Livre',
-      logo: 'https://logoeps.com/wp-content/uploads/2013/03/mercadolibre-vector-logo.png',
-      alt: 'Mercado Livre'
-    },
-    {
-      name: 'Amazon',
-      logo: 'https://logoeps.com/wp-content/uploads/2013/03/amazon-vector-logo.png',
-      alt: 'Amazon'
-    },
-    {
-      name: 'Temu',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Temu_logo.svg',
-      alt: 'Temu'
-    },
-    {
-      name: 'AliExpress',
-      logo: 'https://logoeps.com/wp-content/uploads/2014/09/aliexpress-vector-logo.png',
-      alt: 'AliExpress'
-    },
-    {
-      name: 'Shein',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Shein_logo.svg',
-      alt: 'Shein'
-    }
   ];
 
   return (
@@ -213,7 +178,7 @@ const Index: React.FC = () => {
         </div>
       </section>
 
-      {/* Partner Stores Section - New */}
+      {/* Partner Stores Section - Now using API */}
       <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -225,33 +190,48 @@ const Index: React.FC = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 items-center">
-            {partnerStores.map((store, index) => (
-              <div 
-                key={index} 
-                className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center group"
-              >
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-gray-50 transition-colors">
-                    <img 
-                      src={store.logo} 
-                      alt={store.alt}
-                      className="w-12 h-8 object-contain transition-all duration-300"
-                    />
+          {storesLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              <span className="ml-2 text-gray-600">Carregando lojas parceiras...</span>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 items-center">
+                {stores.map((store) => (
+                  <div 
+                    key={store.id} 
+                    className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center group"
+                  >
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-3 group-hover:bg-gray-50 transition-colors">
+                        <img 
+                          src={store.logo} 
+                          alt={store.alt}
+                          className="w-12 h-8 object-contain transition-all duration-300"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/48x32?text=' + store.name.charAt(0);
+                          }}
+                        />
+                      </div>
+                      <div className="text-xs font-medium text-gray-600 group-hover:text-gray-800 transition-colors">
+                        {store.name}
+                      </div>
+                      <div className="text-xs text-green-600 font-semibold mt-1">
+                        {store.commission}% comissão
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-xs font-medium text-gray-600 group-hover:text-gray-800 transition-colors">
-                    {store.name}
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="text-center mt-8">
-            <p className="text-sm text-gray-500">
-              E mais de <span className="font-semibold text-blue-600">500+ lojas parceiras</span> esperando por você
-            </p>
-          </div>
+              <div className="text-center mt-8">
+                <p className="text-sm text-gray-500">
+                  E mais de <span className="font-semibold text-blue-600">500+ lojas parceiras</span> esperando por você
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
