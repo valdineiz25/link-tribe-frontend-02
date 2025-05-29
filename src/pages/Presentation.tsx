@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { usePartners } from '@/hooks/usePartners';
 import { 
   Users, 
   TrendingUp, 
@@ -15,10 +15,13 @@ import {
   Zap,
   DollarSign,
   Target,
-  Award
+  Award,
+  Loader2
 } from 'lucide-react';
 
 const Presentation: React.FC = () => {
+  const { stores, loading: storesLoading } = usePartners();
+
   const features = [
     {
       icon: DollarSign,
@@ -149,8 +152,65 @@ const Presentation: React.FC = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Partner Stores Section */}
       <section className="py-20 px-4 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-6">
+              Parceiros de <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Confiança</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Trabalhe com as maiores e mais confiáveis lojas do Brasil e do mundo
+            </p>
+          </div>
+
+          {storesLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
+              <span className="ml-2 text-gray-600">Carregando lojas parceiras...</span>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 items-center mb-12">
+                {stores.map((store) => (
+                  <div 
+                    key={store.id} 
+                    className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border border-orange-200 p-6 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group hover:border-orange-400"
+                  >
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md">
+                        <img 
+                          src={store.logo} 
+                          alt={store.alt}
+                          className="w-12 h-8 object-contain transition-all duration-300"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/48x32?text=' + store.name.charAt(0);
+                          }}
+                        />
+                      </div>
+                      <div className="text-xs font-medium text-gray-700 group-hover:text-orange-600 transition-colors">
+                        {store.name}
+                      </div>
+                      <div className="text-xs text-orange-600 font-semibold mt-1">
+                        {store.commission}% comissão
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-center">
+                <p className="text-sm text-gray-500">
+                  E mais de <span className="font-semibold text-orange-600">500+ lojas parceiras</span> esperando por você
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-4 bg-gradient-to-r from-orange-100 to-red-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-6">
@@ -185,7 +245,7 @@ const Presentation: React.FC = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-orange-100 to-red-100">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-6">
