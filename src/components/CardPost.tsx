@@ -8,7 +8,9 @@ import {
   Share2, 
   User,
   ExternalLink,
-  ShoppingBag
+  ShoppingBag,
+  MoreHorizontal,
+  Bookmark
 } from 'lucide-react';
 import EditPostDialog from '@/components/EditPostDialog';
 
@@ -39,6 +41,7 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
   const [currentPost, setCurrentPost] = useState(post);
+  const [isSaved, setIsSaved] = useState(false);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
@@ -57,6 +60,10 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
     }
   };
 
+  const handleSave = () => {
+    setIsSaved(!isSaved);
+  };
+
   const handlePostUpdate = (updatedPost: Post) => {
     setCurrentPost(updatedPost);
     if (onUpdatePost) {
@@ -69,11 +76,12 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
     : 0;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto mb-6 border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
-      <CardHeader className="pb-3 bg-gradient-to-r from-orange-50 to-red-50">
+    <Card className="w-full max-w-lg mx-auto mb-4 border border-gray-200 shadow-sm bg-white rounded-xl overflow-hidden">
+      {/* Header - Instagram style */}
+      <CardHeader className="p-4 pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-red-400 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
               {currentPost.authorAvatar ? (
                 <img 
                   src={currentPost.authorAvatar} 
@@ -81,132 +89,159 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
-                <User size={20} className="text-white" />
+                currentPost.authorName.charAt(0).toUpperCase()
               )}
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-sm">{currentPost.authorName}</h3>
-              <div className="flex items-center space-x-2 text-xs text-gray-500">
+              <h3 className="font-semibold text-sm text-gray-900">{currentPost.authorName}</h3>
+              <div className="flex items-center space-x-1 text-xs text-gray-500">
                 <span>{currentPost.timestamp}</span>
                 <span>•</span>
-                <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-medium">
+                <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">
                   {currentPost.category}
                 </span>
               </div>
             </div>
           </div>
-          {isOwner && (
-            <EditPostDialog 
-              post={currentPost} 
-              onSave={handlePostUpdate}
-            />
-          )}
+          <div className="flex items-center space-x-2">
+            {isOwner && (
+              <EditPostDialog 
+                post={currentPost} 
+                onSave={handlePostUpdate}
+              />
+            )}
+            <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-400">
+              <MoreHorizontal size={20} />
+            </Button>
+          </div>
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        {/* Informações do Produto */}
+      <CardContent className="p-0">
+        {/* Post content */}
+        <div className="px-4 pb-3">
+          <p className="text-gray-900 text-sm leading-relaxed">{currentPost.content}</p>
+        </div>
+        
+        {/* Image - Instagram style */}
+        {currentPost.image && (
+          <div className="w-full">
+            <img 
+              src={currentPost.image} 
+              alt="Post image"
+              className="w-full h-80 object-cover"
+            />
+          </div>
+        )}
+
+        {/* Product info - Instagram shopping style */}
         {currentPost.productName && (
-          <div className="mb-4 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border border-orange-200">
+          <div className="mx-4 my-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-start justify-between mb-2">
-              <h4 className="font-bold text-lg text-orange-700 flex items-center">
-                <ShoppingBag size={18} className="mr-2" />
-                {currentPost.productName}
-              </h4>
+              <div className="flex items-start space-x-2">
+                <ShoppingBag size={16} className="text-gray-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-900">{currentPost.productName}</h4>
+                  {currentPost.storeName && (
+                    <p className="text-xs text-gray-500">{currentPost.storeName}</p>
+                  )}
+                </div>
+              </div>
               {discountPercentage > 0 && (
-                <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                  -{discountPercentage}% OFF
+                <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-semibold">
+                  -{discountPercentage}%
                 </span>
               )}
             </div>
             
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 {currentPost.promotionalPrice && currentPost.promotionalPrice > 0 && (
-                  <span className="text-xl font-bold text-green-600">
+                  <span className="text-lg font-bold text-green-600">
                     R$ {currentPost.promotionalPrice.toFixed(2)}
                   </span>
                 )}
                 {currentPost.currentPrice && currentPost.currentPrice > 0 && (
-                  <span className={`${currentPost.promotionalPrice && currentPost.promotionalPrice > 0 ? 'line-through text-gray-500 text-sm' : 'text-xl font-bold text-orange-600'}`}>
+                  <span className={`${currentPost.promotionalPrice && currentPost.promotionalPrice > 0 ? 'line-through text-gray-500 text-sm' : 'text-lg font-bold text-gray-900'}`}>
                     R$ {currentPost.currentPrice.toFixed(2)}
                   </span>
                 )}
               </div>
-              {currentPost.storeName && (
-                <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
-                  {currentPost.storeName}
-                </span>
+              {currentPost.productLink && (
+                <Button 
+                  size="sm" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg"
+                  onClick={() => window.open(currentPost.productLink, '_blank')}
+                >
+                  Ver produto
+                </Button>
               )}
-            </div>
-          </div>
-        )}
-
-        <p className="text-gray-800 mb-4 whitespace-pre-wrap">{currentPost.content}</p>
-        
-        {currentPost.image && (
-          <div className="mb-4">
-            <img 
-              src={currentPost.image} 
-              alt="Post image"
-              className="w-full rounded-lg object-cover max-h-96 border shadow-sm"
-            />
-          </div>
-        )}
-
-        {currentPost.productLink && (
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg p-4 shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-bold">🔥 Link de Afiliado</p>
-                <p className="text-xs opacity-90">Clique e garante o seu!</p>
-              </div>
-              <Button 
-                size="sm" 
-                className="bg-white text-orange-600 hover:bg-gray-100 font-bold"
-                onClick={() => window.open(currentPost.productLink, '_blank')}
-              >
-                <ExternalLink size={16} className="mr-2" />
-                COMPRAR
-              </Button>
             </div>
           </div>
         )}
       </CardContent>
 
-      <CardFooter className="pt-0 bg-gray-50">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center space-x-6">
+      {/* Footer - Instagram style actions */}
+      <CardFooter className="p-4 pt-2">
+        <div className="w-full">
+          {/* Action buttons */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLike}
+                className={`p-0 h-auto hover:bg-transparent ${
+                  isLiked ? 'text-red-500' : 'text-gray-700'
+                }`}
+              >
+                <Heart 
+                  size={24} 
+                  className={isLiked ? 'fill-current' : ''} 
+                />
+              </Button>
+
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-0 h-auto text-gray-700 hover:bg-transparent"
+              >
+                <MessageCircle size={24} />
+              </Button>
+
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleShare}
+                className="p-0 h-auto text-gray-700 hover:bg-transparent"
+              >
+                <Share2 size={24} />
+              </Button>
+            </div>
+            
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleLike}
-              className={`flex items-center space-x-2 hover:bg-red-50 ${
-                isLiked ? 'text-red-500' : 'text-gray-600'
+              onClick={handleSave}
+              className={`p-0 h-auto hover:bg-transparent ${
+                isSaved ? 'text-gray-900' : 'text-gray-700'
               }`}
             >
-              <Heart 
-                size={18} 
-                className={isLiked ? 'fill-current' : ''} 
-              />
-              <span className="font-medium">{likesCount}</span>
-            </Button>
-
-            <Button variant="ghost" size="sm" className="flex items-center space-x-2 text-gray-600 hover:bg-blue-50">
-              <MessageCircle size={18} />
-              <span className="font-medium">{currentPost.comments}</span>
-            </Button>
-
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleShare}
-              className="flex items-center space-x-2 text-gray-600 hover:bg-green-50"
-            >
-              <Share2 size={18} />
-              <span className="font-medium">Compartilhar</span>
+              <Bookmark size={24} className={isSaved ? 'fill-current' : ''} />
             </Button>
           </div>
+          
+          {/* Likes count */}
+          <div className="text-sm font-semibold text-gray-900 mb-1">
+            {likesCount} curtidas
+          </div>
+          
+          {/* Comments preview */}
+          {currentPost.comments > 0 && (
+            <div className="text-sm text-gray-500">
+              Ver todos os {currentPost.comments} comentários
+            </div>
+          )}
         </div>
       </CardFooter>
     </Card>

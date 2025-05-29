@@ -73,11 +73,12 @@ const Feed: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-100">
-      <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="min-h-screen bg-gray-50 pb-16 md:pb-0">
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         <FeedHeader />
         
-        <div className="bg-gradient-to-r from-white via-amber-50 to-yellow-50 rounded-2xl shadow-xl border border-amber-200 p-6 backdrop-blur-sm">
+        {/* Stories-like category filter */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <CategoryFilter 
             categories={categories}
             selectedCategory={selectedCategory}
@@ -85,13 +86,15 @@ const Feed: React.FC = () => {
           />
         </div>
 
-        <div className="bg-gradient-to-r from-white via-amber-50 to-yellow-50 rounded-2xl shadow-xl border border-amber-200 p-6 backdrop-blur-sm">
+        {/* Post creation - Instagram style */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <PostCreation 
             isCreating={isCreatingPost}
             onToggleCreating={setIsCreatingPost}
           />
         </div>
 
+        {/* Posts feed */}
         <PostList 
           posts={posts}
           currentUserName={user?.name}
