@@ -73,11 +73,11 @@ const Feed: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-100">
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         <FeedHeader />
         
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
+        <div className="bg-gradient-to-r from-white via-amber-50 to-yellow-50 rounded-2xl shadow-xl border border-amber-200 p-6 backdrop-blur-sm">
           <CategoryFilter 
             categories={categories}
             selectedCategory={selectedCategory}
@@ -85,7 +85,7 @@ const Feed: React.FC = () => {
           />
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-6">
+        <div className="bg-gradient-to-r from-white via-amber-50 to-yellow-50 rounded-2xl shadow-xl border border-amber-200 p-6 backdrop-blur-sm">
           <PostCreation 
             isCreating={isCreatingPost}
             onToggleCreating={setIsCreatingPost}
