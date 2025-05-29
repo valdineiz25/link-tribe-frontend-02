@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,7 @@ import Groups from "@/pages/Groups";
 import Chat from "@/pages/Chat";
 import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
+import CreatePost from "@/pages/CreatePost";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +42,11 @@ const App = () => (
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/create-post" element={
+                <ProtectedRoute>
+                  <CreatePost />
                 </ProtectedRoute>
               } />
               <Route path="/marketplace" element={

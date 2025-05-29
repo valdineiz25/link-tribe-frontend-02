@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,12 +12,18 @@ interface PostCreationProps {
 }
 
 const PostCreation: React.FC<PostCreationProps> = ({ isCreating, onToggleCreating }) => {
+  const navigate = useNavigate();
+
+  const handleCreatePost = () => {
+    navigate('/create-post');
+  };
+
   return (
     <Card className="border-0 shadow-lg bg-gradient-to-r from-orange-500 to-red-500 text-white">
       <CardContent className="p-6">
         {!isCreating ? (
           <Button 
-            onClick={() => onToggleCreating(true)}
+            onClick={handleCreatePost}
             className="w-full bg-white text-orange-600 hover:bg-gray-100 font-bold text-lg py-3"
             size="lg"
           >
@@ -51,6 +58,7 @@ const PostCreation: React.FC<PostCreationProps> = ({ isCreating, onToggleCreatin
                 </Button>
                 <Button 
                   size="sm"
+                  onClick={handleCreatePost}
                   className="bg-white text-orange-600 hover:bg-gray-100 font-bold"
                 >
                   🚀 Publicar
