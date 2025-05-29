@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TrendingUp, Sparkles, Plus, Filter, Users, BarChart3 } from 'lucide-react';
+import { TrendingUp, Sparkles, Plus, Filter, Users, BarChart3, Store } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
@@ -49,6 +49,15 @@ const FeedHeader: React.FC = () => {
           >
             <Plus className="w-5 h-5 mr-2" />
             Criar Post
+          </Button>
+        </Link>
+
+        <Link to="/create-store">
+          <Button 
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+          >
+            <Store className="w-5 h-5 mr-2" />
+            Criar Loja
           </Button>
         </Link>
         

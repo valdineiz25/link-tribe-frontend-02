@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,7 +12,9 @@ import {
   Plus,
   ExternalLink,
   Users,
-  Share2
+  Share2,
+  Camera,
+  Edit
 } from 'lucide-react';
 
 const Profile: React.FC = () => {
@@ -22,6 +23,30 @@ const Profile: React.FC = () => {
   const isOwnProfile = user?.id === id;
   
   const [activeTab, setActiveTab] = useState('posts');
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+
+  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfileImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCoverImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCoverImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const mockAffiliateLinks = [
     {
@@ -84,15 +109,70 @@ const Profile: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
-      {/* Header do Perfil */}
-      <Card>
-        <CardHeader>
+      {/* Header do Perfil com Capa */}
+      <Card className="overflow-hidden">
+        {/* Imagem de Capa */}
+        <div className="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600">
+          {coverImage && (
+            <img 
+              src={coverImage} 
+              alt="Capa do perfil" 
+              className="w-full h-full object-cover"
+            />
+          )}
+          {isOwnProfile && (
+            <div className="absolute top-4 right-4">
+              <label htmlFor="cover-upload" className="cursor-pointer">
+                <Button size="sm" className="bg-black/50 hover:bg-black/70 text-white">
+                  <Camera size={16} className="mr-2" />
+                  Alterar Capa
+                </Button>
+              </label>
+              <input
+                id="cover-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleCoverImageChange}
+                className="hidden"
+              />
+            </div>
+          )}
+        </div>
+
+        <CardHeader className="relative pb-2">
           <div className="flex items-start space-x-6">
-            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-              <User size={40} className="text-gray-500" />
+            {/* Foto de Perfil */}
+            <div className="relative -mt-16">
+              <div className="w-32 h-32 bg-white rounded-full border-4 border-white shadow-lg overflow-hidden">
+                {profileImage ? (
+                  <img 
+                    src={profileImage} 
+                    alt="Foto do perfil" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <User size={48} className="text-gray-500" />
+                  </div>
+                )}
+              </div>
+              {isOwnProfile && (
+                <label htmlFor="profile-upload" className="absolute bottom-2 right-2 cursor-pointer">
+                  <div className="bg-blue-600 rounded-full p-2 shadow-lg hover:bg-blue-700 transition-colors">
+                    <Camera size={16} className="text-white" />
+                  </div>
+                </label>
+              )}
+              <input
+                id="profile-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleProfileImageChange}
+                className="hidden"
+              />
             </div>
             
-            <div className="flex-1">
+            <div className="flex-1 pt-4">
               <div className="flex justify-between items-start">
                 <div>
                   <h1 className="text-2xl font-bold">{user?.name}</h1>
@@ -114,6 +194,7 @@ const Profile: React.FC = () => {
                 
                 {isOwnProfile && (
                   <Button variant="outline">
+                    <Edit size={16} className="mr-2" />
                     Editar Perfil
                   </Button>
                 )}

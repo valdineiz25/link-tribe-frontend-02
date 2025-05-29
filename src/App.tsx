@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +25,7 @@ import Reels from "@/pages/Reels";
 import AddProduct from "@/pages/AddProduct";
 import Presentation from "@/pages/Presentation";
 import Connect from "@/pages/Connect";
+import CreateStore from "@/pages/CreateStore";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +62,11 @@ const App = () => (
               <Route path="/add-product" element={
                 <ProtectedRoute>
                   <AddProduct />
+                </ProtectedRoute>
+              } />
+              <Route path="/create-store" element={
+                <ProtectedRoute>
+                  <CreateStore />
                 </ProtectedRoute>
               } />
               <Route path="/reels" element={
