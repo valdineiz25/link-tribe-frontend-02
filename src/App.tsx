@@ -12,6 +12,7 @@ import Navbar from "@/components/Navbar";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Feed from "@/pages/Feed";
+import Dashboard from "@/pages/Dashboard";
 import Marketplace from "@/pages/Marketplace";
 import Profile from "@/pages/Profile";
 import Groups from "@/pages/Groups";
@@ -36,6 +37,11 @@ const App = () => (
               <Route path="/" element={
                 <ProtectedRoute>
                   <Feed />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
                 </ProtectedRoute>
               } />
               <Route path="/marketplace" element={

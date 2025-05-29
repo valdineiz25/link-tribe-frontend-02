@@ -10,7 +10,8 @@ import {
   MessageCircle, 
   Settings,
   User,
-  LogOut
+  LogOut,
+  BarChart3
 } from 'lucide-react';
 
 const Navbar: React.FC = () => {
@@ -25,6 +26,7 @@ const Navbar: React.FC = () => {
 
   const navItems = [
     { path: '/', icon: Home, label: 'Feed' },
+    { path: '/dashboard', icon: BarChart3, label: 'Dashboard' },
     { path: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
     { path: '/groups', icon: Users, label: 'Grupos' },
     { path: '/chat', icon: MessageCircle, label: 'Chat' },
