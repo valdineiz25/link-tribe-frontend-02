@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +20,7 @@ import Settings from "@/pages/Settings";
 import NotFound from "@/pages/NotFound";
 import CreatePost from "@/pages/CreatePost";
 import Reels from "@/pages/Reels";
+import AddProduct from "@/pages/AddProduct";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +49,11 @@ const App = () => (
               <Route path="/create-post" element={
                 <ProtectedRoute>
                   <CreatePost />
+                </ProtectedRoute>
+              } />
+              <Route path="/add-product" element={
+                <ProtectedRoute>
+                  <AddProduct />
                 </ProtectedRoute>
               } />
               <Route path="/reels" element={
