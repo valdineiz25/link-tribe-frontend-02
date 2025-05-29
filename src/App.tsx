@@ -23,6 +23,7 @@ import CreatePost from "@/pages/CreatePost";
 import Reels from "@/pages/Reels";
 import AddProduct from "@/pages/AddProduct";
 import Presentation from "@/pages/Presentation";
+import Connect from "@/pages/Connect";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/presentation" element={<Presentation />} />
+              <Route path="/connect" element={<Connect />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/feed" element={
