@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Upload, Image, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { StorageService } from '@/services/storageService';
 
 const CreatePost: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -20,8 +20,10 @@ const CreatePost: React.FC = () => {
     promotionalPrice: '',
     storeName: '',
     category: '',
-    media: null as File | null,
+    mediaFile: null as File | null,
+    mediaPreview: null as string | null,
   });
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -31,7 +33,10 @@ const CreatePost: React.FC = () => {
     'Moda',
     'Casa e Jardim',
     'Esportes',
-    'Educação'
+    'Educação',
+    'Beleza',
+    'Eletrônicos',
+    'Alimentação'
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,24 +51,121 @@ const CreatePost: React.FC = () => {
       return;
     }
 
-    // Simulação de envio para API
-    console.log('Post criado:', formData);
-    
-    toast({
-      title: "Sucesso! 🎉",
-      description: "Seu post foi criado e publicado no feed!",
-    });
-    
-    navigate('/');
+    setIsLoading(true);
+
+    try {
+      let mediaBase64 = null;
+      if (formData.mediaFile) {
+        mediaBase64 = await StorageService.fileToBase64(formData.mediaFile);
+      }
+
+      const postData = {
+        type: formData.type,
+        description: formData.description,
+        productLink: formData.productLink,
+        productName: formData.productName,
+        currentPrice: formData.currentPrice ? parseFloat(formData.currentPrice) : null,
+        promotionalPrice: formData.promotionalPrice ? parseFloat(formData.promotionalPrice) : null,
+        storeName: formData.storeName,
+        category: formData.category,
+        media: mediaBase64,
+        mediaType: formData.mediaFile?.type || null,
+        mediaName: formData.mediaFile?.name || null,
+      };
+
+      if (formData.type === 'reel') {
+        StorageService.saveReel(postData);
+        console.log('Reel criado:', postData);
+        toast({
+          title: "Reel criado! 🎥",
+          description: "Seu reel foi criado e está disponível na aba Reels!",
+        });
+      } else {
+        StorageService.savePost(postData);
+        console.log('Post criado:', postData);
+        toast({
+          title: "Post criado! 🎉",
+          description: "Seu post foi criado e publicado no feed!",
+        });
+      }
+      
+      // Aguardar um pouco para mostrar o toast antes de navegar
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Erro ao criar post:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao criar o post. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData(prev => ({ ...prev, media: e.target.files![0] }));
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Verificar tipo de arquivo
+      const isVideo = file.type.startsWith('video/');
+      const isImage = file.type.startsWith('image/');
+      
+      if (formData.type === 'reel' && !isVideo) {
+        toast({
+          title: "Erro",
+          description: "Para reels, selecione apenas arquivos de vídeo.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (formData.type === 'post' && !isImage) {
+        toast({
+          title: "Erro",
+          description: "Para posts, selecione apenas arquivos de imagem.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Verificar tamanho (max 50MB para vídeos, 5MB para imagens)
+      const maxSize = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        toast({
+          title: "Erro",
+          description: `O arquivo deve ter no máximo ${isVideo ? '50MB' : '5MB'}.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        const preview = await StorageService.fileToBase64(file);
+        setFormData(prev => ({ 
+          ...prev, 
+          mediaFile: file,
+          mediaPreview: preview
+        }));
+        
+        toast({
+          title: "Arquivo carregado! ✅",
+          description: `${isVideo ? 'Vídeo' : 'Imagem'} carregado com sucesso!`,
+        });
+      } catch (error) {
+        console.error('Erro ao carregar arquivo:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar o arquivo. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -76,6 +178,7 @@ const CreatePost: React.FC = () => {
             variant="ghost" 
             onClick={() => navigate('/')}
             className="mr-4"
+            disabled={isLoading}
           >
             <ArrowLeft size={20} />
           </Button>
@@ -145,6 +248,7 @@ const CreatePost: React.FC = () => {
                   placeholder="Conte sobre seu produto! O que o torna especial? Por que você recomenda?"
                   rows={4}
                   className="resize-none"
+                  required
                 />
               </div>
 
@@ -213,7 +317,7 @@ const CreatePost: React.FC = () => {
               {/* Upload de mídia */}
               <div className="space-y-2">
                 <Label htmlFor="media">
-                  {formData.type === 'reel' ? 'Vídeo' : 'Imagem'}
+                  {formData.type === 'reel' ? 'Vídeo *' : 'Imagem'}
                 </Label>
                 <Input
                   id="media"
@@ -222,11 +326,34 @@ const CreatePost: React.FC = () => {
                   onChange={handleFileChange}
                   className="cursor-pointer"
                 />
-                {formData.media && (
-                  <p className="text-sm text-green-600">
-                    ✓ Arquivo selecionado: {formData.media.name}
-                  </p>
+                {formData.mediaPreview && (
+                  <div className="mt-2">
+                    <p className="text-sm text-green-600 mb-2">
+                      ✓ Arquivo selecionado: {formData.mediaFile?.name}
+                    </p>
+                    <div className="w-32 h-32 border border-gray-300 rounded-lg overflow-hidden">
+                      {formData.type === 'reel' ? (
+                        <video 
+                          src={formData.mediaPreview} 
+                          className="w-full h-full object-cover"
+                          controls
+                        />
+                      ) : (
+                        <img 
+                          src={formData.mediaPreview} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
+                  </div>
                 )}
+                <p className="text-xs text-gray-500">
+                  {formData.type === 'reel' 
+                    ? 'Vídeo até 50MB (MP4, MOV, AVI)'
+                    : 'Imagem até 5MB (PNG, JPG, JPEG)'
+                  }
+                </p>
               </div>
 
               {/* Botões */}
@@ -236,14 +363,16 @@ const CreatePost: React.FC = () => {
                   variant="outline"
                   onClick={() => navigate('/')}
                   className="flex-1"
+                  disabled={isLoading}
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
                   className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                  disabled={isLoading}
                 >
-                  🚀 Publicar Post
+                  {isLoading ? 'Publicando...' : '🚀 Publicar Post'}
                 </Button>
               </div>
             </form>

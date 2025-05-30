@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { StorageService } from '@/services/storageService';
 import { 
   Store, 
   Upload, 
@@ -24,21 +26,54 @@ interface Catalog {
 
 const CreateStore: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [storeName, setStoreName] = useState('');
   const [storeDescription, setStoreDescription] = useState('');
   const [storeLogo, setStoreLogo] = useState<string | null>(null);
   const [catalogs, setCatalogs] = useState<Catalog[]>([]);
   const [newCatalogName, setNewCatalogName] = useState('');
   const [newCatalogDescription, setNewCatalogDescription] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setStoreLogo(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        // Verificar se é uma imagem
+        if (!file.type.startsWith('image/')) {
+          toast({
+            title: "Erro",
+            description: "Por favor, selecione apenas arquivos de imagem.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Verificar tamanho (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          toast({
+            title: "Erro",
+            description: "A imagem deve ter no máximo 5MB.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const base64 = await StorageService.fileToBase64(file);
+        setStoreLogo(base64);
+        
+        toast({
+          title: "Sucesso! ✅",
+          description: "Logo carregado com sucesso!",
+        });
+      } catch (error) {
+        console.error('Erro ao carregar logo:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar a imagem. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -53,6 +88,11 @@ const CreateStore: React.FC = () => {
       setCatalogs([...catalogs, newCatalog]);
       setNewCatalogName('');
       setNewCatalogDescription('');
+      
+      toast({
+        title: "Catálogo adicionado! ✅",
+        description: `Catálogo "${newCatalogName}" foi adicionado.`,
+      });
     }
   };
 
@@ -60,30 +100,94 @@ const CreateStore: React.FC = () => {
     setCatalogs(catalogs.filter(catalog => catalog.id !== id));
   };
 
-  const handleCatalogImageUpload = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCatalogImageUpload = async (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
+      try {
+        if (!file.type.startsWith('image/')) {
+          toast({
+            title: "Erro",
+            description: "Por favor, selecione apenas arquivos de imagem.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+          toast({
+            title: "Erro",
+            description: "A imagem deve ter no máximo 5MB.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const base64 = await StorageService.fileToBase64(file);
         setCatalogs(catalogs.map(catalog => 
           catalog.id === id 
-            ? { ...catalog, image: e.target?.result as string }
+            ? { ...catalog, image: base64 }
             : catalog
         ));
-      };
-      reader.readAsDataURL(file);
+
+        toast({
+          title: "Sucesso! ✅",
+          description: "Imagem do catálogo carregada!",
+        });
+      } catch (error) {
+        console.error('Erro ao carregar imagem do catálogo:', error);
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar a imagem. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const handleCreateStore = () => {
-    console.log('Criando loja:', {
-      name: storeName,
-      description: storeDescription,
-      logo: storeLogo,
-      catalogs
-    });
-    // Aqui você implementaria a lógica para salvar a loja
-    navigate('/dashboard');
+  const handleCreateStore = async () => {
+    if (!storeName.trim()) {
+      toast({
+        title: "Erro",
+        description: "Por favor, digite o nome da loja.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const storeData = {
+        name: storeName,
+        description: storeDescription,
+        logo: storeLogo,
+        catalogs
+      };
+
+      StorageService.saveStore(storeData);
+      
+      console.log('Loja criada com sucesso:', storeData);
+      
+      toast({
+        title: "Loja criada! 🎉",
+        description: `A loja "${storeName}" foi criada com sucesso!`,
+      });
+      
+      // Aguardar um pouco para mostrar o toast antes de navegar
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Erro ao criar loja:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao criar a loja. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -121,19 +225,22 @@ const CreateStore: React.FC = () => {
             <div className="space-y-2">
               <Label>Logo da Loja</Label>
               <div className="flex items-center space-x-4">
-                <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50">
                   {storeLogo ? (
-                    <img src={storeLogo} alt="Logo" className="w-full h-full object-cover" />
+                    <img src={storeLogo} alt="Logo" className="w-full h-full object-cover rounded-lg" />
                   ) : (
                     <ImageIcon className="w-8 h-8 text-gray-400" />
                   )}
                 </div>
-                <label htmlFor="logo-upload" className="cursor-pointer">
-                  <Button variant="outline" size="sm">
-                    <Upload size={16} className="mr-2" />
-                    Escolher Logo
-                  </Button>
-                </label>
+                <div>
+                  <label htmlFor="logo-upload" className="cursor-pointer">
+                    <Button variant="outline" size="sm" type="button">
+                      <Upload size={16} className="mr-2" />
+                      Escolher Logo
+                    </Button>
+                  </label>
+                  <p className="text-xs text-gray-500 mt-1">PNG, JPG até 5MB</p>
+                </div>
                 <input
                   id="logo-upload"
                   type="file"
@@ -146,12 +253,13 @@ const CreateStore: React.FC = () => {
 
             {/* Nome da Loja */}
             <div className="space-y-2">
-              <Label htmlFor="store-name">Nome da Loja</Label>
+              <Label htmlFor="store-name">Nome da Loja *</Label>
               <Input
                 id="store-name"
                 placeholder="Digite o nome da sua loja"
                 value={storeName}
                 onChange={(e) => setStoreName(e.target.value)}
+                required
               />
             </div>
 
@@ -264,15 +372,15 @@ const CreateStore: React.FC = () => {
 
         {/* Botões de Ação */}
         <div className="flex justify-end space-x-4">
-          <Button variant="outline" onClick={() => navigate(-1)}>
+          <Button variant="outline" onClick={() => navigate(-1)} disabled={isLoading}>
             Cancelar
           </Button>
           <Button 
             onClick={handleCreateStore}
-            disabled={!storeName.trim()}
+            disabled={!storeName.trim() || isLoading}
             className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
           >
-            Criar Loja
+            {isLoading ? 'Criando...' : 'Criar Loja'}
           </Button>
         </div>
       </div>
