@@ -17,7 +17,9 @@ import {
   Heart,
   Camera,
   Share2,
-  Loader2
+  Loader2,
+  Mail,
+  Phone
 } from 'lucide-react';
 
 const Index: React.FC = () => {
@@ -197,7 +199,7 @@ const Index: React.FC = () => {
               <Loader2 className="w-8 h-8 animate-spin text-yellow-400" />
               <span className="ml-2 text-gray-300">Carregando lojas parceiras...</span>
             </div>
-          ) : (
+          ) : stores && stores.length > 0 ? (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 items-center">
                 {stores.map((store) => (
@@ -207,14 +209,24 @@ const Index: React.FC = () => {
                   >
                     <div className="text-center">
                       <div className="w-16 h-16 bg-gradient-to-br from-yellow-100 to-white rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <img 
-                          src={store.logo} 
-                          alt={store.alt}
-                          className="w-12 h-8 object-contain transition-all duration-300"
-                          onError={(e) => {
-                            e.currentTarget.src = 'https://via.placeholder.com/48x32?text=' + store.name.charAt(0);
-                          }}
-                        />
+                        {store.logo ? (
+                          <img 
+                            src={store.logo} 
+                            alt={store.alt || store.name}
+                            className="w-12 h-8 object-contain transition-all duration-300"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                              target.nextElementSibling!.style.display = 'flex';
+                            }}
+                          />
+                        ) : null}
+                        <div 
+                          className="w-12 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded flex items-center justify-center text-black font-bold text-lg"
+                          style={{ display: store.logo ? 'none' : 'flex' }}
+                        >
+                          {store.name.charAt(0)}
+                        </div>
                       </div>
                       <div className="text-xs font-medium text-gray-300 group-hover:text-white transition-colors">
                         {store.name}
@@ -233,6 +245,10 @@ const Index: React.FC = () => {
                 </p>
               </div>
             </>
+          ) : (
+            <div className="text-center text-gray-400">
+              <p>Carregando lojas parceiras...</p>
+            </div>
           )}
         </div>
       </section>
@@ -314,6 +330,58 @@ const Index: React.FC = () => {
                 Receba comissões por cada venda através das suas recomendações
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section className="py-20 px-4 bg-gradient-to-br from-yellow-50 via-white to-gray-50">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Entre em <span className="text-yellow-600">Contato</span>
+          </h2>
+          <p className="text-xl text-gray-600 mb-12">
+            Precisa de ajuda? Estamos aqui para você!
+          </p>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <Card className="border border-yellow-200 shadow-xl hover:shadow-2xl transition-all bg-white hover:border-yellow-400 group">
+              <CardHeader className="text-center pb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Mail size={28} className="text-black" />
+                </div>
+                <CardTitle className="text-xl text-gray-900 font-semibold">Email</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">Envie um email para nossa equipe</p>
+                <a 
+                  href="mailto:valdtkr@gmail.com" 
+                  className="text-yellow-600 hover:text-yellow-700 font-semibold transition-colors"
+                >
+                  valdtkr@gmail.com
+                </a>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-yellow-200 shadow-xl hover:shadow-2xl transition-all bg-white hover:border-yellow-400 group">
+              <CardHeader className="text-center pb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  <Phone size={28} className="text-black" />
+                </div>
+                <CardTitle className="text-xl text-gray-900 font-semibold">WhatsApp</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">Converse conosco no WhatsApp</p>
+                <a 
+                  href="https://wa.me/5563999589965" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-yellow-600 hover:text-yellow-700 font-semibold transition-colors"
+                >
+                  +55 63 9958-9965
+                </a>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

@@ -148,22 +148,34 @@ const Help: React.FC = () => {
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-gray-600 mb-4">Envie um email para suporte</p>
-                <Button variant="outline" className="border-orange-500 text-orange-600">
-                  suporte@affiliatenet.com
-                </Button>
+                <a 
+                  href="mailto:valdtkr@gmail.com"
+                  className="inline-block"
+                >
+                  <Button variant="outline" className="border-orange-500 text-orange-600">
+                    valdtkr@gmail.com
+                  </Button>
+                </a>
               </CardContent>
             </Card>
 
             <Card className="border-0 shadow-lg hover:shadow-xl transition-all">
               <CardHeader className="text-center">
                 <Phone className="w-12 h-12 text-orange-500 mx-auto mb-4" />
-                <CardTitle>Telefone</CardTitle>
+                <CardTitle>WhatsApp</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
-                <p className="text-gray-600 mb-4">Ligue para nosso suporte</p>
-                <Button variant="outline" className="border-orange-500 text-orange-600">
-                  (11) 9999-9999
-                </Button>
+                <p className="text-gray-600 mb-4">Fale conosco no WhatsApp</p>
+                <a 
+                  href="https://wa.me/5563999589965" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                >
+                  <Button variant="outline" className="border-orange-500 text-orange-600">
+                    +55 63 9958-9965
+                  </Button>
+                </a>
               </CardContent>
             </Card>
           </div>
