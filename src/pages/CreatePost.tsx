@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +15,7 @@ import { StorageService } from '@/services/storageService';
 const CreatePost: React.FC = () => {
   const [formData, setFormData] = useState({
     type: 'post',
-    description: '',
+    content: '', // Mudado de description para content
     productLink: '',
     productName: '',
     currentPrice: '',
@@ -45,7 +46,7 @@ const CreatePost: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.description.trim()) {
+    if (!formData.content.trim()) {
       toast({
         title: "Erro",
         description: "Por favor, adicione uma descrição para o post.",
@@ -74,7 +75,7 @@ const CreatePost: React.FC = () => {
 
       const postData = {
         type: formData.type,
-        description: formData.description.trim(),
+        content: formData.content.trim(), // Mudado de description para content
         productLink: formData.productLink.trim(),
         productName: formData.productName.trim(),
         currentPrice: formData.currentPrice ? parseFloat(formData.currentPrice) : undefined,
@@ -255,13 +256,13 @@ const CreatePost: React.FC = () => {
                 </Select>
               </div>
 
-              {/* Descrição */}
+              {/* Conteúdo */}
               <div className="space-y-2">
-                <Label htmlFor="description">Descrição *</Label>
+                <Label htmlFor="content">Descrição *</Label>
                 <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  id="content"
+                  value={formData.content}
+                  onChange={(e) => handleInputChange('content', e.target.value)}
                   placeholder="Conte sobre seu produto! O que o torna especial? Por que você recomenda?"
                   rows={4}
                   className="resize-none"
