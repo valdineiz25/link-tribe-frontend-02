@@ -1,23 +1,15 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  cpf: string;
-  phone: string;
-  state: string;
-  city: string;
-  avatar?: string;
-}
+import { UsersApi } from '@/services/usersApi';
+import { User, UserRegistration } from '@/types/user';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: Omit<User, 'id'> & { password: string }) => Promise<void>;
+  register: (userData: UserRegistration) => Promise<void>;
   logout: () => void;
+  updateProfile: (updates: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,38 +30,52 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const login = async (email: string, password: string) => {
-    // Simulação de login - em produção, fazer call para API
     console.log('Login attempt:', { email, password });
     
-    // Simulando usuário logado
-    const mockUser: User = {
-      id: '1',
-      name: 'João Silva',
-      email: email,
-      cpf: '123.456.789-00',
-      phone: '(11) 99999-9999',
-      state: 'SP',
-      city: 'São Paulo'
-    };
-    
-    setUser(mockUser);
+    try {
+      const authenticatedUser = await UsersApi.authenticateUser(email, password);
+      if (!authenticatedUser) {
+        throw new Error('Credenciais inválidas');
+      }
+      setUser(authenticatedUser);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
-  const register = async (userData: Omit<User, 'id'> & { password: string }) => {
-    // Simulação de registro - em produção, fazer call para API
+  const register = async (userData: UserRegistration) => {
     console.log('Register attempt:', userData);
     
-    const newUser: User = {
-      id: Date.now().toString(),
-      name: userData.name,
-      email: userData.email,
-      cpf: userData.cpf,
-      phone: userData.phone,
-      state: userData.state,
-      city: userData.city
-    };
+    try {
+      // Verificar se email já existe
+      const existingUser = await UsersApi.getUserByEmail(userData.email);
+      if (existingUser) {
+        throw new Error('Email já cadastrado');
+      }
+      
+      const newUser = await UsersApi.createUser(userData);
+      setUser(newUser);
+    } catch (error) {
+      console.error('Register error:', error);
+      throw error;
+    }
+  };
+
+  const updateProfile = async (updates: Partial<User>) => {
+    if (!user) {
+      throw new Error('Usuário não logado');
+    }
     
-    setUser(newUser);
+    try {
+      const updatedUser = await UsersApi.updateUser(user.id, updates);
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+    } catch (error) {
+      console.error('Update profile error:', error);
+      throw error;
+    }
   };
 
   const logout = () => {
@@ -81,7 +87,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated: !!user,
     login,
     register,
-    logout
+    logout,
+    updateProfile
   };
 
   return (

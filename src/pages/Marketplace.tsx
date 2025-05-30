@@ -14,12 +14,27 @@ import {
   X
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useProducts } from '@/hooks/useProducts';
+import { ProductFilters } from '@/types/product';
 
 const Marketplace: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [sortBy, setSortBy] = useState<'price' | 'commission' | 'rating' | 'sales' | 'newest'>('newest');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const { toast } = useToast();
+
+  const filters: ProductFilters = {
+    searchTerm: searchTerm || undefined,
+    category: selectedCategory || undefined,
+    minPrice: priceRange.min ? parseFloat(priceRange.min) : undefined,
+    maxPrice: priceRange.max ? parseFloat(priceRange.max) : undefined,
+    sortBy,
+    sortOrder
+  };
+
+  const { products, loading, trackClick } = useProducts(filters);
 
   const categories = [
     'Todos',
@@ -31,80 +46,12 @@ const Marketplace: React.FC = () => {
     'Livros'
   ];
 
-  const mockProducts = [
-    {
-      id: '1',
-      name: 'Smartphone Android 128GB',
-      price: 899.99,
-      originalPrice: 1199.99,
-      image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=300&fit=crop',
-      category: 'Eletrônicos',
-      affiliateLink: 'https://example.com/smartphone',
-      commission: 8
-    },
-    {
-      id: '2',
-      name: 'Tênis Running Performance',
-      price: 249.90,
-      originalPrice: 349.90,
-      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop',
-      category: 'Esportes',
-      affiliateLink: 'https://example.com/tenis',
-      commission: 12
-    },
-    {
-      id: '3',
-      name: 'Skincare Kit Completo',
-      price: 159.99,
-      image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300&h=300&fit=crop',
-      category: 'Saúde e Beleza',
-      affiliateLink: 'https://example.com/skincare',
-      commission: 15
-    },
-    {
-      id: '4',
-      name: 'Livro: Marketing Digital 2024',
-      price: 39.90,
-      originalPrice: 59.90,
-      image: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=300&fit=crop',
-      category: 'Livros',
-      affiliateLink: 'https://example.com/livro',
-      commission: 20
-    },
-    {
-      id: '5',
-      name: 'Cafeteira Expresso Automática',
-      price: 599.99,
-      originalPrice: 799.99,
-      image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300&h=300&fit=crop',
-      category: 'Casa e Jardim',
-      affiliateLink: 'https://example.com/cafeteira',
-      commission: 10
-    },
-    {
-      id: '6',
-      name: 'Vestido Elegante Primavera',
-      price: 129.90,
-      image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=300&h=300&fit=crop',
-      category: 'Moda',
-      affiliateLink: 'https://example.com/vestido',
-      commission: 18
-    }
-  ];
-
-  const filteredProducts = mockProducts.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'Todos' || product.category === selectedCategory;
-    const matchesPriceMin = !priceRange.min || product.price >= parseFloat(priceRange.min);
-    const matchesPriceMax = !priceRange.max || product.price <= parseFloat(priceRange.max);
-    
-    return matchesSearch && matchesCategory && matchesPriceMin && matchesPriceMax;
-  });
-
   const handleClearFilters = () => {
     setSearchTerm('');
-    setSelectedCategory('Todos');
+    setSelectedCategory('');
     setPriceRange({ min: '', max: '' });
+    setSortBy('newest');
+    setSortOrder('desc');
     toast({
       title: "Filtros limpos",
       description: "Todos os filtros foram removidos.",
@@ -112,20 +59,15 @@ const Marketplace: React.FC = () => {
   };
 
   const handleCategorySelect = (category: string) => {
-    setSelectedCategory(category);
+    setSelectedCategory(category === 'Todos' ? '' : category);
     toast({
       title: "Categoria selecionada",
       description: `Exibindo produtos de: ${category}`,
     });
   };
 
-  const handlePriceFilter = () => {
-    if (priceRange.min || priceRange.max) {
-      toast({
-        title: "Filtro de preço aplicado",
-        description: `Faixa: R$ ${priceRange.min || '0'} - R$ ${priceRange.max || '∞'}`,
-      });
-    }
+  const handleProductClick = (productId: string) => {
+    trackClick(productId);
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -137,6 +79,17 @@ const Marketplace: React.FC = () => {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-orange-50 to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando produtos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-orange-50 to-red-50">
@@ -152,7 +105,7 @@ const Marketplace: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
             <div className="bg-gradient-to-r from-green-400 to-green-500 text-white p-4 rounded-xl cursor-pointer hover:scale-105 transition-transform">
               <Star size={24} className="mx-auto mb-2" />
-              <p className="font-bold text-lg">+50k Produtos</p>
+              <p className="font-bold text-lg">{products.length}+ Produtos</p>
               <p className="text-xs opacity-90">Verificados</p>
             </div>
             <div className="bg-gradient-to-r from-blue-400 to-blue-500 text-white p-4 rounded-xl cursor-pointer hover:scale-105 transition-transform">
@@ -204,10 +157,10 @@ const Marketplace: React.FC = () => {
                   <Button
                     key={category}
                     type="button"
-                    variant={selectedCategory === category ? 'default' : 'outline'}
+                    variant={(selectedCategory === category || (category === 'Todos' && !selectedCategory)) ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => handleCategorySelect(category)}
-                    className={selectedCategory === category 
+                    className={(selectedCategory === category || (category === 'Todos' && !selectedCategory))
                       ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 font-bold' 
                       : 'border-orange-300 text-orange-600 hover:bg-orange-50 font-medium'
                     }
@@ -218,39 +171,58 @@ const Marketplace: React.FC = () => {
               </div>
             </div>
 
-            {/* Filtro de Preço */}
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <SlidersHorizontal size={20} className="text-orange-600" />
-                <span className="font-bold text-gray-800">Faixa de Preço:</span>
+            {/* Filtro de Preço e Ordenação */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <div className="flex items-center space-x-2 mb-4">
+                  <SlidersHorizontal size={20} className="text-orange-600" />
+                  <span className="font-bold text-gray-800">Faixa de Preço:</span>
+                </div>
+                <div className="flex space-x-3 items-center">
+                  <Input
+                    placeholder="R$ Mín"
+                    type="number"
+                    value={priceRange.min}
+                    onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                    className="w-28 border-orange-200"
+                  />
+                  <span className="font-medium text-gray-500">até</span>
+                  <Input
+                    placeholder="R$ Máx"
+                    type="number"
+                    value={priceRange.max}
+                    onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                    className="w-28 border-orange-200"
+                  />
+                </div>
               </div>
-              <div className="flex space-x-3 items-center">
-                <Input
-                  placeholder="R$ Mín"
-                  type="number"
-                  value={priceRange.min}
-                  onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                  onBlur={handlePriceFilter}
-                  className="w-28 border-orange-200"
-                />
-                <span className="font-medium text-gray-500">até</span>
-                <Input
-                  placeholder="R$ Máx"
-                  type="number"
-                  value={priceRange.max}
-                  onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                  onBlur={handlePriceFilter}
-                  className="w-28 border-orange-200"
-                />
-                <Button 
-                  type="button"
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setPriceRange({ min: '', max: '' })}
-                  className="border-orange-300 text-orange-600 hover:bg-orange-50"
-                >
-                  Limpar
-                </Button>
+
+              <div>
+                <div className="flex items-center space-x-2 mb-4">
+                  <span className="font-bold text-gray-800">Ordenar por:</span>
+                </div>
+                <div className="flex space-x-2">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="border border-orange-200 rounded px-3 py-2 flex-1"
+                  >
+                    <option value="newest">Mais Recentes</option>
+                    <option value="price">Preço</option>
+                    <option value="commission">Comissão</option>
+                    <option value="rating">Avaliação</option>
+                    <option value="sales">Vendas</option>
+                  </select>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                    className="border-orange-300"
+                  >
+                    {sortOrder === 'asc' ? '↑' : '↓'}
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -261,10 +233,10 @@ const Marketplace: React.FC = () => {
           <div className="flex justify-between items-center mb-6">
             <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full">
               <p className="font-bold">
-                🔥 {filteredProducts.length} produtos encontrados
+                🔥 {products.length} produtos encontrados
               </p>
             </div>
-            {(searchTerm || selectedCategory !== 'Todos' || priceRange.min || priceRange.max) && (
+            {(searchTerm || selectedCategory || priceRange.min || priceRange.max) && (
               <Button
                 type="button"
                 variant="outline"
@@ -278,12 +250,14 @@ const Marketplace: React.FC = () => {
 
           {/* Grid de Produtos */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {products.map((product) => (
+              <div key={product.id} onClick={() => handleProductClick(product.id)}>
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
 
-          {filteredProducts.length === 0 && (
+          {products.length === 0 && (
             <div className="text-center py-16">
               <div className="text-8xl mb-6">🤔</div>
               <h3 className="text-2xl font-bold text-gray-700 mb-2">
