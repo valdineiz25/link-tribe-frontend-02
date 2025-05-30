@@ -351,10 +351,10 @@ const Index: React.FC = () => {
             </p>
           </div>
           <div className="flex justify-center space-x-8 text-sm text-gray-400">
-            <a href="#" className="hover:text-yellow-400 transition-colors">Sobre</a>
-            <a href="#" className="hover:text-yellow-400 transition-colors">Ajuda</a>
-            <a href="#" className="hover:text-yellow-400 transition-colors">Termos</a>
-            <a href="#" className="hover:text-yellow-400 transition-colors">Privacidade</a>
+            <Link to="/about" className="hover:text-yellow-400 transition-colors">Sobre</Link>
+            <Link to="/help" className="hover:text-yellow-400 transition-colors">Ajuda</Link>
+            <Link to="/terms" className="hover:text-yellow-400 transition-colors">Termos</Link>
+            <Link to="/privacy" className="hover:text-yellow-400 transition-colors">Privacidade</Link>
           </div>
           <div className="text-center text-xs text-gray-500 mt-6">
             © 2024 AffiliateNet. Todos os direitos reservados.

@@ -26,6 +26,10 @@ import AddProduct from "@/pages/AddProduct";
 import Presentation from "@/pages/Presentation";
 import Connect from "@/pages/Connect";
 import CreateStore from "@/pages/CreateStore";
+import About from "@/pages/About";
+import Help from "@/pages/Help";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +46,10 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/presentation" element={<Presentation />} />
               <Route path="/connect" element={<Connect />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/feed" element={

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -317,7 +318,7 @@ const Presentation: React.FC = () => {
             <div>
               <h4 className="font-bold mb-4 text-orange-400">Empresa</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-orange-400 transition-colors">Sobre</a></li>
+                <li><Link to="/about" className="hover:text-orange-400 transition-colors">Sobre</Link></li>
                 <li><a href="#" className="hover:text-orange-400 transition-colors">Blog</a></li>
                 <li><a href="#" className="hover:text-orange-400 transition-colors">Carreiras</a></li>
               </ul>
@@ -325,7 +326,7 @@ const Presentation: React.FC = () => {
             <div>
               <h4 className="font-bold mb-4 text-orange-400">Suporte</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-orange-400 transition-colors">Central de Ajuda</a></li>
+                <li><Link to="/help" className="hover:text-orange-400 transition-colors">Central de Ajuda</Link></li>
                 <li><a href="#" className="hover:text-orange-400 transition-colors">Contato</a></li>
                 <li><a href="#" className="hover:text-orange-400 transition-colors">Status</a></li>
               </ul>
@@ -333,8 +334,8 @@ const Presentation: React.FC = () => {
             <div>
               <h4 className="font-bold mb-4 text-orange-400">Legal</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-orange-400 transition-colors">Termos</a></li>
-                <li><a href="#" className="hover:text-orange-400 transition-colors">Privacidade</a></li>
+                <li><Link to="/terms" className="hover:text-orange-400 transition-colors">Termos</Link></li>
+                <li><Link to="/privacy" className="hover:text-orange-400 transition-colors">Privacidade</Link></li>
                 <li><a href="#" className="hover:text-orange-400 transition-colors">Cookies</a></li>
               </ul>
             </div>
