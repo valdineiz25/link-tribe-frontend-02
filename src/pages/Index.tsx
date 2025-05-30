@@ -55,6 +55,17 @@ const Index: React.FC = () => {
     { value: '98%', label: 'Satisfação dos Usuários' }
   ];
 
+  // Mapeamento das lojas com as novas imagens
+  const storeLogos: { [key: string]: string } = {
+    'Shopee': '/lovable-uploads/2f2c8f66-efc5-45d1-bb48-29a832d5a765.png',
+    'Magazine Luiza': '/lovable-uploads/e3a0f40c-9132-4c47-8369-5b3534dd866e.png',
+    'Mercado Livre': '/lovable-uploads/0e3ca787-7bb8-4dc5-9bde-e82458b64c6f.png',
+    'Amazon': '/lovable-uploads/f17ed122-502f-4692-8287-26005601041f.png',
+    'Temu': '/lovable-uploads/e41781f9-4219-4be6-8fab-b3f5a42c55dc.png',
+    'AliExpress': '/lovable-uploads/d5ad38d1-fd6d-4fb6-94a8-a8b85e5762d8.png',
+    'Shein': 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Shein_logo.svg'
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50">
       {/* Professional gradient header */}
@@ -209,21 +220,24 @@ const Index: React.FC = () => {
                   >
                     <div className="text-center">
                       <div className="w-16 h-16 bg-gradient-to-br from-yellow-100 to-white rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        {store.logo ? (
+                        {storeLogos[store.name] ? (
                           <img 
-                            src={store.logo} 
+                            src={storeLogos[store.name]} 
                             alt={store.alt || store.name}
-                            className="w-12 h-8 object-contain transition-all duration-300"
+                            className="w-12 h-12 object-contain transition-all duration-300"
                             onError={(e) => {
                               const target = e.currentTarget;
                               target.style.display = 'none';
-                              target.nextElementSibling!.style.display = 'flex';
+                              const fallback = target.nextElementSibling as HTMLElement;
+                              if (fallback) {
+                                fallback.style.display = 'flex';
+                              }
                             }}
                           />
                         ) : null}
                         <div 
-                          className="w-12 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded flex items-center justify-center text-black font-bold text-lg"
-                          style={{ display: store.logo ? 'none' : 'flex' }}
+                          className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded flex items-center justify-center text-black font-bold text-lg"
+                          style={{ display: storeLogos[store.name] ? 'none' : 'flex' }}
                         >
                           {store.name.charAt(0)}
                         </div>

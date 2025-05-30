@@ -1,4 +1,3 @@
-
 export interface PartnerStore {
   id: string;
   name: string;
@@ -14,7 +13,7 @@ export class PartnersApi {
     {
       id: '1',
       name: 'Shopee',
-      logo: 'https://logoeps.com/wp-content/uploads/2020/08/shopee-vector-logo.png',
+      logo: '/lovable-uploads/2f2c8f66-efc5-45d1-bb48-29a832d5a765.png',
       alt: 'Shopee',
       category: 'Marketplace',
       commission: 8,
@@ -23,7 +22,7 @@ export class PartnersApi {
     {
       id: '2',
       name: 'Magazine Luiza',
-      logo: 'https://logoeps.com/wp-content/uploads/2013/03/magazine-luiza-vector-logo.png',
+      logo: '/lovable-uploads/e3a0f40c-9132-4c47-8369-5b3534dd866e.png',
       alt: 'Magazine Luiza',
       category: 'Varejo',
       commission: 6,
@@ -32,7 +31,7 @@ export class PartnersApi {
     {
       id: '3',
       name: 'Mercado Livre',
-      logo: 'https://logoeps.com/wp-content/uploads/2013/03/mercadolibre-vector-logo.png',
+      logo: '/lovable-uploads/0e3ca787-7bb8-4dc5-9bde-e82458b64c6f.png',
       alt: 'Mercado Livre',
       category: 'Marketplace',
       commission: 7,
@@ -41,7 +40,7 @@ export class PartnersApi {
     {
       id: '4',
       name: 'Amazon',
-      logo: 'https://logoeps.com/wp-content/uploads/2013/03/amazon-vector-logo.png',
+      logo: '/lovable-uploads/f17ed122-502f-4692-8287-26005601041f.png',
       alt: 'Amazon',
       category: 'Internacional',
       commission: 10,
@@ -50,7 +49,7 @@ export class PartnersApi {
     {
       id: '5',
       name: 'Temu',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/9/99/Temu_logo.svg',
+      logo: '/lovable-uploads/e41781f9-4219-4be6-8fab-b3f5a42c55dc.png',
       alt: 'Temu',
       category: 'Internacional',
       commission: 12,
@@ -59,7 +58,7 @@ export class PartnersApi {
     {
       id: '6',
       name: 'AliExpress',
-      logo: 'https://logoeps.com/wp-content/uploads/2014/09/aliexpress-vector-logo.png',
+      logo: '/lovable-uploads/d5ad38d1-fd6d-4fb6-94a8-a8b85e5762d8.png',
       alt: 'AliExpress',
       category: 'Internacional',
       commission: 8,
