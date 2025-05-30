@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -78,27 +77,27 @@ const CreatePost: React.FC = () => {
         description: formData.description.trim(),
         productLink: formData.productLink.trim(),
         productName: formData.productName.trim(),
-        currentPrice: formData.currentPrice ? parseFloat(formData.currentPrice) : null,
-        promotionalPrice: formData.promotionalPrice ? parseFloat(formData.promotionalPrice) : null,
+        currentPrice: formData.currentPrice ? parseFloat(formData.currentPrice) : undefined,
+        promotionalPrice: formData.promotionalPrice ? parseFloat(formData.promotionalPrice) : undefined,
         storeName: formData.storeName.trim(),
         category: formData.category,
         media: mediaBase64,
-        mediaType: formData.mediaFile?.type || null,
-        mediaName: formData.mediaFile?.name || null,
+        mediaType: formData.mediaFile?.type || undefined,
+        mediaName: formData.mediaFile?.name || undefined,
       };
 
       console.log('Dados do post a serem salvos:', postData);
 
       if (formData.type === 'reel') {
-        await addReel(postData);
-        console.log('Reel criado com sucesso!');
+        const savedReel = await addReel(postData);
+        console.log('Reel criado com sucesso!', savedReel);
         toast({
           title: "Reel criado! 🎥",
           description: "Seu reel foi criado e está disponível na aba Reels!",
         });
       } else {
-        await addPost(postData);
-        console.log('Post criado com sucesso!');
+        const savedPost = await addPost(postData);
+        console.log('Post criado com sucesso!', savedPost);
         toast({
           title: "Post criado! 🎉",
           description: "Seu post foi criado e publicado no feed!",
@@ -108,13 +107,13 @@ const CreatePost: React.FC = () => {
       // Aguardar um pouco para mostrar o toast antes de navegar
       setTimeout(() => {
         navigate('/');
-      }, 1500);
+      }, 1000);
       
     } catch (error) {
       console.error('Erro ao criar post/reel:', error);
       toast({
         title: "Erro",
-        description: "Erro ao criar o conteúdo. Tente novamente.",
+        description: `Erro ao criar o conteúdo: ${error instanceof Error ? error.message : 'Tente novamente.'}`,
         variant: "destructive",
       });
     } finally {

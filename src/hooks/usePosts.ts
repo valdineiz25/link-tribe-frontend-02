@@ -20,11 +20,30 @@ export const usePosts = () => {
     }
   };
 
-  const addPost = (post: Partial<Post>) => {
+  const addPost = async (post: Partial<Post>) => {
     try {
       console.log('Adicionando post:', post);
-      StorageService.savePost(post);
-      fetchPosts();
+      
+      // Validar dados obrigatórios
+      if (!post.description?.trim()) {
+        throw new Error('Descrição é obrigatória');
+      }
+
+      const postData = {
+        ...post,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        views: 0
+      };
+
+      StorageService.savePost(postData);
+      await fetchPosts(); // Recarregar lista
+      console.log('Post salvo com sucesso!');
+      
+      return postData;
     } catch (error) {
       console.error('Erro ao adicionar post:', error);
       throw error;
@@ -60,11 +79,34 @@ export const useReels = () => {
     }
   };
 
-  const addReel = (reel: any) => {
+  const addReel = async (reel: any) => {
     try {
       console.log('Adicionando reel:', reel);
-      StorageService.saveReel(reel);
-      fetchReels();
+      
+      // Validar dados obrigatórios
+      if (!reel.description?.trim()) {
+        throw new Error('Descrição é obrigatória');
+      }
+      
+      if (!reel.media) {
+        throw new Error('Vídeo é obrigatório para reels');
+      }
+
+      const reelData = {
+        ...reel,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        likes: 0,
+        comments: 0,
+        shares: 0,
+        views: 0
+      };
+
+      StorageService.saveReel(reelData);
+      await fetchReels(); // Recarregar lista
+      console.log('Reel salvo com sucesso!');
+      
+      return reelData;
     } catch (error) {
       console.error('Erro ao adicionar reel:', error);
       throw error;

@@ -16,61 +16,94 @@ export class StorageService {
 
   // Gerenciamento de lojas
   static saveStore(store: any): void {
-    const stores = this.getStores();
-    const newStore = {
-      ...store,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString()
-    };
-    stores.push(newStore);
-    localStorage.setItem(this.STORES_KEY, JSON.stringify(stores));
+    try {
+      const stores = this.getStores();
+      const newStore = {
+        ...store,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      };
+      stores.push(newStore);
+      localStorage.setItem(this.STORES_KEY, JSON.stringify(stores));
+      console.log('Loja salva com sucesso:', newStore);
+    } catch (error) {
+      console.error('Erro ao salvar loja:', error);
+      throw error;
+    }
   }
 
   static getStores(): any[] {
-    const stored = localStorage.getItem(this.STORES_KEY);
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem(this.STORES_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Erro ao carregar lojas:', error);
+      return [];
+    }
   }
 
   // Gerenciamento de posts
   static savePost(post: any): void {
-    const posts = this.getPosts();
-    const newPost = {
-      ...post,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      likes: 0,
-      comments: 0,
-      shares: 0,
-      views: 0
-    };
-    posts.push(newPost);
-    localStorage.setItem(this.POSTS_KEY, JSON.stringify(posts));
+    try {
+      const posts = this.getPosts();
+      const newPost = {
+        ...post,
+        id: post.id || Date.now().toString(),
+        createdAt: post.createdAt || new Date().toISOString(),
+        likes: post.likes || 0,
+        comments: post.comments || 0,
+        shares: post.shares || 0,
+        views: post.views || 0
+      };
+      posts.push(newPost);
+      localStorage.setItem(this.POSTS_KEY, JSON.stringify(posts));
+      console.log('Post salvo com sucesso:', newPost);
+    } catch (error) {
+      console.error('Erro ao salvar post:', error);
+      throw error;
+    }
   }
 
   static getPosts(): any[] {
-    const stored = localStorage.getItem(this.POSTS_KEY);
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem(this.POSTS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Erro ao carregar posts:', error);
+      return [];
+    }
   }
 
   // Gerenciamento de reels
   static saveReel(reel: any): void {
-    const reels = this.getReels();
-    const newReel = {
-      ...reel,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      likes: 0,
-      comments: 0,
-      shares: 0,
-      views: 0
-    };
-    reels.push(newReel);
-    localStorage.setItem(this.REELS_KEY, JSON.stringify(reels));
+    try {
+      const reels = this.getReels();
+      const newReel = {
+        ...reel,
+        id: reel.id || Date.now().toString(),
+        createdAt: reel.createdAt || new Date().toISOString(),
+        likes: reel.likes || 0,
+        comments: reel.comments || 0,
+        shares: reel.shares || 0,
+        views: reel.views || 0
+      };
+      reels.push(newReel);
+      localStorage.setItem(this.REELS_KEY, JSON.stringify(reels));
+      console.log('Reel salvo com sucesso:', newReel);
+    } catch (error) {
+      console.error('Erro ao salvar reel:', error);
+      throw error;
+    }
   }
 
   static getReels(): any[] {
-    const stored = localStorage.getItem(this.REELS_KEY);
-    return stored ? JSON.parse(stored) : [];
+    try {
+      const stored = localStorage.getItem(this.REELS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Erro ao carregar reels:', error);
+      return [];
+    }
   }
 
   // Limpar dados (para debug)
@@ -78,5 +111,6 @@ export class StorageService {
     localStorage.removeItem(this.STORES_KEY);
     localStorage.removeItem(this.POSTS_KEY);
     localStorage.removeItem(this.REELS_KEY);
+    console.log('Todos os dados foram limpos');
   }
 }
