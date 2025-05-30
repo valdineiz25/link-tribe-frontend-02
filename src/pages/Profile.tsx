@@ -9,6 +9,7 @@ import ProfileStats from '@/components/ProfileStats';
 import AffiliateLinks from '@/components/AffiliateLinks';
 import ProfileTabs from '@/components/ProfileTabs';
 import { useToast } from '@/hooks/use-toast';
+import { StorageService } from '@/services/storageService';
 
 const Profile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,9 +21,13 @@ const Profile: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(null);
 
-  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    try {
+      console.log('Iniciando upload da foto de perfil:', file.name);
+      
       // Validar tipo de arquivo
       if (!file.type.startsWith('image/')) {
         toast({
@@ -43,28 +48,31 @@ const Profile: React.FC = () => {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileImage(e.target?.result as string);
-        toast({
-          title: "Foto de perfil atualizada",
-          description: "Sua foto de perfil foi alterada com sucesso!",
-        });
-      };
-      reader.onerror = () => {
-        toast({
-          title: "Erro no upload",
-          description: "Não foi possível carregar a imagem. Tente novamente.",
-          variant: "destructive",
-        });
-      };
-      reader.readAsDataURL(file);
+      const base64 = await StorageService.fileToBase64(file);
+      console.log('Foto de perfil convertida para base64, tamanho:', base64.length);
+      setProfileImage(base64);
+      
+      toast({
+        title: "Foto de perfil atualizada ✅",
+        description: "Sua foto de perfil foi alterada com sucesso!",
+      });
+    } catch (error) {
+      console.error('Erro ao carregar foto de perfil:', error);
+      toast({
+        title: "Erro no upload",
+        description: "Não foi possível carregar a imagem. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleCoverImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    try {
+      console.log('Iniciando upload da foto de capa:', file.name);
+      
       // Validar tipo de arquivo
       if (!file.type.startsWith('image/')) {
         toast({
@@ -85,22 +93,21 @@ const Profile: React.FC = () => {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setCoverImage(e.target?.result as string);
-        toast({
-          title: "Foto de capa atualizada",
-          description: "Sua foto de capa foi alterada com sucesso!",
-        });
-      };
-      reader.onerror = () => {
-        toast({
-          title: "Erro no upload",
-          description: "Não foi possível carregar a imagem. Tente novamente.",
-          variant: "destructive",
-        });
-      };
-      reader.readAsDataURL(file);
+      const base64 = await StorageService.fileToBase64(file);
+      console.log('Foto de capa convertida para base64, tamanho:', base64.length);
+      setCoverImage(base64);
+      
+      toast({
+        title: "Foto de capa atualizada ✅",
+        description: "Sua foto de capa foi alterada com sucesso!",
+      });
+    } catch (error) {
+      console.error('Erro ao carregar foto de capa:', error);
+      toast({
+        title: "Erro no upload",
+        description: "Não foi possível carregar a imagem. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 

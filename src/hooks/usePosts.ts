@@ -21,8 +21,14 @@ export const usePosts = () => {
   };
 
   const addPost = (post: Partial<Post>) => {
-    StorageService.savePost(post);
-    fetchPosts();
+    try {
+      console.log('Adicionando post:', post);
+      StorageService.savePost(post);
+      fetchPosts();
+    } catch (error) {
+      console.error('Erro ao adicionar post:', error);
+      throw error;
+    }
   };
 
   useEffect(() => {
@@ -55,8 +61,14 @@ export const useReels = () => {
   };
 
   const addReel = (reel: any) => {
-    StorageService.saveReel(reel);
-    fetchReels();
+    try {
+      console.log('Adicionando reel:', reel);
+      StorageService.saveReel(reel);
+      fetchReels();
+    } catch (error) {
+      console.error('Erro ao adicionar reel:', error);
+      throw error;
+    }
   };
 
   useEffect(() => {

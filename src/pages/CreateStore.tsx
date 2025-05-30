@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { StorageService } from '@/services/storageService';
+import { useStores } from '@/hooks/useStores';
 import { 
   Store, 
   Upload, 
@@ -27,6 +28,7 @@ interface Catalog {
 const CreateStore: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { addStore } = useStores();
   const [storeName, setStoreName] = useState('');
   const [storeDescription, setStoreDescription] = useState('');
   const [storeLogo, setStoreLogo] = useState<string | null>(null);
@@ -37,110 +39,126 @@ const CreateStore: React.FC = () => {
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      try {
-        // Verificar se é uma imagem
-        if (!file.type.startsWith('image/')) {
-          toast({
-            title: "Erro",
-            description: "Por favor, selecione apenas arquivos de imagem.",
-            variant: "destructive",
-          });
-          return;
-        }
+    if (!file) return;
 
-        // Verificar tamanho (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          toast({
-            title: "Erro",
-            description: "A imagem deve ter no máximo 5MB.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        const base64 = await StorageService.fileToBase64(file);
-        setStoreLogo(base64);
-        
-        toast({
-          title: "Sucesso! ✅",
-          description: "Logo carregado com sucesso!",
-        });
-      } catch (error) {
-        console.error('Erro ao carregar logo:', error);
+    try {
+      console.log('Iniciando upload do logo:', file.name);
+      
+      // Verificar se é uma imagem
+      if (!file.type.startsWith('image/')) {
         toast({
           title: "Erro",
-          description: "Erro ao carregar a imagem. Tente novamente.",
+          description: "Por favor, selecione apenas arquivos de imagem.",
           variant: "destructive",
         });
+        return;
       }
-    }
-  };
 
-  const addCatalog = () => {
-    if (newCatalogName.trim()) {
-      const newCatalog: Catalog = {
-        id: Date.now().toString(),
-        name: newCatalogName,
-        description: newCatalogDescription,
-        image: null
-      };
-      setCatalogs([...catalogs, newCatalog]);
-      setNewCatalogName('');
-      setNewCatalogDescription('');
+      // Verificar tamanho (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Erro",
+          description: "A imagem deve ter no máximo 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const base64 = await StorageService.fileToBase64(file);
+      console.log('Logo convertido para base64, tamanho:', base64.length);
+      setStoreLogo(base64);
       
       toast({
-        title: "Catálogo adicionado! ✅",
-        description: `Catálogo "${newCatalogName}" foi adicionado.`,
+        title: "Sucesso! ✅",
+        description: "Logo carregado com sucesso!",
+      });
+    } catch (error) {
+      console.error('Erro ao carregar logo:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar a imagem. Tente novamente.",
+        variant: "destructive",
       });
     }
   };
 
+  const addCatalog = () => {
+    if (!newCatalogName.trim()) {
+      toast({
+        title: "Erro",
+        description: "Digite o nome do catálogo.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newCatalog: Catalog = {
+      id: Date.now().toString(),
+      name: newCatalogName.trim(),
+      description: newCatalogDescription.trim(),
+      image: null
+    };
+    setCatalogs([...catalogs, newCatalog]);
+    setNewCatalogName('');
+    setNewCatalogDescription('');
+    
+    toast({
+      title: "Catálogo adicionado! ✅",
+      description: `Catálogo "${newCatalogName}" foi adicionado.`,
+    });
+  };
+
   const removeCatalog = (id: string) => {
     setCatalogs(catalogs.filter(catalog => catalog.id !== id));
+    toast({
+      title: "Catálogo removido",
+      description: "Catálogo foi removido com sucesso.",
+    });
   };
 
   const handleCatalogImageUpload = async (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      try {
-        if (!file.type.startsWith('image/')) {
-          toast({
-            title: "Erro",
-            description: "Por favor, selecione apenas arquivos de imagem.",
-            variant: "destructive",
-          });
-          return;
-        }
+    if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-          toast({
-            title: "Erro",
-            description: "A imagem deve ter no máximo 5MB.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        const base64 = await StorageService.fileToBase64(file);
-        setCatalogs(catalogs.map(catalog => 
-          catalog.id === id 
-            ? { ...catalog, image: base64 }
-            : catalog
-        ));
-
-        toast({
-          title: "Sucesso! ✅",
-          description: "Imagem do catálogo carregada!",
-        });
-      } catch (error) {
-        console.error('Erro ao carregar imagem do catálogo:', error);
+    try {
+      console.log('Iniciando upload da imagem do catálogo:', file.name);
+      
+      if (!file.type.startsWith('image/')) {
         toast({
           title: "Erro",
-          description: "Erro ao carregar a imagem. Tente novamente.",
+          description: "Por favor, selecione apenas arquivos de imagem.",
           variant: "destructive",
         });
+        return;
       }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Erro",
+          description: "A imagem deve ter no máximo 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const base64 = await StorageService.fileToBase64(file);
+      setCatalogs(catalogs.map(catalog => 
+        catalog.id === id 
+          ? { ...catalog, image: base64 }
+          : catalog
+      ));
+
+      toast({
+        title: "Sucesso! ✅",
+        description: "Imagem do catálogo carregada!",
+      });
+    } catch (error) {
+      console.error('Erro ao carregar imagem do catálogo:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar a imagem. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -158,15 +176,14 @@ const CreateStore: React.FC = () => {
 
     try {
       const storeData = {
-        name: storeName,
-        description: storeDescription,
+        name: storeName.trim(),
+        description: storeDescription.trim(),
         logo: storeLogo,
         catalogs
       };
 
-      StorageService.saveStore(storeData);
-      
-      console.log('Loja criada com sucesso:', storeData);
+      console.log('Criando loja com dados:', storeData);
+      addStore(storeData);
       
       toast({
         title: "Loja criada! 🎉",
@@ -176,7 +193,7 @@ const CreateStore: React.FC = () => {
       // Aguardar um pouco para mostrar o toast antes de navegar
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1000);
+      }, 1500);
       
     } catch (error) {
       console.error('Erro ao criar loja:', error);
@@ -200,6 +217,7 @@ const CreateStore: React.FC = () => {
             size="sm"
             onClick={() => navigate(-1)}
             className="flex items-center space-x-2"
+            disabled={isLoading}
           >
             <ArrowLeft size={16} />
             <span>Voltar</span>
@@ -234,9 +252,11 @@ const CreateStore: React.FC = () => {
                 </div>
                 <div>
                   <label htmlFor="logo-upload" className="cursor-pointer">
-                    <Button variant="outline" size="sm" type="button">
-                      <Upload size={16} className="mr-2" />
-                      Escolher Logo
+                    <Button variant="outline" size="sm" type="button" asChild>
+                      <span>
+                        <Upload size={16} className="mr-2" />
+                        Escolher Logo
+                      </span>
                     </Button>
                   </label>
                   <p className="text-xs text-gray-500 mt-1">PNG, JPG até 5MB</p>
@@ -307,7 +327,7 @@ const CreateStore: React.FC = () => {
                   />
                 </div>
               </div>
-              <Button onClick={addCatalog} className="w-full md:w-auto">
+              <Button onClick={addCatalog} className="w-full md:w-auto" disabled={isLoading}>
                 <Plus size={16} className="mr-2" />
                 Adicionar Catálogo
               </Button>
@@ -333,6 +353,7 @@ const CreateStore: React.FC = () => {
                             size="sm"
                             onClick={() => removeCatalog(catalog.id)}
                             className="text-red-500 hover:text-red-700"
+                            disabled={isLoading}
                           >
                             <X size={16} />
                           </Button>
@@ -348,9 +369,11 @@ const CreateStore: React.FC = () => {
                             )}
                           </div>
                           <label htmlFor={`catalog-image-${catalog.id}`} className="cursor-pointer">
-                            <Button variant="outline" size="sm">
-                              <Upload size={14} className="mr-1" />
-                              Imagem
+                            <Button variant="outline" size="sm" asChild>
+                              <span>
+                                <Upload size={14} className="mr-1" />
+                                Imagem
+                              </span>
                             </Button>
                           </label>
                           <input

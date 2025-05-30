@@ -32,9 +32,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         {isOwnProfile && (
           <div className="absolute top-4 right-4">
             <label htmlFor="cover-upload" className="cursor-pointer">
-              <Button size="sm" className="bg-black/50 hover:bg-black/70 text-white">
-                <Camera size={16} className="mr-2" />
-                Alterar Capa
+              <Button size="sm" className="bg-black/50 hover:bg-black/70 text-white" asChild>
+                <span>
+                  <Camera size={16} className="mr-2" />
+                  Alterar Capa
+                </span>
               </Button>
             </label>
             <input
@@ -49,7 +51,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       </div>
 
       {/* Foto de Perfil */}
-      <div className="relative -mt-16">
+      <div className="relative -mt-16 ml-6">
         <div className="w-32 h-32 bg-white rounded-full border-4 border-white shadow-lg overflow-hidden">
           {profileImage ? (
             <img 
@@ -68,15 +70,15 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             <div className="bg-blue-600 rounded-full p-2 shadow-lg hover:bg-blue-700 transition-colors">
               <Camera size={16} className="text-white" />
             </div>
+            <input
+              id="profile-upload"
+              type="file"
+              accept="image/*"
+              onChange={onProfileImageChange}
+              className="hidden"
+            />
           </label>
         )}
-        <input
-          id="profile-upload"
-          type="file"
-          accept="image/*"
-          onChange={onProfileImageChange}
-          className="hidden"
-        />
       </div>
     </>
   );
