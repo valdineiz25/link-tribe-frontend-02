@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { StorageService } from '@/services/storageService';
 
 interface Group {
   id: string;
@@ -44,6 +45,7 @@ const Groups: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [newMessage, setNewMessage] = useState('');
+  const [groups, setGroups] = useState<Group[]>([]);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -110,7 +112,14 @@ const Groups: React.FC = () => {
     }
   ];
 
-  const filteredGroups = mockGroups.filter(group =>
+  useEffect(() => {
+    // Carregar grupos salvos
+    const savedGroups = StorageService.getGroups();
+    const allGroups = [...mockGroups, ...savedGroups];
+    setGroups(allGroups);
+  }, []);
+
+  const filteredGroups = groups.filter(group =>
     group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     group.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -125,15 +134,28 @@ const Groups: React.FC = () => {
       return;
     }
 
-    console.log('Criando grupo:', newGroup);
-    
-    toast({
-      title: "Grupo criado! 🎉",
-      description: `O grupo "${newGroup.name}" foi criado com sucesso!`,
-    });
+    try {
+      console.log('Criando grupo:', newGroup);
+      const savedGroup = StorageService.saveGroup(newGroup);
+      
+      // Atualizar lista local
+      setGroups(prev => [...prev, savedGroup]);
+      
+      toast({
+        title: "Grupo criado! 🎉",
+        description: `O grupo "${newGroup.name}" foi criado com sucesso!`,
+      });
 
-    setNewGroup({ name: '', description: '', category: '' });
-    setShowCreateForm(false);
+      setNewGroup({ name: '', description: '', category: '' });
+      setShowCreateForm(false);
+    } catch (error) {
+      console.error('Erro ao criar grupo:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao criar grupo. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSendMessage = () => {

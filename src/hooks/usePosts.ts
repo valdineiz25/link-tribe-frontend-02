@@ -25,18 +25,33 @@ export const usePosts = () => {
       console.log('Adicionando post:', post);
       
       // Validar dados obrigatórios
-      if (!post.description?.trim()) {
+      if (!post.description || !post.description.trim()) {
         throw new Error('Descrição é obrigatória');
       }
 
-      const postData = {
-        ...post,
+      const postData: Post = {
         id: Date.now().toString(),
+        description: post.description.trim(),
+        productLink: post.productLink || '',
+        productName: post.productName || '',
+        currentPrice: post.currentPrice,
+        promotionalPrice: post.promotionalPrice,
+        storeName: post.storeName || '',
+        category: post.category || '',
+        media: post.media,
+        mediaType: post.mediaType,
+        mediaName: post.mediaName,
+        type: post.type || 'post',
         createdAt: new Date().toISOString(),
         likes: 0,
         comments: 0,
         shares: 0,
-        views: 0
+        views: 0,
+        user: {
+          id: '1',
+          name: 'Usuário',
+          avatar: ''
+        }
       };
 
       StorageService.savePost(postData);
@@ -84,7 +99,7 @@ export const useReels = () => {
       console.log('Adicionando reel:', reel);
       
       // Validar dados obrigatórios
-      if (!reel.description?.trim()) {
+      if (!reel.description || !reel.description.trim()) {
         throw new Error('Descrição é obrigatória');
       }
       
@@ -99,7 +114,12 @@ export const useReels = () => {
         likes: 0,
         comments: 0,
         shares: 0,
-        views: 0
+        views: 0,
+        user: {
+          id: '1',
+          name: 'Usuário',
+          avatar: ''
+        }
       };
 
       StorageService.saveReel(reelData);

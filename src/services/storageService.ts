@@ -3,6 +3,7 @@ export class StorageService {
   private static STORES_KEY = 'affiliate_stores';
   private static POSTS_KEY = 'affiliate_posts';
   private static REELS_KEY = 'affiliate_reels';
+  private static GROUPS_KEY = 'affiliate_groups';
 
   // Função para converter arquivo em base64
   static async fileToBase64(file: File): Promise<string> {
@@ -55,7 +56,7 @@ export class StorageService {
         shares: post.shares || 0,
         views: post.views || 0
       };
-      posts.push(newPost);
+      posts.unshift(newPost); // Adicionar no início da lista
       localStorage.setItem(this.POSTS_KEY, JSON.stringify(posts));
       console.log('Post salvo com sucesso:', newPost);
     } catch (error) {
@@ -87,7 +88,7 @@ export class StorageService {
         shares: reel.shares || 0,
         views: reel.views || 0
       };
-      reels.push(newReel);
+      reels.unshift(newReel); // Adicionar no início da lista
       localStorage.setItem(this.REELS_KEY, JSON.stringify(reels));
       console.log('Reel salvo com sucesso:', newReel);
     } catch (error) {
@@ -106,11 +107,43 @@ export class StorageService {
     }
   }
 
+  // Gerenciamento de grupos
+  static saveGroup(group: any): void {
+    try {
+      const groups = this.getGroups();
+      const newGroup = {
+        ...group,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        members: 1,
+        isActive: true
+      };
+      groups.push(newGroup);
+      localStorage.setItem(this.GROUPS_KEY, JSON.stringify(groups));
+      console.log('Grupo salvo com sucesso:', newGroup);
+      return newGroup;
+    } catch (error) {
+      console.error('Erro ao salvar grupo:', error);
+      throw error;
+    }
+  }
+
+  static getGroups(): any[] {
+    try {
+      const stored = localStorage.getItem(this.GROUPS_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Erro ao carregar grupos:', error);
+      return [];
+    }
+  }
+
   // Limpar dados (para debug)
   static clearAll(): void {
     localStorage.removeItem(this.STORES_KEY);
     localStorage.removeItem(this.POSTS_KEY);
     localStorage.removeItem(this.REELS_KEY);
+    localStorage.removeItem(this.GROUPS_KEY);
     console.log('Todos os dados foram limpos');
   }
 }
