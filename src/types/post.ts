@@ -1,11 +1,16 @@
 
 export interface Post {
   id: string;
-  authorId: string;
-  authorName: string;
+  authorId?: string;
+  authorName?: string;
   authorAvatar?: string;
   content: string;
+  description?: string; // Adicionado para compatibilidade
   image?: string;
+  media?: string; // Adicionado para suporte a mídia
+  mediaType?: string; // Adicionado para tipo de mídia
+  mediaName?: string; // Adicionado para nome da mídia
+  type?: string; // Adicionado para tipo de post
   productId?: string;
   productLink?: string;
   productName?: string;
@@ -23,6 +28,11 @@ export interface Post {
   updatedAt: string;
   isActive: boolean;
   tags: string[];
+  user?: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
 }
 
 export interface PostStats {

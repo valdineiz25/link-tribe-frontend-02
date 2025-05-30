@@ -24,14 +24,15 @@ export const usePosts = () => {
     try {
       console.log('Adicionando post:', post);
       
-      // Validar dados obrigatórios
-      if (!post.description || !post.description.trim()) {
-        throw new Error('Descrição é obrigatória');
+      // Validar dados obrigatórios - usar content em vez de description
+      if (!post.content || !post.content.trim()) {
+        throw new Error('Conteúdo é obrigatório');
       }
 
       const postData: Post = {
         id: Date.now().toString(),
-        description: post.description.trim(),
+        content: post.content.trim(),
+        description: post.description || post.content?.trim() || '',
         productLink: post.productLink || '',
         productName: post.productName || '',
         currentPrice: post.currentPrice,
@@ -43,10 +44,15 @@ export const usePosts = () => {
         mediaName: post.mediaName,
         type: post.type || 'post',
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         likes: 0,
         comments: 0,
         shares: 0,
         views: 0,
+        clickThroughs: 0,
+        earnings: 0,
+        isActive: true,
+        tags: [],
         user: {
           id: '1',
           name: 'Usuário',
@@ -99,8 +105,8 @@ export const useReels = () => {
       console.log('Adicionando reel:', reel);
       
       // Validar dados obrigatórios
-      if (!reel.description || !reel.description.trim()) {
-        throw new Error('Descrição é obrigatória');
+      if (!reel.content || !reel.content.trim()) {
+        throw new Error('Conteúdo é obrigatório');
       }
       
       if (!reel.media) {

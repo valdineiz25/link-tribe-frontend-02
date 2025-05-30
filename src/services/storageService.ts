@@ -107,8 +107,8 @@ export class StorageService {
     }
   }
 
-  // Gerenciamento de grupos
-  static saveGroup(group: any): void {
+  // Gerenciamento de grupos - corrigido para retornar o grupo criado
+  static saveGroup(group: any): any {
     try {
       const groups = this.getGroups();
       const newGroup = {
@@ -121,7 +121,7 @@ export class StorageService {
       groups.push(newGroup);
       localStorage.setItem(this.GROUPS_KEY, JSON.stringify(groups));
       console.log('Grupo salvo com sucesso:', newGroup);
-      return newGroup;
+      return newGroup; // Retornando o grupo criado
     } catch (error) {
       console.error('Erro ao salvar grupo:', error);
       throw error;
