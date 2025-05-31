@@ -4,10 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Activity, Bot, Play, Square, RotateCcw, Settings } from 'lucide-react';
-import { BotManager } from '@/services/botSystem/BotManager';
 
 const BotDashboard: React.FC = () => {
-  const [botManager] = useState(() => new BotManager());
   const [bots, setBots] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,7 +24,7 @@ const BotDashboard: React.FC = () => {
     };
 
     loadBots();
-  }, [botManager]);
+  }, []);
 
   const handleStopBot = async (botId: string) => {
     try {

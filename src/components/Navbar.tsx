@@ -1,243 +1,197 @@
 
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStores } from '@/hooks/useStores';
-import { Button } from '@/components/ui/button';
 import { 
   Home, 
-  ShoppingBag, 
   Users, 
   MessageCircle, 
-  Settings,
-  User,
-  LogOut,
+  Settings, 
+  User, 
+  LogOut, 
+  Plus,
+  Store,
   BarChart3,
-  Video,
-  Search,
-  Bell,
-  Menu,
-  Store
+  ShoppingBag,
+  Video
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 
 const Navbar: React.FC = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, logout } = useAuth();
   const { stores } = useStores();
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast } = useToast();
+
+  const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = () => {
     logout();
-    toast({
-      title: "Logout realizado",
-      description: "Você foi desconectado com sucesso!",
-    });
     navigate('/');
   };
 
-  const handleNotificationClick = () => {
-    toast({
-      title: "Notificações",
-      description: "Você não tem novas notificações.",
-    });
-  };
-
-  const handleMessageClick = () => {
-    navigate('/chat');
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const searchTerm = formData.get('search') as string;
-    
-    if (searchTerm?.trim()) {
-      toast({
-        title: "Busca realizada",
-        description: `Procurando por: "${searchTerm}"`,
-      });
-      // Aqui você pode implementar a lógica de busca
-    }
-  };
-
-  const navItems = [
-    { path: '/feed', icon: Home, label: 'Feed' },
-    { path: '/reels', icon: Video, label: 'Reels' },
-    { path: '/dashboard', icon: BarChart3, label: 'Dashboard' },
-    { path: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
-    { path: '/groups', icon: Users, label: 'Grupos' },
-    { path: '/chat', icon: MessageCircle, label: 'Chat' },
-  ];
-
-  if (!isAuthenticated) {
+  if (!user) {
     return (
-      <div className="w-full">
-        {/* Facebook/Instagram style thin blue bar */}
-        <div className="w-full h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"></div>
-      </div>
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">AN</span>
+              </div>
+              <span className="font-bold text-xl bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                AffiliateNet
+              </span>
+            </Link>
+            
+            <div className="flex space-x-4">
+              <Link to="/login">
+                <Button variant="ghost">Entrar</Button>
+              </Link>
+              <Link to="/register">
+                <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600">
+                  Cadastrar
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
     );
   }
 
   return (
-    <div className="w-full">
-      {/* Facebook/Instagram style thin colored bar */}
-      <div className="w-full h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"></div>
-      
-      {/* Main navbar - Facebook/Instagram style */}
-      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo - Facebook style */}
-            <div className="flex items-center">
-              <Link 
-                to="/feed" 
-                className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors"
-              >
-                AffiliateNet
-              </Link>
+    <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <Link to="/feed" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">AN</span>
             </div>
+            <span className="font-bold text-xl bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+              AffiliateNet
+            </span>
+          </Link>
 
-            {/* Search bar - Facebook style (desktop) */}
-            <div className="hidden md:flex flex-1 max-w-xs mx-8">
-              <form onSubmit={handleSearchSubmit} className="relative w-full">
-                <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  name="search"
-                  type="text"
-                  placeholder="Pesquisar..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm border-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </form>
-            </div>
-
-            {/* Navigation Items - Desktop (Instagram/Facebook style) */}
-            <div className="hidden md:flex items-center space-x-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-                
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 ${
-                      isActive
-                        ? 'bg-blue-100 text-blue-600'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    title={item.label}
-                  >
-                    <Icon size={24} />
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Right side - User actions */}
-            <div className="flex items-center space-x-2">
-              {/* Stores indicator */}
-              {stores.length > 0 && (
-                <Link
-                  to="/dashboard"
-                  className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
-                  title="Suas Lojas"
-                >
-                  <Store size={16} />
-                  <span className="text-sm font-medium">{stores.length}</span>
-                </Link>
-              )}
-              
+          <div className="hidden md:flex items-center space-x-1">
+            <Link to="/feed">
               <Button 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full w-10 h-10"
-                onClick={handleNotificationClick}
-                title="Notificações"
+                variant={isActive('/feed') ? 'default' : 'ghost'} 
+                size="sm"
+                className="flex items-center space-x-2"
               >
-                <Bell size={20} className="text-gray-600" />
+                <Home size={16} />
+                <span>Feed</span>
               </Button>
-              
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="rounded-full w-10 h-10"
-                onClick={handleMessageClick}
-                title="Mensagens"
-              >
-                <MessageCircle size={20} className="text-gray-600" />
-              </Button>
-              
-              {/* Profile dropdown trigger */}
-              <div className="relative">
-                <Link
-                  to={`/profile/${user?.id}`}
-                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  title="Meu Perfil"
-                >
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
-                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <span className="hidden sm:block text-sm font-medium text-gray-700">{user?.name}</span>
-                </Link>
-              </div>
-              
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handleLogout} 
-                className="rounded-full w-10 h-10 text-gray-600 hover:text-red-600"
-                title="Sair"
-              >
-                <LogOut size={20} />
-              </Button>
-            </div>
-          </div>
-        </div>
+            </Link>
 
-        {/* Mobile Navigation - Instagram style bottom bar */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-          <div className="flex justify-around items-center py-2">
-            {navItems.slice(0, 5).map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex flex-col items-center justify-center w-12 h-12 rounded-lg transition-colors ${
-                    isActive
-                      ? 'text-blue-600'
-                      : 'text-gray-600'
-                  }`}
-                  title={item.label}
-                >
-                  <Icon size={24} />
-                </Link>
-              );
-            })}
-            
-            {/* Profile in mobile nav */}
-            <Link
-              to={`/profile/${user?.id}`}
-              className="flex flex-col items-center justify-center w-12 h-12"
-              title="Perfil"
-            >
-              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-semibold relative">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+            <Link to="/reels">
+              <Button 
+                variant={isActive('/reels') ? 'default' : 'ghost'} 
+                size="sm"
+                className="flex items-center space-x-2"
+              >
+                <Video size={16} />
+                <span>Reels</span>
+              </Button>
+            </Link>
+
+            <Link to="/marketplace">
+              <Button 
+                variant={isActive('/marketplace') ? 'default' : 'ghost'} 
+                size="sm"
+                className="flex items-center space-x-2"
+              >
+                <ShoppingBag size={16} />
+                <span>Marketplace</span>
+              </Button>
+            </Link>
+
+            <Link to="/my-store">
+              <Button 
+                variant={isActive('/my-store') ? 'default' : 'ghost'} 
+                size="sm"
+                className="flex items-center space-x-2"
+              >
+                <Store size={16} />
+                <span>Minha Loja</span>
                 {stores.length > 0 && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-xs text-white">{stores.length}</span>
-                  </div>
+                  <Badge variant="secondary" className="ml-1 text-xs">
+                    {stores.length}
+                  </Badge>
                 )}
-              </div>
+              </Button>
+            </Link>
+
+            <Link to="/dashboard">
+              <Button 
+                variant={isActive('/dashboard') ? 'default' : 'ghost'} 
+                size="sm"
+                className="flex items-center space-x-2"
+              >
+                <BarChart3 size={16} />
+                <span>Dashboard</span>
+              </Button>
+            </Link>
+
+            <Link to="/groups">
+              <Button 
+                variant={isActive('/groups') ? 'default' : 'ghost'} 
+                size="sm"
+                className="flex items-center space-x-2"
+              >
+                <Users size={16} />
+                <span>Grupos</span>
+              </Button>
+            </Link>
+
+            <Link to="/chat">
+              <Button 
+                variant={isActive('/chat') ? 'default' : 'ghost'} 
+                size="sm"
+                className="flex items-center space-x-2"
+              >
+                <MessageCircle size={16} />
+                <span>Chat</span>
+              </Button>
             </Link>
           </div>
+
+          <div className="flex items-center space-x-2">
+            <Link to="/create-post">
+              <Button 
+                size="sm"
+                className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+              >
+                <Plus size={16} className="mr-1" />
+                <span className="hidden sm:inline">Criar</span>
+              </Button>
+            </Link>
+
+            <div className="flex items-center space-x-2">
+              <Link to={`/profile/${user.id}`}>
+                <Button variant="ghost" size="sm">
+                  <User size={16} className="mr-1" />
+                  <span className="hidden sm:inline">{user.name}</span>
+                </Button>
+              </Link>
+
+              <Link to="/settings">
+                <Button variant="ghost" size="sm">
+                  <Settings size={16} />
+                </Button>
+              </Link>
+
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
+                <LogOut size={16} />
+              </Button>
+            </div>
+          </div>
         </div>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 };
 

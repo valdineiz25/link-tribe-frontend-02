@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -32,6 +31,7 @@ import About from "@/pages/About";
 import Help from "@/pages/Help";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
+import MyStore from "@/pages/MyStore";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +77,11 @@ const App: React.FC = () => (
               <Route path="/create-store" element={
                 <ProtectedRoute>
                   <CreateStore />
+                </ProtectedRoute>
+              } />
+              <Route path="/my-store" element={
+                <ProtectedRoute>
+                  <MyStore />
                 </ProtectedRoute>
               } />
               <Route path="/store-builder" element={
