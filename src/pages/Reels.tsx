@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -122,6 +123,18 @@ const Reels: React.FC = () => {
   const getAuthorName = (reel: Reel) => reel.user?.name || 'Usuário Afiliado';
 
   useEffect(() => {
+    const stats: { [key: string]: { likes: number; comments: number; shares: number } } = {};
+    reels.forEach(reel => {
+      stats[reel.id] = {
+        likes: reel.likes || 0,
+        comments: reel.comments || 0,
+        shares: reel.shares || 0
+      };
+    });
+    setReelStats(stats);
+  }, [reels]);
+
+  useEffect(() => {
     if (reels.length > 0 && currentReelIndex < reels.length) {
       const currentReel = reels[currentReelIndex];
       const video = videoRefs.current[currentReel.id];
@@ -240,7 +253,7 @@ const Reels: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="sticky top-16 z-40 bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 shadow-lg">
           <h1 className="text-2xl font-bold text-center">🔥 Reels</h1>
@@ -267,172 +280,178 @@ const Reels: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="space-y-1">
+          <div className="space-y-6 p-4">
             {reels.map((reel, index) => (
-              <Card key={reel.id} className="border-0 rounded-none relative h-screen max-h-[calc(100vh-120px)] overflow-hidden">
-                <CardContent className="p-0 relative h-full">
-                  {/* Video */}
-                  <div className="relative w-full h-full bg-black">
-                    {reel.media ? (
-                      <video
-                        ref={(el) => { videoRefs.current[reel.id] = el; }}
-                        className="w-full h-full object-cover"
-                        src={reel.media}
-                        loop
-                        playsInline
-                        muted={mutedVideos.has(reel.id)}
-                        onClick={() => togglePlay(reel.id)}
-                        onLoadedData={() => {
-                          if (index === currentReelIndex && !pausedVideos.has(reel.id)) {
-                            const video = videoRefs.current[reel.id];
-                            if (video) {
-                              video.currentTime = 0;
-                              video.play().catch(console.error);
+              <Card key={reel.id} className="border-0 rounded-lg overflow-hidden shadow-lg">
+                <CardContent className="p-0">
+                  <div className="flex flex-col lg:flex-row">
+                    {/* Video Section */}
+                    <div className="lg:w-1/2 relative bg-black aspect-[9/16] lg:aspect-video">
+                      {reel.media ? (
+                        <video
+                          ref={(el) => { videoRefs.current[reel.id] = el; }}
+                          className="w-full h-full object-cover"
+                          src={reel.media}
+                          loop
+                          playsInline
+                          muted={mutedVideos.has(reel.id)}
+                          onClick={() => togglePlay(reel.id)}
+                          onLoadedData={() => {
+                            if (index === currentReelIndex && !pausedVideos.has(reel.id)) {
+                              const video = videoRefs.current[reel.id];
+                              if (video) {
+                                video.currentTime = 0;
+                                video.play().catch(console.error);
+                              }
                             }
-                          }
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
-                        <div className="text-center text-white p-8">
-                          <div className="text-6xl mb-4">📝</div>
-                          <p className="text-xl font-semibold mb-2">{reel.content}</p>
-                          {reel.category && (
-                            <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">
-                              {reel.category}
-                            </span>
-                          )}
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                          <div className="text-center text-white p-8">
+                            <div className="text-6xl mb-4">📝</div>
+                            <p className="text-xl font-semibold mb-2">{reel.content}</p>
+                            {reel.category && (
+                              <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">
+                                {reel.category}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    
-                    {/* Play/Pause Overlay */}
-                    {pausedVideos.has(reel.id) && reel.media && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                      )}
+                      
+                      {/* Play/Pause Overlay */}
+                      {pausedVideos.has(reel.id) && reel.media && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-16 h-16 rounded-full bg-white/20 hover:bg-white/30"
+                            onClick={() => togglePlay(reel.id)}
+                          >
+                            <Play size={32} className="text-white" />
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Mute/Unmute Button */}
+                      {reel.media && (
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="w-16 h-16 rounded-full bg-white/20 hover:bg-white/30"
-                          onClick={() => togglePlay(reel.id)}
+                          className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white"
+                          onClick={() => toggleMute(reel.id)}
                         >
-                          <Play size={32} className="text-white" />
+                          {mutedVideos.has(reel.id) ? <VolumeX size={20} /> : <Volume2 size={20} />}
                         </Button>
-                      </div>
-                    )}
-
-                    {/* Mute/Unmute Button */}
-                    {reel.media && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white"
-                        onClick={() => toggleMute(reel.id)}
-                      >
-                        {mutedVideos.has(reel.id) ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Content Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
-                    {/* Author Info */}
-                    <div className="flex items-center mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
-                        {getAuthorName(reel).charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-semibold">{getAuthorName(reel)}</p>
-                        <p className="text-xs text-gray-300">
-                          {new Date(reel.createdAt).toLocaleDateString('pt-BR')}
-                        </p>
-                      </div>
+                      )}
                     </div>
 
-                    {/* Description */}
-                    <p className="text-sm mb-3 leading-relaxed">{reel.content || reel.description}</p>
+                    {/* Caption and Info Section */}
+                    <div className="lg:w-1/2 p-6 bg-white flex flex-col justify-between">
+                      {/* Author Info */}
+                      <div>
+                        <div className="flex items-center mb-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                            {getAuthorName(reel).charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{getAuthorName(reel)}</p>
+                            <p className="text-sm text-gray-500">
+                              {new Date(reel.createdAt).toLocaleDateString('pt-BR')}
+                            </p>
+                          </div>
+                        </div>
 
-                    {/* Product Info */}
-                    {reel.productName && (
-                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 mb-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <p className="font-semibold text-sm">{reel.productName}</p>
-                            {reel.storeName && (
-                              <p className="text-xs text-gray-300">📍 {reel.storeName}</p>
-                            )}
-                            <div className="flex items-center gap-2 mt-1">
-                              {reel.currentPrice && reel.promotionalPrice && (
-                                <>
-                                  <span className="text-xs line-through text-gray-400">
-                                    {formatPrice(reel.currentPrice)}
-                                  </span>
-                                  <span className="text-sm font-bold text-green-400">
-                                    {formatPrice(reel.promotionalPrice)}
-                                  </span>
-                                </>
+                        {/* Description */}
+                        <p className="text-gray-800 mb-4 leading-relaxed">{reel.content || reel.description}</p>
+
+                        {/* Category Tag */}
+                        {reel.category && (
+                          <div className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-sm font-medium mb-4">
+                            {reel.category}
+                          </div>
+                        )}
+
+                        {/* Product Info */}
+                        {reel.productName && (
+                          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <p className="font-semibold text-gray-900">{reel.productName}</p>
+                                {reel.storeName && (
+                                  <p className="text-sm text-gray-600">📍 {reel.storeName}</p>
+                                )}
+                                <div className="flex items-center gap-2 mt-2">
+                                  {reel.currentPrice && reel.promotionalPrice && (
+                                    <>
+                                      <span className="text-sm line-through text-gray-500">
+                                        {formatPrice(reel.currentPrice)}
+                                      </span>
+                                      <span className="text-lg font-bold text-green-600">
+                                        {formatPrice(reel.promotionalPrice)}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              {reel.productLink && (
+                                <Button
+                                  size="sm"
+                                  className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white ml-4"
+                                  onClick={() => window.open(reel.productLink, '_blank')}
+                                >
+                                  <ExternalLink size={14} className="mr-1" />
+                                  Ver Produto
+                                </Button>
                               )}
                             </div>
                           </div>
-                          {reel.productLink && (
-                            <Button
-                              size="sm"
-                              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-                              onClick={() => window.open(reel.productLink, '_blank')}
-                            >
-                              <ExternalLink size={14} className="mr-1" />
-                              Ver
-                            </Button>
-                          )}
-                        </div>
+                        )}
                       </div>
-                    )}
-
-                    {/* Category Tag */}
-                    {reel.category && (
-                      <div className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-medium mb-3">
-                        {reel.category}
-                      </div>
-                    )}
+                    </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="absolute right-4 bottom-20 flex flex-col space-y-4">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 text-white flex flex-col ${
-                        likedReels.has(reel.id) ? 'text-red-500' : ''
-                      }`}
-                      onClick={() => handleLike(reel.id)}
-                    >
-                      <Heart size={24} className={likedReels.has(reel.id) ? 'fill-current' : ''} />
-                      <span className="text-xs mt-1">{reelStats[reel.id]?.likes || 0}</span>
-                    </Button>
+                  {/* Action Buttons - Now at the bottom */}
+                  <div className="bg-white border-t px-6 py-4">
+                    <div className="flex justify-around">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`flex items-center space-x-2 ${
+                          likedReels.has(reel.id) ? 'text-red-500' : 'text-gray-600'
+                        }`}
+                        onClick={() => handleLike(reel.id)}
+                      >
+                        <Heart size={20} className={likedReels.has(reel.id) ? 'fill-current' : ''} />
+                        <span>{reelStats[reel.id]?.likes || 0}</span>
+                      </Button>
 
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 text-white flex flex-col"
-                      onClick={() => handleComment(reel.id)}
-                    >
-                      <MessageCircle size={24} />
-                      <span className="text-xs mt-1">{reelStats[reel.id]?.comments || 0}</span>
-                    </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center space-x-2 text-gray-600"
+                        onClick={() => handleComment(reel.id)}
+                      >
+                        <MessageCircle size={20} />
+                        <span>{reelStats[reel.id]?.comments || 0}</span>
+                      </Button>
 
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 text-white"
-                      onClick={() => handleShare(reel.id)}
-                    >
-                      <Share size={24} />
-                      <span className="text-xs mt-1">{reelStats[reel.id]?.shares || 0}</span>
-                    </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center space-x-2 text-gray-600"
+                        onClick={() => handleShare(reel.id)}
+                      >
+                        <Share size={20} />
+                        <span>{reelStats[reel.id]?.shares || 0}</span>
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Comments Section */}
                   {showComments[reel.id] && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-4 max-h-80 overflow-hidden">
+                    <div className="bg-gray-50 p-4 border-t">
                       <CommentSection
                         isOpen={showComments[reel.id]}
                         onClose={() => setShowComments(prev => ({ ...prev, [reel.id]: false }))}
