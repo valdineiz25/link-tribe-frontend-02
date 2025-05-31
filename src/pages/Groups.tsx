@@ -13,7 +13,10 @@ import {
   MessageCircle, 
   Settings,
   Send,
-  ArrowLeft
+  ArrowLeft,
+  Building2,
+  TrendingUp,
+  Clock
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { StorageService } from '@/services/storageService';
@@ -113,7 +116,6 @@ const Groups: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Carregar grupos salvos
     const savedGroups = StorageService.getGroups();
     const allGroups = [...mockGroups, ...savedGroups];
     setGroups(allGroups);
@@ -127,7 +129,7 @@ const Groups: React.FC = () => {
   const handleCreateGroup = () => {
     if (!newGroup.name.trim() || !newGroup.description.trim()) {
       toast({
-        title: "Erro",
+        title: "Campos obrigatórios",
         description: "Por favor, preencha todos os campos obrigatórios.",
         variant: "destructive",
       });
@@ -138,12 +140,11 @@ const Groups: React.FC = () => {
       console.log('Criando grupo:', newGroup);
       const savedGroup = StorageService.saveGroup(newGroup);
       
-      // Atualizar lista local
       setGroups(prev => [...prev, savedGroup]);
       
       toast({
-        title: "Grupo criado! 🎉",
-        description: `O grupo "${newGroup.name}" foi criado com sucesso!`,
+        title: "Grupo criado com sucesso",
+        description: `O grupo "${newGroup.name}" foi criado.`,
       });
 
       setNewGroup({ name: '', description: '', category: '' });
@@ -174,7 +175,7 @@ const Groups: React.FC = () => {
     setNewMessage('');
 
     toast({
-      title: "Mensagem enviada! 💬",
+      title: "Mensagem enviada",
       description: "Sua mensagem foi enviada para o grupo.",
     });
   };
@@ -190,37 +191,38 @@ const Groups: React.FC = () => {
 
   if (selectedGroup) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="max-w-4xl mx-auto p-4">
-          {/* Header do Chat */}
-          <Card className="mb-4">
-            <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-5xl mx-auto p-6">
+          <Card className="mb-6 border-0 shadow-sm">
+            <CardHeader className="bg-white border-b">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => setSelectedGroup(null)}
-                    className="text-white hover:bg-white/20"
+                    className="text-gray-600 hover:text-gray-900"
                   >
                     <ArrowLeft size={20} />
                   </Button>
                   <div>
-                    <CardTitle className="text-xl">{selectedGroup.name}</CardTitle>
-                    <p className="text-blue-100 text-sm">{selectedGroup.members} membros</p>
+                    <CardTitle className="text-xl text-gray-900">{selectedGroup.name}</CardTitle>
+                    <p className="text-gray-500 text-sm flex items-center mt-1">
+                      <Users size={14} className="mr-1" />
+                      {selectedGroup.members} membros
+                    </p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
+                <Button variant="ghost" size="icon" className="text-gray-500 hover:text-gray-700">
                   <Settings size={20} />
                 </Button>
               </div>
             </CardHeader>
           </Card>
 
-          {/* Área do Chat */}
-          <Card className="h-[500px] flex flex-col">
+          <Card className="h-[600px] flex flex-col border-0 shadow-sm">
             <CardContent className="flex-1 p-0">
-              <ScrollArea className="h-[400px] p-4">
+              <ScrollArea className="h-[500px] p-6">
                 <div className="space-y-4">
                   {groupMessages.map((message) => (
                     <div
@@ -228,20 +230,20 @@ const Groups: React.FC = () => {
                       className={`flex ${message.isOwn ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
-                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
                           message.isOwn
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-900'
+                            ? 'bg-gray-900 text-white'
+                            : 'bg-white border text-gray-900'
                         }`}
                       >
                         {!message.isOwn && (
-                          <p className="text-xs font-semibold mb-1 text-blue-600">
+                          <p className="text-xs font-medium mb-1 text-gray-600">
                             {message.sender}
                           </p>
                         )}
                         <p className="text-sm">{message.content}</p>
                         <p className={`text-xs mt-1 ${
-                          message.isOwn ? 'text-blue-100' : 'text-gray-500'
+                          message.isOwn ? 'text-gray-300' : 'text-gray-500'
                         }`}>
                           {message.timestamp}
                         </p>
@@ -252,9 +254,8 @@ const Groups: React.FC = () => {
               </ScrollArea>
             </CardContent>
 
-            {/* Input de Mensagem */}
-            <div className="border-t p-4">
-              <div className="flex space-x-2">
+            <div className="border-t bg-white p-4">
+              <div className="flex space-x-3">
                 <Input
                   placeholder="Digite sua mensagem..."
                   value={newMessage}
@@ -262,8 +263,12 @@ const Groups: React.FC = () => {
                   onKeyPress={handleKeyPress}
                   className="flex-1"
                 />
-                <Button onClick={handleSendMessage} disabled={!newMessage.trim()}>
-                  <Send size={20} />
+                <Button 
+                  onClick={handleSendMessage} 
+                  disabled={!newMessage.trim()}
+                  className="bg-gray-900 hover:bg-gray-800"
+                >
+                  <Send size={18} />
                 </Button>
               </div>
             </div>
@@ -274,53 +279,60 @@ const Groups: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="max-w-6xl mx-auto p-4 space-y-6">
-        {/* Header */}
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            💬 Grupos de Afiliados
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">
+            Grupos Profissionais
           </h1>
-          <p className="text-gray-600">Conecte-se com outros afiliados e compartilhe experiências</p>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Conecte-se com outros afiliados, compartilhe experiências e construa relacionamentos estratégicos
+          </p>
         </div>
 
-        {/* Busca e Criar Grupo */}
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <Input
               placeholder="Buscar grupos por nome ou categoria..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-12"
             />
           </div>
           <Button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            className="bg-gray-900 hover:bg-gray-800 h-12 px-6"
           >
             <Plus size={20} className="mr-2" />
             Criar Grupo
           </Button>
         </div>
 
-        {/* Formulário de Criar Grupo */}
         {showCreateForm && (
-          <Card className="border-blue-200">
-            <CardHeader className="bg-gradient-to-r from-blue-100 to-purple-100">
-              <CardTitle className="text-blue-800">Criar Novo Grupo</CardTitle>
+          <Card className="border-0 shadow-sm">
+            <CardHeader className="bg-white">
+              <CardTitle className="text-gray-900 flex items-center">
+                <Building2 className="mr-2" size={20} />
+                Criar Novo Grupo
+              </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
+            <CardContent className="p-6 space-y-6 bg-white">
               <div>
-                <label className="block text-sm font-medium mb-2">Nome do Grupo *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nome do Grupo *
+                </label>
                 <Input
                   value={newGroup.name}
                   onChange={(e) => setNewGroup(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Ex: Afiliados de Tecnologia"
+                  className="h-11"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Descrição *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Descrição *
+                </label>
                 <Textarea
                   value={newGroup.description}
                   onChange={(e) => setNewGroup(prev => ({ ...prev, description: e.target.value }))}
@@ -329,24 +341,27 @@ const Groups: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">Categoria</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Categoria
+                </label>
                 <Input
                   value={newGroup.category}
                   onChange={(e) => setNewGroup(prev => ({ ...prev, category: e.target.value }))}
                   placeholder="Ex: Tecnologia, Beleza, Saúde"
+                  className="h-11"
                 />
               </div>
               <div className="flex space-x-4">
                 <Button
                   variant="outline"
                   onClick={() => setShowCreateForm(false)}
-                  className="flex-1"
+                  className="flex-1 h-11"
                 >
                   Cancelar
                 </Button>
                 <Button
                   onClick={handleCreateGroup}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="flex-1 h-11 bg-gray-900 hover:bg-gray-800"
                 >
                   Criar Grupo
                 </Button>
@@ -355,45 +370,47 @@ const Groups: React.FC = () => {
           </Card>
         )}
 
-        {/* Lista de Grupos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGroups.map((group) => (
             <Card 
               key={group.id} 
-              className="hover:shadow-lg transition-shadow cursor-pointer border-blue-200"
+              className="hover:shadow-md transition-all cursor-pointer border-0 shadow-sm bg-white"
               onClick={() => setSelectedGroup(group)}
             >
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg text-blue-800 mb-1">{group.name}</CardTitle>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    <CardTitle className="text-lg text-gray-900 mb-2">{group.name}</CardTitle>
+                    <Badge variant="secondary" className="bg-gray-100 text-gray-700 text-xs">
                       {group.category}
                     </Badge>
                   </div>
                   {group.isActive && (
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   )}
                 </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">{group.description}</p>
+              <CardContent className="pt-0">
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{group.description}</p>
                 
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <div className="flex items-center">
-                    <Users size={16} className="mr-1" />
-                    {group.members} membros
+                    <Users size={14} className="mr-1" />
+                    <span>{group.members}</span>
                   </div>
                   <div className="flex items-center">
-                    <MessageCircle size={16} className="mr-1" />
-                    Chat ativo
+                    <MessageCircle size={14} className="mr-1" />
+                    <span>Ativo</span>
                   </div>
                 </div>
 
                 {group.lastMessage && (
-                  <div className="border-t pt-2">
-                    <p className="text-xs text-gray-500 truncate">{group.lastMessage}</p>
-                    <p className="text-xs text-gray-400 mt-1">{group.lastMessageTime}</p>
+                  <div className="border-t pt-3">
+                    <p className="text-xs text-gray-600 truncate mb-1">{group.lastMessage}</p>
+                    <div className="flex items-center text-xs text-gray-400">
+                      <Clock size={12} className="mr-1" />
+                      {group.lastMessageTime}
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -402,13 +419,13 @@ const Groups: React.FC = () => {
         </div>
 
         {filteredGroups.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-16">
             <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">
               Nenhum grupo encontrado
             </h3>
             <p className="text-gray-500">
-              Tente ajustar sua busca ou crie um novo grupo!
+              Tente ajustar sua busca ou crie um novo grupo
             </p>
           </div>
         )}
