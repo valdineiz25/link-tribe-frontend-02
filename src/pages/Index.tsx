@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, Users, Star, ArrowRight, Play, Zap, Target, DollarSign, MessageCircle, ShoppingBag, Heart, Share2 } from 'lucide-react';
+import { TrendingUp, Users, Star, ArrowRight, Play, Zap, Target, DollarSign, MessageCircle, ShoppingBag, Heart, Share2, Check, Crown, Shield, Rocket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import TopAffiliates from '@/components/TopAffiliates';
@@ -12,119 +12,165 @@ const Index = () => {
 
   const differentials = [
     {
-      icon: MessageCircle,
-      title: 'Conexão Real',
-      description: 'Adicione amigos, compartilhe momentos e descubra produtos juntos',
-      color: 'from-purple-500 to-indigo-500'
-    },
-    {
-      icon: ShoppingBag,
-      title: 'Descubra e Indique',
-      description: 'Encontre marcas que combinam com você e recomende sem ser "vendedor"',
-      color: 'from-orange-500 to-red-500'
+      icon: Check,
+      title: 'Links Ilimitados',
+      description: 'Poste quantos links de afiliados quiser, sem medo de ter conta bloqueada',
+      color: 'from-green-500 to-emerald-500'
     },
     {
       icon: DollarSign,
-      title: 'Ganhe com Autenticidade',
-      description: 'Monetize cada indicação que seus amigos realmente aproveitem',
-      color: 'from-green-500 to-emerald-500'
+      title: 'Zero Taxas Ocultas',
+      description: 'Nada de pagar para postar ou impulsionar suas recomendações',
+      color: 'from-blue-500 to-cyan-500'
+    },
+    {
+      icon: Shield,
+      title: 'Grandes Lojas Integradas',
+      description: 'Amazon, AliExpress, Shopee, Mercado Livre e mais, tudo em um só lugar',
+      color: 'from-purple-500 to-indigo-500'
+    },
+    {
+      icon: Target,
+      title: 'Alcance Orgânico',
+      description: 'Conecte-se com compradores reais que procuram ofertas',
+      color: 'from-orange-500 to-red-500'
+    },
+    {
+      icon: Rocket,
+      title: 'Monetização Instantânea',
+      description: 'Ganhe comissões diretas sem intermediários complicados',
+      color: 'from-pink-500 to-rose-500'
+    }
+  ];
+
+  const steps = [
+    {
+      number: '1',
+      title: 'Cadastre-se',
+      description: 'Gratuito e rápido'
+    },
+    {
+      number: '2',
+      title: 'Escolha seus produtos',
+      description: 'Links de afiliados das maiores lojas'
+    },
+    {
+      number: '3',
+      title: 'Poste e Divulgue',
+      description: 'Sem limites, sem censura'
+    },
+    {
+      number: '4',
+      title: 'Ganhe Dinheiro',
+      description: 'Suas comissões direto na sua conta'
     }
   ];
 
   const stats = [
-    { icon: Users, label: 'Afiliados Ativos', value: '10,000+' },
-    { icon: DollarSign, label: 'Comissões Pagas', value: 'R$ 2.5M' },
-    { icon: Target, label: 'Produtos Disponíveis', value: '50,000+' },
-    { icon: TrendingUp, label: 'Taxa de Conversão', value: '8.5%' }
+    { icon: Users, label: 'Afiliados Ativos', value: '50,000+' },
+    { icon: DollarSign, label: 'Comissões Pagas', value: 'R$ 25M' },
+    { icon: Target, label: 'Produtos Disponíveis', value: '100,000+' },
+    { icon: TrendingUp, label: 'Taxa de Conversão', value: '12.5%' }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-orange-50">
-      {/* Hero Section with Video-like Background */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-white">
+      {/* Hero Section - Focado 100% em Afiliados */}
       <section className="relative pt-20 pb-16 px-4 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-orange-500/10 to-purple-600/20 animate-pulse"></div>
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=1200&h=800&fit=crop&blend=multiply&blend-alpha=20')] bg-cover bg-center opacity-30"></div>
+        {/* Background com Dashboard de Afiliado */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 via-cyan-500/20 to-green-500/30 animate-pulse"></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop&blend=multiply&blend-alpha=40')] bg-cover bg-center opacity-20"></div>
         
-        {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full opacity-20 animate-bounce"></div>
-        <div className="absolute top-40 right-20 w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full opacity-30 animate-pulse"></div>
-        <div className="absolute bottom-20 left-1/4 w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full opacity-25 animate-bounce" style={{ animationDelay: '1s' }}></div>
+        {/* Elementos Flutuantes - Dinheiro e Gráficos */}
+        <div className="absolute top-20 left-10 w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full opacity-30 animate-bounce flex items-center justify-center text-2xl">💰</div>
+        <div className="absolute top-40 right-20 w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full opacity-40 animate-pulse flex items-center justify-center text-lg">📈</div>
+        <div className="absolute bottom-20 left-1/4 w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full opacity-35 animate-bounce flex items-center justify-center text-sm" style={{ animationDelay: '1s' }}>🚀</div>
 
         <div className="max-w-6xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-purple-800 px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-lg border border-purple-200">
-            <Star size={16} className="fill-current" />
-            Social como deve ser: humano e recompensador
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-8 py-4 rounded-full text-lg font-bold mb-8 shadow-2xl border-2 border-cyan-400 animate-pulse">
+            <Crown size={24} className="text-yellow-400" />
+            A ÚNICA Rede Social Feita para Afiliados!
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            <span className="bg-gradient-to-r from-purple-600 to-orange-500 bg-clip-text text-transparent">
-              Sua rede social
+          <h1 className="text-6xl md:text-8xl font-black text-white mb-8 leading-tight">
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-green-400 bg-clip-text text-transparent">
+              AffiliateNet
             </span>
-            <br />
-            <span className="text-gray-800">tem valor.</span>
           </h1>
           
-          <p className="text-2xl md:text-3xl text-gray-700 mb-8 max-w-4xl mx-auto font-medium">
-            Conecte-se. Recomende. Ganhe.
+          <p className="text-3xl md:text-4xl text-cyan-100 mb-8 max-w-5xl mx-auto font-bold leading-tight">
+            Divulgue seus links livremente,
             <br />
-            <span className="text-purple-600">Sem perder a autenticidade.</span>
+            <span className="text-green-400">sem bloqueios, sem banimentos</span>
+            <br />
+            <span className="text-yellow-400">e sem pagar fortunas por tráfego!</span>
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
             <Button 
               onClick={() => navigate('/register')}
               size="lg" 
-              className="bg-gradient-to-r from-purple-600 to-orange-500 hover:from-purple-700 hover:to-orange-600 text-white px-12 py-4 text-xl font-bold shadow-2xl hover:shadow-purple-500/25 hover:-translate-y-1 transition-all duration-300 rounded-xl"
+              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-16 py-6 text-2xl font-black shadow-2xl hover:shadow-green-500/50 hover:-translate-y-2 transition-all duration-300 rounded-2xl border-2 border-green-400 animate-pulse"
             >
-              Comece Agora
-              <ArrowRight size={24} className="ml-3" />
+              CADASTRE-SE AGORA!
+              <Rocket size={28} className="ml-3" />
             </Button>
             
             <Button 
               onClick={() => navigate('/presentation')}
               variant="outline" 
               size="lg" 
-              className="border-2 border-purple-500 text-purple-600 hover:bg-purple-50 px-10 py-4 text-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
+              className="border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black px-12 py-6 text-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl bg-black/50"
             >
               <Play size={24} className="mr-3" />
-              Ver Demonstração
+              Ver Como Funciona
             </Button>
+          </div>
+
+          {/* Stats Impressionantes */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {stats.map((stat, index) => (
+              <div key={index} className="bg-black/50 border border-cyan-500/30 rounded-xl p-6 backdrop-blur-sm">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl mb-3">
+                  <stat.icon size={24} />
+                </div>
+                <div className="text-2xl md:text-3xl font-black text-cyan-400 mb-1">{stat.value}</div>
+                <div className="text-cyan-100 font-medium text-sm">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Diferenciais em Ícones Animados */}
-      <section className="py-20 px-4 bg-white/70 backdrop-blur-sm">
+      {/* Diferenciais - Direto ao Ponto */}
+      <section className="py-20 px-4 bg-gradient-to-r from-black via-gray-900 to-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Por que somos diferentes?
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
+              Por que AffiliateNet?
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              A primeira rede social pensada 100% para monetização autêntica
+            <p className="text-2xl text-cyan-200 max-w-3xl mx-auto font-bold">
+              Finalmente uma plataforma que ENTENDE os afiliados!
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
             {differentials.map((item, index) => (
               <Card 
                 key={index} 
-                className="border-0 shadow-2xl bg-white/90 backdrop-blur-sm hover:shadow-3xl hover:-translate-y-4 transition-all duration-500 group cursor-pointer overflow-hidden"
-                style={{ animationDelay: `${index * 200}ms` }}
+                className="border-2 border-cyan-500/30 shadow-2xl bg-gradient-to-br from-gray-900 to-black hover:shadow-cyan-500/50 hover:-translate-y-4 transition-all duration-500 group cursor-pointer overflow-hidden"
               >
-                <CardContent className="p-10 text-center relative">
-                  {/* Hover Glow Effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                <CardContent className="p-8 text-center relative">
+                  <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-20 transition-opacity duration-300`}></div>
                   
-                  <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r ${item.color} text-white rounded-2xl mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
-                    <item.icon size={40} />
+                  <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r ${item.color} text-white rounded-2xl mb-6 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                    <item.icon size={32} />
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors">
+                  <h3 className="text-xl font-black text-white mb-4 group-hover:text-cyan-400 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 text-lg leading-relaxed">
+                  <p className="text-gray-300 text-sm leading-relaxed">
                     {item.description}
                   </p>
                 </CardContent>
@@ -134,81 +180,135 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Preview do Feed (Mockup de Celular) */}
-      <section className="py-20 px-4 bg-gradient-to-r from-purple-100 via-orange-50 to-purple-100">
+      {/* Como Funciona - Passo a Passo */}
+      <section className="py-20 px-4 bg-gradient-to-r from-blue-900 via-cyan-900 to-green-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Como funciona na prática
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
+              Como Funciona?
             </h2>
-            <p className="text-xl text-gray-600">
-              Veja como suas recomendações se transformam em renda
+            <p className="text-2xl text-cyan-200 font-bold">
+              4 passos simples para começar a GANHAR AGORA!
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-8">
+            {steps.map((step, index) => (
+              <div key={index} className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-black text-3xl font-black shadow-2xl">
+                  {step.number}
+                </div>
+                <h3 className="text-2xl font-black mb-4 text-white">{step.title}</h3>
+                <p className="text-cyan-200 leading-relaxed font-medium text-lg">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Depoimento - Prova Social */}
+      <section className="py-20 px-4 bg-black">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 border-2 border-green-500 rounded-3xl p-12 shadow-2xl">
+            <div className="flex justify-center mb-6">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={32} className="text-yellow-400 fill-current" />
+              ))}
+            </div>
+            
+            <blockquote className="text-2xl md:text-3xl text-white mb-8 font-bold italic">
+              "Finalmente uma rede social que entende os afiliados! 
+              Minhas vendas aumentaram <span className="text-green-400 font-black">300%</span> sem medo de banimento!"
+            </blockquote>
+            
+            <div className="flex items-center justify-center space-x-4">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-black text-xl">
+                JS
+              </div>
+              <div className="text-left">
+                <div className="text-white font-black text-xl">João Silva</div>
+                <div className="text-green-400 font-bold">Afiliado Top 1% 🏆</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mockup do Feed */}
+      <section className="py-20 px-4 bg-gradient-to-r from-gray-900 to-black">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
+              Veja Como Será Seu Feed
+            </h2>
+            <p className="text-2xl text-cyan-200">
+              Links de afiliados livres, engajamento real, lucro garantido!
             </p>
           </div>
 
           <div className="flex justify-center">
             <div className="relative">
               {/* Phone Mockup */}
-              <div className="w-80 h-[600px] bg-gray-900 rounded-[3rem] p-2 shadow-3xl">
-                <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
+              <div className="w-80 h-[600px] bg-gray-900 rounded-[3rem] p-2 shadow-3xl border-4 border-cyan-500">
+                <div className="w-full h-full bg-black rounded-[2.5rem] overflow-hidden">
                   {/* Phone Header */}
-                  <div className="h-6 bg-gray-100 flex items-center justify-center">
-                    <div className="w-20 h-1 bg-gray-400 rounded-full"></div>
+                  <div className="h-6 bg-gray-800 flex items-center justify-center">
+                    <div className="w-20 h-1 bg-gray-600 rounded-full"></div>
                   </div>
                   
                   {/* Feed Content */}
-                  <div className="p-4 space-y-4">
+                  <div className="p-4 space-y-4 text-white">
                     {/* Post Header */}
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                        A
+                      <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                        JS
                       </div>
                       <div>
-                        <p className="font-semibold text-sm">Ana Costa</p>
-                        <p className="text-xs text-gray-500">2h • Praia do Forte</p>
+                        <p className="font-bold text-sm text-white">João - Afiliado Top</p>
+                        <p className="text-xs text-gray-400">2h • 🔥 VENDENDO MUITO!</p>
                       </div>
-                    </div>
-                    
-                    {/* Post Image */}
-                    <div className="w-full h-48 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-xl flex items-center justify-center text-white font-semibold">
-                      🏖️ Foto na praia
                     </div>
                     
                     {/* Post Content */}
-                    <div className="space-y-2">
-                      <p className="text-sm">
-                        Dia perfeito na praia! ☀️ Esse protetor solar que uso é incrível, 
-                        não saiu nem na água 🌊
+                    <div className="space-y-3">
+                      <p className="text-sm text-white">
+                        🚨 OFERTA RELÂMPAGO! Fone Bluetooth que uso todos os dias 
+                        com 70% OFF! Corram! 🏃‍♂️💨
                       </p>
                       
-                      {/* Product Tag */}
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                        <div className="flex items-center space-x-2">
-                          <ShoppingBag size={16} className="text-orange-600" />
-                          <span className="text-sm font-medium text-orange-800">
-                            Protetor Solar FPS 60+ 🔗
+                      {/* Product Link - Destaque */}
+                      <div className="bg-gradient-to-r from-green-600 to-emerald-600 border-2 border-green-400 rounded-xl p-4">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <ShoppingBag size={16} className="text-white" />
+                          <span className="text-sm font-bold text-white">
+                            Fone JBL Bluetooth - Link Afiliado 🔗
                           </span>
                         </div>
-                        <p className="text-xs text-orange-600 mt-1">
-                          Ganhe 15% de comissão
+                        <p className="text-xs text-green-200 mb-2">
+                          💰 Comissão: R$ 45,00 por venda
                         </p>
+                        <Button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-sm py-2">
+                          COMPRAR AGORA - R$ 89,90
+                        </Button>
                       </div>
                     </div>
                     
                     {/* Post Actions */}
                     <div className="flex items-center justify-between pt-2">
                       <div className="flex items-center space-x-4">
-                        <Heart size={20} className="text-red-500 fill-current" />
-                        <MessageCircle size={20} className="text-gray-600" />
-                        <Share2 size={20} className="text-gray-600" />
+                        <div className="flex items-center space-x-1">
+                          <Heart size={18} className="text-red-500 fill-current" />
+                          <span className="text-xs text-white">234</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <MessageCircle size={18} className="text-cyan-400" />
+                          <span className="text-xs text-white">45</span>
+                        </div>
+                        <Share2 size={18} className="text-green-400" />
                       </div>
-                      <span className="text-xs text-gray-500">127 curtidas</span>
-                    </div>
-                    
-                    {/* Comments */}
-                    <div className="space-y-2 text-xs">
-                      <p><span className="font-semibold">marina_silva:</span> Onde comprou? 😍</p>
-                      <p><span className="font-semibold">ana_costa:</span> Te mando o link! Super recomendo 💕</p>
+                      <span className="text-xs text-green-400 font-bold">🔥 12 vendas hoje!</span>
                     </div>
                   </div>
                 </div>
@@ -218,97 +318,72 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white/80 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center group">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-orange-500 text-white rounded-2xl mb-4 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-lg">
-                  <stat.icon size={28} />
-                </div>
-                <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{stat.value}</div>
-                <div className="text-gray-600 font-medium">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Featured Products Section */}
-      <section className="py-16 px-4">
+      <section className="py-16 px-4 bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <FeaturedProducts />
         </div>
       </section>
 
-      {/* Chamada para Influenciadores */}
-      <section className="py-20 px-4 bg-gradient-to-r from-purple-600 via-orange-500 to-purple-600 relative overflow-hidden">
-        {/* Animated Background Elements */}
+      {/* CTA Final - Urgência */}
+      <section className="py-20 px-4 bg-gradient-to-r from-green-600 via-emerald-500 to-green-600 relative overflow-hidden">
         <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-pulse"></div>
         <div className="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full animate-bounce"></div>
         
         <div className="max-w-4xl mx-auto text-center text-white relative z-10">
-          <h2 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
-            Você já recomenda produtos todo dia.
+          <h2 className="text-5xl md:text-7xl font-black mb-8 leading-tight">
+            O Futuro dos Afiliados.
             <br />
-            <span className="text-orange-200">Aqui, você é pago por isso.</span>
+            <span className="text-yellow-300">Comece HOJE!</span>
           </h2>
           
-          <p className="text-xl md:text-2xl mb-10 text-purple-100 font-light">
-            Transforme suas recomendações naturais em uma fonte de renda consistente
+          <p className="text-2xl md:text-3xl mb-10 text-green-100 font-bold">
+            Não perca mais tempo com plataformas que te limitam!
           </p>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button 
               onClick={() => navigate('/register')}
               size="lg" 
-              className="bg-white text-purple-600 hover:bg-gray-100 px-10 py-4 text-xl font-bold shadow-2xl hover:shadow-white/25 hover:-translate-y-1 transition-all duration-300 rounded-xl"
+              className="bg-white text-green-600 hover:bg-gray-100 px-12 py-6 text-2xl font-black shadow-2xl hover:shadow-white/25 hover:-translate-y-2 transition-all duration-300 rounded-2xl"
             >
-              Começar Agora - GRÁTIS
-              <ArrowRight size={24} className="ml-3" />
-            </Button>
-            
-            <Button 
-              onClick={() => navigate('/connect')}
-              variant="outline" 
-              size="lg" 
-              className="border-2 border-white text-white hover:bg-white hover:text-purple-600 px-10 py-4 text-xl font-semibold shadow-lg transition-all duration-300 rounded-xl"
-            >
-              Para Criadores →
+              COMECE AGORA - GRÁTIS! 🚀
+              <ArrowRight size={28} className="ml-3" />
             </Button>
           </div>
         </div>
       </section>
 
       {/* Top Affiliates Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-purple-50 to-orange-50">
+      <section className="py-16 px-4 bg-black">
         <div className="max-w-6xl mx-auto">
           <TopAffiliates />
         </div>
       </section>
 
-      {/* Rodapé Minimalista */}
-      <section className="py-12 px-4 bg-gray-900">
+      {/* Rodapé Impactante */}
+      <section className="py-12 px-4 bg-gradient-to-r from-gray-900 to-black border-t border-cyan-500">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="flex justify-center items-center space-x-2 mb-6">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-orange-500 rounded-lg"></div>
-            <span className="text-white text-xl font-bold">AffiliateNet</span>
+          <div className="flex justify-center items-center space-x-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-green-500 rounded-xl flex items-center justify-center">
+              <Crown size={24} className="text-white" />
+            </div>
+            <span className="text-white text-2xl font-black">AffiliateNet</span>
           </div>
           
-          <p className="text-gray-400 text-lg font-light mb-6">
-            Social como deve ser: humano e recompensador.
+          <p className="text-cyan-400 text-xl font-bold mb-6">
+            💡 AffiliateNet – O Futuro dos Afiliados. Comece Hoje!
           </p>
           
           <div className="flex justify-center space-x-6">
-            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-cyan-400 font-bold">
               Instagram
             </Button>
-            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-              Twitter
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-cyan-400 font-bold">
+              YouTube
             </Button>
-            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-              LinkedIn
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-cyan-400 font-bold">
+              Telegram
             </Button>
           </div>
         </div>
