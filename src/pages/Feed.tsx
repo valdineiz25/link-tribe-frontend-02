@@ -7,57 +7,14 @@ import PostCreation from '@/components/PostCreation';
 import PostList from '@/components/PostList';
 import Stories from '@/components/Stories';
 import { useToast } from '@/hooks/use-toast';
+import { usePosts } from '@/hooks/usePosts';
 
 const Feed: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [isCreatingPost, setIsCreatingPost] = useState(false);
-  const [posts, setPosts] = useState([
-    {
-      id: '1',
-      authorName: 'Maria Silva',
-      content: 'Acabei de descobrir esse produto incrível para cuidados com a pele! 🌟 Estou usando há 2 semanas e já vejo resultados. Quem mais quer uma pele radiante?',
-      category: 'Saúde',
-      likes: 24,
-      comments: 8,
-      timestamp: '2h',
-      productLink: 'https://example.com/produto-skincare',
-      image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&h=300&fit=crop',
-      productName: 'Kit Skincare Completo Anti-idade',
-      currentPrice: 199.90,
-      promotionalPrice: 149.90,
-      storeName: 'BeautyShop'
-    },
-    {
-      id: '2',
-      authorName: user?.name || 'João Santos',
-      content: 'Pessoal, essa ferramenta de produtividade mudou minha vida! 💼 Consegui organizar todos os meus projetos e aumentar minha eficiência em 50%. Recomendo demais!',
-      category: 'Tecnologia',
-      likes: 45,
-      comments: 15,
-      timestamp: '4h',
-      productLink: 'https://example.com/app-produtividade',
-      productName: 'App Organização Pro 2024',
-      currentPrice: 89.90,
-      promotionalPrice: 59.90,
-      storeName: 'TechStore'
-    },
-    {
-      id: '3',
-      authorName: 'Ana Costa',
-      content: 'Que tal essa combinação para o fim de semana? Estou apaixonada por essa nova coleção! ✨',
-      category: 'Moda',
-      likes: 67,
-      comments: 23,
-      timestamp: '6h',
-      image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=500&h=300&fit=crop',
-      productName: 'Vestido Floral Primavera 2024',
-      currentPrice: 259.90,
-      promotionalPrice: 179.90,
-      storeName: 'ModaStyle'
-    }
-  ]);
+  const { posts, loading } = usePosts();
 
   const categories = [
     'Todos',
@@ -66,13 +23,14 @@ const Feed: React.FC = () => {
     'Moda',
     'Casa e Jardim',
     'Esportes',
-    'Educação'
+    'Educação',
+    'Beleza',
+    'Eletrônicos',
+    'Alimentação'
   ];
 
   const handleUpdatePost = (updatedPost: any) => {
-    setPosts(prev => prev.map(post => 
-      post.id === updatedPost.id ? updatedPost : post
-    ));
+    // Esta função será implementada se necessário
     toast({
       title: "Post atualizado",
       description: "As alterações foram salvas com sucesso.",
@@ -96,6 +54,35 @@ const Feed: React.FC = () => {
       });
     }
   };
+
+  // Converter posts para o formato esperado pelo PostList
+  const formattedPosts = posts.map(post => ({
+    id: post.id,
+    authorName: post.user?.name || 'Usuário',
+    authorAvatar: post.user?.avatar,
+    content: post.content || post.description || '',
+    image: post.media && post.mediaType?.startsWith('image/') ? post.media : undefined,
+    productLink: post.productLink,
+    category: post.category || 'Geral',
+    likes: post.likes || 0,
+    comments: post.comments || 0,
+    timestamp: new Date(post.createdAt).toLocaleDateString('pt-BR'),
+    productName: post.productName,
+    currentPrice: post.currentPrice,
+    promotionalPrice: post.promotionalPrice,
+    storeName: post.storeName
+  }));
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando feed...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50 pb-16 md:pb-0">
@@ -123,12 +110,24 @@ const Feed: React.FC = () => {
         </div>
 
         {/* Posts feed */}
-        <PostList 
-          posts={posts}
-          currentUserName={user?.name}
-          onUpdatePost={handleUpdatePost}
-          selectedCategory={selectedCategory}
-        />
+        {formattedPosts.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-8xl mb-6">📝</div>
+            <h3 className="text-2xl font-bold text-gray-700 mb-2">
+              Ainda não há posts!
+            </h3>
+            <p className="text-gray-500 text-lg mb-4">
+              Seja o primeiro a compartilhar algo interessante.
+            </p>
+          </div>
+        ) : (
+          <PostList 
+            posts={formattedPosts}
+            currentUserName={user?.name}
+            onUpdatePost={handleUpdatePost}
+            selectedCategory={selectedCategory}
+          />
+        )}
       </div>
     </div>
   );

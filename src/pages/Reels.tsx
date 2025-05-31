@@ -8,7 +8,8 @@ import { useReels } from '@/hooks/usePosts';
 
 interface Reel {
   id: string;
-  description: string;
+  content: string;
+  description?: string;
   media?: string;
   mediaType?: string;
   productLink?: string;
@@ -22,6 +23,11 @@ interface Reel {
   promotionalPrice?: number;
   storeName?: string;
   createdAt: string;
+  user?: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
 }
 
 const Reels: React.FC = () => {
@@ -29,29 +35,6 @@ const Reels: React.FC = () => {
   const { reels, loading } = useReels();
   const [playingVideo, setPlayingVideo] = useState<string | null>(null);
   const [mutedVideos, setMutedVideos] = useState<Set<string>>(new Set());
-
-  // Mock de dados caso não tenha reels salvos
-  const mockReels: Reel[] = [
-    {
-      id: 'mock-1',
-      description: 'Unboxing do melhor kit de skincare que já usei! 🌟 Resultados incríveis em 2 semanas',
-      media: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      category: 'Saúde',
-      likes: 156,
-      comments: 23,
-      shares: 12,
-      views: 1240,
-      productLink: 'https://example.com/skincare',
-      productName: 'Kit Skincare Anti-idade Premium',
-      currentPrice: 299.90,
-      promotionalPrice: 199.90,
-      storeName: 'BeautyShop',
-      createdAt: new Date().toISOString()
-    }
-  ];
-
-  // Combinar reels reais com mock se não houver dados
-  const allReels = reels.length > 0 ? reels : mockReels;
 
   const handleLike = (reelId: string) => {
     toast({
@@ -95,7 +78,7 @@ const Reels: React.FC = () => {
     });
   };
 
-  const getAuthorName = () => 'Usuário Afiliado'; // Mock author name
+  const getAuthorName = (reel: Reel) => reel.user?.name || 'Usuário Afiliado';
 
   if (loading) {
     return (
@@ -118,21 +101,27 @@ const Reels: React.FC = () => {
         </div>
 
         {/* Reels Feed */}
-        {allReels.length === 0 ? (
+        {reels.length === 0 ? (
           <div className="flex items-center justify-center h-96">
             <div className="text-center">
               <div className="text-6xl mb-4">🎥</div>
               <h3 className="text-xl font-semibold text-gray-600 mb-2">
                 Nenhum reel ainda
               </h3>
-              <p className="text-gray-500">
+              <p className="text-gray-500 mb-4">
                 Crie seu primeiro reel para aparecer aqui!
               </p>
+              <Button
+                onClick={() => window.location.href = '/create-post'}
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+              >
+                Criar Reel
+              </Button>
             </div>
           </div>
         ) : (
           <div className="space-y-1">
-            {allReels.map((reel) => (
+            {reels.map((reel) => (
               <Card key={reel.id} className="border-0 rounded-none relative h-screen max-h-[calc(100vh-120px)] overflow-hidden">
                 <CardContent className="p-0 relative h-full">
                   {/* Video */}
@@ -188,10 +177,10 @@ const Reels: React.FC = () => {
                     {/* Author Info */}
                     <div className="flex items-center mb-3">
                       <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
-                        {getAuthorName().charAt(0)}
+                        {getAuthorName(reel).charAt(0)}
                       </div>
                       <div>
-                        <p className="font-semibold">{getAuthorName()}</p>
+                        <p className="font-semibold">{getAuthorName(reel)}</p>
                         <p className="text-xs text-gray-300">
                           {new Date(reel.createdAt).toLocaleDateString('pt-BR')}
                         </p>
@@ -199,7 +188,7 @@ const Reels: React.FC = () => {
                     </div>
 
                     {/* Description */}
-                    <p className="text-sm mb-3 leading-relaxed">{reel.description}</p>
+                    <p className="text-sm mb-3 leading-relaxed">{reel.content || reel.description}</p>
 
                     {/* Product Info */}
                     {reel.productName && (

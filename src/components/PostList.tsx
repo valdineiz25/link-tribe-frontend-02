@@ -39,11 +39,16 @@ const PostList: React.FC<PostListProps> = ({
   if (filteredPosts.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-6xl mb-4">😔</div>
+        <div className="text-6xl mb-4">🤔</div>
         <p className="text-gray-500 text-lg">
-          Nenhum post encontrado para a categoria "{selectedCategory}".
+          {selectedCategory === 'Todos' 
+            ? 'Ainda não há posts publicados. Seja o primeiro a compartilhar!'
+            : `Nenhum post encontrado para a categoria "${selectedCategory}".`
+          }
         </p>
-        <p className="text-gray-400">Seja o primeiro a postar nesta categoria!</p>
+        <p className="text-gray-400 mt-2">
+          {selectedCategory !== 'Todos' && 'Tente selecionar "Todos" ou crie um post nesta categoria!'}
+        </p>
       </div>
     );
   }

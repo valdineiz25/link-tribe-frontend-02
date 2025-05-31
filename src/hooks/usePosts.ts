@@ -32,13 +32,13 @@ export const usePosts = () => {
       const postData: Post = {
         id: Date.now().toString(),
         content: post.content.trim(),
-        description: post.description || post.content?.trim() || '',
+        description: post.content.trim(), // Para compatibilidade
         productLink: post.productLink || '',
         productName: post.productName || '',
         currentPrice: post.currentPrice,
         promotionalPrice: post.promotionalPrice,
         storeName: post.storeName || '',
-        category: post.category || '',
+        category: post.category || 'Geral',
         media: post.media,
         mediaType: post.mediaType,
         mediaName: post.mediaName,
