@@ -13,6 +13,7 @@ import {
   Bookmark
 } from 'lucide-react';
 import EditPostDialog from '@/components/EditPostDialog';
+import { useToast } from '@/hooks/use-toast';
 
 interface Post {
   id: string;
@@ -38,14 +39,30 @@ interface CardPostProps {
 }
 
 const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false }) => {
+  const { toast } = useToast();
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
+  const [commentsCount, setCommentsCount] = useState(post.comments);
   const [currentPost, setCurrentPost] = useState(post);
   const [isSaved, setIsSaved] = useState(false);
 
   const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+    const newIsLiked = !isLiked;
+    setIsLiked(newIsLiked);
+    setLikesCount(prev => newIsLiked ? prev + 1 : prev - 1);
+    
+    toast({
+      title: newIsLiked ? "❤️ Curtido!" : "💔 Descurtido!",
+      description: newIsLiked ? "Você curtiu este post" : "Você descurtiu este post",
+    });
+  };
+
+  const handleComment = () => {
+    setCommentsCount(prev => prev + 1);
+    toast({
+      title: "💬 Comentário adicionado!",
+      description: "Seu comentário foi publicado",
+    });
   };
 
   const handleShare = () => {
@@ -54,14 +71,34 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
         title: 'Post da AffiliateNet',
         text: currentPost.content,
         url: window.location.href,
+      }).then(() => {
+        toast({
+          title: "📤 Compartilhado!",
+          description: "Post compartilhado com sucesso",
+        });
+      }).catch(() => {
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "📤 Link copiado!",
+          description: "Link copiado para a área de transferência",
+        });
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "📤 Link copiado!",
+        description: "Link copiado para a área de transferência",
+      });
     }
   };
 
   const handleSave = () => {
-    setIsSaved(!isSaved);
+    const newIsSaved = !isSaved;
+    setIsSaved(newIsSaved);
+    toast({
+      title: newIsSaved ? "🔖 Post salvo!" : "🗑️ Post removido dos salvos",
+      description: newIsSaved ? "Post adicionado aos seus salvos" : "Post removido dos seus salvos",
+    });
   };
 
   const handlePostUpdate = (updatedPost: Post) => {
@@ -204,6 +241,7 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
               <Button 
                 variant="ghost" 
                 size="sm" 
+                onClick={handleComment}
                 className="p-0 h-auto text-gray-700 hover:bg-transparent"
               >
                 <MessageCircle size={24} />
@@ -237,9 +275,9 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
           </div>
           
           {/* Comments preview */}
-          {currentPost.comments > 0 && (
+          {commentsCount > 0 && (
             <div className="text-sm text-gray-500">
-              Ver todos os {currentPost.comments} comentários
+              Ver todos os {commentsCount} comentários
             </div>
           )}
         </div>

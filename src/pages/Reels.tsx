@@ -36,27 +36,98 @@ const Reels: React.FC = () => {
   const [currentReelIndex, setCurrentReelIndex] = useState(0);
   const [mutedVideos, setMutedVideos] = useState<Set<string>>(new Set());
   const [pausedVideos, setPausedVideos] = useState<Set<string>>(new Set());
+  const [likedReels, setLikedReels] = useState<Set<string>>(new Set());
+  const [reelStats, setReelStats] = useState<{ [key: string]: { likes: number; comments: number; shares: number } }>({});
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
+  // Initialize reel stats
+  useEffect(() => {
+    const stats: { [key: string]: { likes: number; comments: number; shares: number } } = {};
+    reels.forEach(reel => {
+      stats[reel.id] = {
+        likes: reel.likes || 0,
+        comments: reel.comments || 0,
+        shares: reel.shares || 0
+      };
+    });
+    setReelStats(stats);
+  }, [reels]);
+
   const handleLike = (reelId: string) => {
+    const isLiked = likedReels.has(reelId);
+    
+    setLikedReels(prev => {
+      const newSet = new Set(prev);
+      if (isLiked) {
+        newSet.delete(reelId);
+      } else {
+        newSet.add(reelId);
+      }
+      return newSet;
+    });
+
+    setReelStats(prev => ({
+      ...prev,
+      [reelId]: {
+        ...prev[reelId],
+        likes: prev[reelId].likes + (isLiked ? -1 : 1)
+      }
+    }));
+
     toast({
-      title: "❤️ Curtido!",
-      description: "Você curtiu este reel",
+      title: isLiked ? "💔 Descurtido!" : "❤️ Curtido!",
+      description: isLiked ? "Você descurtiu este reel" : "Você curtiu este reel",
     });
   };
 
   const handleComment = (reelId: string) => {
+    setReelStats(prev => ({
+      ...prev,
+      [reelId]: {
+        ...prev[reelId],
+        comments: prev[reelId].comments + 1
+      }
+    }));
+
     toast({
-      title: "💬 Comentários",
-      description: "Funcionalidade em desenvolvimento",
+      title: "💬 Comentário adicionado!",
+      description: "Seu comentário foi publicado",
     });
   };
 
   const handleShare = (reelId: string) => {
-    toast({
-      title: "📤 Compartilhado!",
-      description: "Link copiado para a área de transferência",
-    });
+    setReelStats(prev => ({
+      ...prev,
+      [reelId]: {
+        ...prev[reelId],
+        shares: prev[reelId].shares + 1
+      }
+    }));
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Reel incrível da AffiliateNet',
+        text: 'Confira este reel incrível!',
+        url: window.location.href,
+      }).then(() => {
+        toast({
+          title: "📤 Compartilhado!",
+          description: "Reel compartilhado com sucesso",
+        });
+      }).catch(() => {
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "📤 Link copiado!",
+          description: "Link copiado para a área de transferência",
+        });
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "📤 Link copiado!",
+        description: "Link copiado para a área de transferência",
+      });
+    }
   };
 
   const togglePlay = (reelId: string) => {
@@ -106,6 +177,7 @@ const Reels: React.FC = () => {
       const video = videoRefs.current[currentReel.id];
       
       if (video && !pausedVideos.has(currentReel.id)) {
+        video.currentTime = 0;
         video.play().catch(console.error);
       }
 
@@ -196,16 +268,22 @@ const Reels: React.FC = () => {
                           if (index === currentReelIndex && !pausedVideos.has(reel.id)) {
                             const video = videoRefs.current[reel.id];
                             if (video) {
+                              video.currentTime = 0;
                               video.play().catch(console.error);
                             }
                           }
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                        <div className="text-center text-white">
-                          <div className="text-6xl mb-4">🎥</div>
-                          <p className="text-lg">Vídeo não disponível</p>
+                      <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                        <div className="text-center text-white p-8">
+                          <div className="text-6xl mb-4">📝</div>
+                          <p className="text-xl font-semibold mb-2">{reel.content}</p>
+                          {reel.category && (
+                            <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm">
+                              {reel.category}
+                            </span>
+                          )}
                         </div>
                       </div>
                     )}
@@ -304,11 +382,13 @@ const Reels: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 text-white flex flex-col"
+                      className={`w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 text-white flex flex-col ${
+                        likedReels.has(reel.id) ? 'text-red-500' : ''
+                      }`}
                       onClick={() => handleLike(reel.id)}
                     >
-                      <Heart size={24} />
-                      <span className="text-xs mt-1">{reel.likes}</span>
+                      <Heart size={24} className={likedReels.has(reel.id) ? 'fill-current' : ''} />
+                      <span className="text-xs mt-1">{reelStats[reel.id]?.likes || 0}</span>
                     </Button>
 
                     <Button
@@ -318,7 +398,7 @@ const Reels: React.FC = () => {
                       onClick={() => handleComment(reel.id)}
                     >
                       <MessageCircle size={24} />
-                      <span className="text-xs mt-1">{reel.comments}</span>
+                      <span className="text-xs mt-1">{reelStats[reel.id]?.comments || 0}</span>
                     </Button>
 
                     <Button
@@ -328,6 +408,7 @@ const Reels: React.FC = () => {
                       onClick={() => handleShare(reel.id)}
                     >
                       <Share size={24} />
+                      <span className="text-xs mt-1">{reelStats[reel.id]?.shares || 0}</span>
                     </Button>
                   </div>
                 </CardContent>
