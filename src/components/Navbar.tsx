@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useStores } from '@/hooks/useStores';
 import { Button } from '@/components/ui/button';
 import { 
   Home, 
@@ -15,12 +16,14 @@ import {
   Video,
   Search,
   Bell,
-  Menu
+  Menu,
+  Store
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
+  const { stores } = useStores();
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -134,6 +137,18 @@ const Navbar: React.FC = () => {
 
             {/* Right side - User actions */}
             <div className="flex items-center space-x-2">
+              {/* Stores indicator */}
+              {stores.length > 0 && (
+                <Link
+                  to="/dashboard"
+                  className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+                  title="Suas Lojas"
+                >
+                  <Store size={16} />
+                  <span className="text-sm font-medium">{stores.length}</span>
+                </Link>
+              )}
+              
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -210,8 +225,13 @@ const Navbar: React.FC = () => {
               className="flex flex-col items-center justify-center w-12 h-12"
               title="Perfil"
             >
-              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+              <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-semibold relative">
                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                {stores.length > 0 && (
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center">
+                    <span className="text-xs text-white">{stores.length}</span>
+                  </div>
+                )}
               </div>
             </Link>
           </div>
