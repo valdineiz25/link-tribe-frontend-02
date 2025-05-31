@@ -109,18 +109,31 @@ export const useReels = () => {
         throw new Error('Conteúdo é obrigatório');
       }
       
-      if (!reel.media) {
-        throw new Error('Vídeo é obrigatório para reels');
-      }
-
+      // Para reels, o vídeo não é obrigatório - pode ser um post de texto também
       const reelData = {
-        ...reel,
         id: Date.now().toString(),
+        content: reel.content.trim(),
+        description: reel.description || reel.content.trim(),
+        productLink: reel.productLink || '',
+        productName: reel.productName || '',
+        currentPrice: reel.currentPrice,
+        promotionalPrice: reel.promotionalPrice,
+        storeName: reel.storeName || '',
+        category: reel.category || 'Geral',
+        media: reel.media,
+        mediaType: reel.mediaType,
+        mediaName: reel.mediaName,
+        type: reel.type || 'reel',
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         likes: 0,
         comments: 0,
         shares: 0,
         views: 0,
+        clickThroughs: 0,
+        earnings: 0,
+        isActive: true,
+        tags: [],
         user: {
           id: '1',
           name: 'Usuário',

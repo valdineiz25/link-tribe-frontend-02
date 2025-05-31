@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, MessageCircle, Share, Play, Pause, Volume2, VolumeX, ExternalLink } from 'lucide-react';
@@ -33,8 +33,10 @@ interface Reel {
 const Reels: React.FC = () => {
   const { toast } = useToast();
   const { reels, loading } = useReels();
-  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
+  const [currentReelIndex, setCurrentReelIndex] = useState(0);
   const [mutedVideos, setMutedVideos] = useState<Set<string>>(new Set());
+  const [pausedVideos, setPausedVideos] = useState<Set<string>>(new Set());
+  const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
   const handleLike = (reelId: string) => {
     toast({
@@ -58,17 +60,34 @@ const Reels: React.FC = () => {
   };
 
   const togglePlay = (reelId: string) => {
-    setPlayingVideo(playingVideo === reelId ? null : reelId);
+    const video = videoRefs.current[reelId];
+    if (video) {
+      if (video.paused) {
+        video.play();
+        setPausedVideos(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(reelId);
+          return newSet;
+        });
+      } else {
+        video.pause();
+        setPausedVideos(prev => new Set(prev).add(reelId));
+      }
+    }
   };
 
   const toggleMute = (reelId: string) => {
-    const newMutedVideos = new Set(mutedVideos);
-    if (mutedVideos.has(reelId)) {
-      newMutedVideos.delete(reelId);
-    } else {
-      newMutedVideos.add(reelId);
+    const video = videoRefs.current[reelId];
+    if (video) {
+      video.muted = !video.muted;
+      const newMutedVideos = new Set(mutedVideos);
+      if (video.muted) {
+        newMutedVideos.add(reelId);
+      } else {
+        newMutedVideos.delete(reelId);
+      }
+      setMutedVideos(newMutedVideos);
     }
-    setMutedVideos(newMutedVideos);
   };
 
   const formatPrice = (price: number) => {
@@ -79,6 +98,44 @@ const Reels: React.FC = () => {
   };
 
   const getAuthorName = (reel: Reel) => reel.user?.name || 'Usuário Afiliado';
+
+  // Auto-play the current video when it comes into view
+  useEffect(() => {
+    if (reels.length > 0 && currentReelIndex < reels.length) {
+      const currentReel = reels[currentReelIndex];
+      const video = videoRefs.current[currentReel.id];
+      
+      if (video && !pausedVideos.has(currentReel.id)) {
+        video.play().catch(console.error);
+      }
+
+      // Pause other videos
+      Object.keys(videoRefs.current).forEach(reelId => {
+        if (reelId !== currentReel.id) {
+          const otherVideo = videoRefs.current[reelId];
+          if (otherVideo && !otherVideo.paused) {
+            otherVideo.pause();
+          }
+        }
+      });
+    }
+  }, [currentReelIndex, reels, pausedVideos]);
+
+  // Handle scroll to change current reel
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const newIndex = Math.floor(scrollPosition / windowHeight);
+      
+      if (newIndex !== currentReelIndex && newIndex >= 0 && newIndex < reels.length) {
+        setCurrentReelIndex(newIndex);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [currentReelIndex, reels.length]);
 
   if (loading) {
     return (
@@ -121,20 +178,28 @@ const Reels: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-1">
-            {reels.map((reel) => (
+            {reels.map((reel, index) => (
               <Card key={reel.id} className="border-0 rounded-none relative h-screen max-h-[calc(100vh-120px)] overflow-hidden">
                 <CardContent className="p-0 relative h-full">
                   {/* Video */}
                   <div className="relative w-full h-full bg-black">
                     {reel.media ? (
                       <video
+                        ref={(el) => { videoRefs.current[reel.id] = el; }}
                         className="w-full h-full object-cover"
                         src={reel.media}
                         loop
                         playsInline
                         muted={mutedVideos.has(reel.id)}
-                        autoPlay={playingVideo === reel.id}
                         onClick={() => togglePlay(reel.id)}
+                        onLoadedData={() => {
+                          if (index === currentReelIndex && !pausedVideos.has(reel.id)) {
+                            const video = videoRefs.current[reel.id];
+                            if (video) {
+                              video.play().catch(console.error);
+                            }
+                          }
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-800 flex items-center justify-center">
@@ -146,7 +211,7 @@ const Reels: React.FC = () => {
                     )}
                     
                     {/* Play/Pause Overlay */}
-                    {playingVideo !== reel.id && reel.media && (
+                    {pausedVideos.has(reel.id) && reel.media && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                         <Button
                           variant="ghost"

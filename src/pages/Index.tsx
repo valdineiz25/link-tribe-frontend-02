@@ -1,448 +1,162 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { usePartners } from '@/hooks/usePartners';
-import { 
-  TrendingUp, 
-  Users, 
-  DollarSign, 
-  Zap, 
-  Star, 
-  ArrowRight,
-  ShoppingBag,
-  MessageCircle,
-  BarChart3,
-  Heart,
-  Camera,
-  Share2,
-  Loader2,
-  Mail,
-  Phone
-} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { TrendingUp, Users, Star, ArrowRight, Play, Zap, Target, DollarSign } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import FeaturedProducts from '@/components/FeaturedProducts';
+import TopAffiliates from '@/components/TopAffiliates';
 
-const Index: React.FC = () => {
-  const { stores, loading: storesLoading } = usePartners();
+const Index = () => {
+  const navigate = useNavigate();
+
+  const stats = [
+    { icon: Users, label: 'Afiliados Ativos', value: '10,000+' },
+    { icon: DollarSign, label: 'Comissões Pagas', value: 'R$ 2.5M' },
+    { icon: Target, label: 'Produtos Disponíveis', value: '50,000+' },
+    { icon: TrendingUp, label: 'Taxa de Conversão', value: '8.5%' }
+  ];
 
   const features = [
     {
-      icon: DollarSign,
-      title: 'Monetize Seu Conteúdo',
-      description: 'Ganhe comissões reais promovendo produtos que você ama'
+      icon: Zap,
+      title: 'Comissões Altas',
+      description: 'Ganhe até 30% de comissão em cada venda realizada'
     },
     {
-      icon: Users,
-      title: 'Comunidade Ativa',
-      description: 'Conecte-se com milhares de afiliados e influenciadores'
+      icon: Target,
+      title: 'Produtos Premium',
+      description: 'Acesso exclusivo aos melhores produtos do mercado'
     },
     {
       icon: TrendingUp,
       title: 'Analytics Avançado',
-      description: 'Acompanhe suas vendas e performance em tempo real'
-    },
-    {
-      icon: Zap,
-      title: 'Crescimento Acelerado',
-      description: 'Ferramentas poderosas para impulsionar seus resultados'
+      description: 'Acompanhe suas vendas e otimize seus resultados'
     }
   ];
 
-  const stats = [
-    { value: '50K+', label: 'Afiliados Ativos' },
-    { value: 'R$ 2M+', label: 'Em Comissões Pagas' },
-    { value: '10K+', label: 'Produtos Disponíveis' },
-    { value: '98%', label: 'Satisfação dos Usuários' }
-  ];
-
-  // Mapeamento das lojas com as novas imagens
-  const storeLogos: { [key: string]: string } = {
-    'Shopee': '/lovable-uploads/2f2c8f66-efc5-45d1-bb48-29a832d5a765.png',
-    'Magazine Luiza': '/lovable-uploads/e3a0f40c-9132-4c47-8369-5b3534dd866e.png',
-    'Mercado Livre': '/lovable-uploads/0e3ca787-7bb8-4dc5-9bde-e82458b64c6f.png',
-    'Amazon': '/lovable-uploads/f17ed122-502f-4692-8287-26005601041f.png',
-    'Temu': '/lovable-uploads/e41781f9-4219-4be6-8fab-b3f5a42c55dc.png',
-    'AliExpress': '/lovable-uploads/d5ad38d1-fd6d-4fb6-94a8-a8b85e5762d8.png',
-    'Shein': 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Shein_logo.svg'
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50">
-      {/* Professional gradient header */}
-      <div className="w-full h-2 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600"></div>
-      
-      {/* Hero Section - Professional style */}
-      <section className="relative py-20 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-        <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-yellow-400/5"></div>
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left side - Text content */}
-            <div className="text-left">
-              <h1 className="text-6xl md:text-7xl font-bold mb-6">
-                Affiliate<span className="text-yellow-400">Net</span>
-              </h1>
-              <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-                Conecte-se com amigos, descubra produtos incríveis e monetize suas recomendações. 
-                A rede social que transforma suas conexões em oportunidades.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link to="/register">
-                  <Button 
-                    size="lg" 
-                    className="btn-professional px-8 py-4 text-lg rounded-xl shadow-xl w-full sm:w-auto font-semibold"
-                  >
-                    Criar conta
-                  </Button>
-                </Link>
-                <Link to="/login">
-                  <Button 
-                    variant="outline" 
-                    size="lg"
-                    className="btn-professional-outline px-8 py-4 text-lg font-semibold rounded-xl w-full sm:w-auto"
-                  >
-                    Entrar
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Social proof */}
-              <div className="flex items-center space-x-4 text-sm text-gray-400">
-                <div className="flex -space-x-2">
-                  <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full border-3 border-black"></div>
-                  <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full border-3 border-black"></div>
-                  <div className="w-10 h-10 bg-gradient-to-r from-gray-600 to-gray-700 rounded-full border-3 border-black"></div>
-                  <div className="w-10 h-10 bg-gradient-to-r from-gray-700 to-gray-800 rounded-full border-3 border-black flex items-center justify-center text-yellow-400 text-sm font-bold">
-                    +99
-                  </div>
-                </div>
-                <span>Mais de 50.000 pessoas já se conectaram</span>
-              </div>
-            </div>
-
-            {/* Right side - Mock phone interface */}
-            <div className="relative">
-              <div className="bg-gray-900 rounded-3xl p-3 shadow-2xl max-w-sm mx-auto border border-yellow-500/20">
-                <div className="bg-white rounded-2xl overflow-hidden">
-                  {/* Phone header */}
-                  <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 px-4 py-4 flex items-center justify-between">
-                    <div className="text-lg font-bold text-black">AffiliateNet</div>
-                    <div className="flex space-x-2">
-                      <Heart size={20} className="text-black" />
-                      <MessageCircle size={20} className="text-black" />
-                    </div>
-                  </div>
-                  
-                  {/* Mock post */}
-                  <div className="p-4 bg-gray-50">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full border-2 border-gray-800"></div>
-                      <div>
-                        <div className="font-semibold text-sm text-gray-900">Maria Silva</div>
-                        <div className="text-xs text-gray-600">2 horas atrás</div>
-                      </div>
-                    </div>
-                    
-                    <p className="text-sm text-gray-800 mb-3">
-                      Acabei de descobrir este produto incrível! 💄✨
-                    </p>
-                    
-                    <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg h-32 mb-3 flex items-center justify-center border border-yellow-300">
-                      <Camera size={24} className="text-yellow-600" />
-                    </div>
-                    
-                    <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg p-3 mb-3">
-                      <div className="font-semibold text-sm text-black">Kit Maquiagem Pro</div>
-                      <div className="text-sm text-gray-800">R$ 299,90 → R$ 199,90</div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-gray-600">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-1">
-                          <Heart size={16} className="text-yellow-600" />
-                          <span className="text-sm">124</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <MessageCircle size={16} className="text-yellow-600" />
-                          <span className="text-sm">8</span>
-                        </div>
-                      </div>
-                      <Share2 size={16} className="text-yellow-600" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-orange-50">
+      {/* Hero Section */}
+      <section className="pt-20 pb-16 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <Star size={16} className="fill-current" />
+            Plataforma #1 de Marketing de Afiliados
+          </div>
+          
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Transforme suas
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500"> redes sociais </span>
+            em uma máquina de vendas
+          </h1>
+          
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Conecte-se com as melhores marcas, promova produtos incríveis e ganhe comissões altas. 
+            Tudo em uma plataforma moderna e intuitiva.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button 
+              onClick={() => navigate('/register')}
+              size="lg" 
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-3 text-lg"
+            >
+              Começar Agora
+              <ArrowRight size={20} className="ml-2" />
+            </Button>
+            
+            <Button 
+              onClick={() => navigate('/presentation')}
+              variant="outline" 
+              size="lg" 
+              className="border-orange-500 text-orange-600 hover:bg-orange-50 px-8 py-3 text-lg"
+            >
+              <Play size={20} className="mr-2" />
+              Ver Demonstração
+            </Button>
           </div>
         </div>
       </section>
 
-      {/* Stats Section - Professional style */}
-      <section className="py-16 px-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
-        <div className="max-w-6xl mx-auto">
+      {/* Stats Section */}
+      <section className="py-16 bg-white/50 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center bg-black/90 rounded-xl p-8 shadow-xl border border-yellow-500/20">
-                <div className="text-4xl md:text-5xl font-bold text-yellow-400 mb-2">
-                  {stat.value}
+              <div key={index} className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full mb-4">
+                  <stat.icon size={24} />
                 </div>
-                <div className="text-gray-300 text-sm font-medium">{stat.label}</div>
+                <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                <div className="text-gray-600">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Partner Stores Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      {/* Featured Products Section */}
+      <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Parceiros de <span className="text-yellow-400">Confiança</span>
-            </h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Trabalhe com as maiores e mais confiáveis lojas do Brasil e do mundo
-            </p>
-          </div>
+          <FeaturedProducts />
+        </div>
+      </section>
 
-          {storesLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-yellow-400" />
-              <span className="ml-2 text-gray-300">Carregando lojas parceiras...</span>
-            </div>
-          ) : stores && stores.length > 0 ? (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 items-center">
-                {stores.map((store) => (
-                  <div 
-                    key={store.id} 
-                    className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-yellow-500/20 p-6 shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center group hover:border-yellow-400/40"
-                  >
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-100 to-white rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        {storeLogos[store.name] ? (
-                          <img 
-                            src={storeLogos[store.name]} 
-                            alt={store.alt || store.name}
-                            className="w-12 h-12 object-contain transition-all duration-300"
-                            onError={(e) => {
-                              const target = e.currentTarget;
-                              target.style.display = 'none';
-                              const fallback = target.nextElementSibling as HTMLElement;
-                              if (fallback) {
-                                fallback.style.display = 'flex';
-                              }
-                            }}
-                          />
-                        ) : null}
-                        <div 
-                          className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded flex items-center justify-center text-black font-bold text-lg"
-                          style={{ display: storeLogos[store.name] ? 'none' : 'flex' }}
-                        >
-                          {store.name.charAt(0)}
-                        </div>
-                      </div>
-                      <div className="text-xs font-medium text-gray-300 group-hover:text-white transition-colors">
-                        {store.name}
-                      </div>
-                      <div className="text-xs text-yellow-400 font-semibold mt-1">
-                        {store.commission}% comissão
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="text-center mt-12">
-                <p className="text-sm text-gray-400">
-                  E mais de <span className="font-semibold text-yellow-400">500+ lojas parceiras</span> esperando por você
-                </p>
-              </div>
-            </>
-          ) : (
-            <div className="text-center text-gray-400">
-              <p>Carregando lojas parceiras...</p>
-            </div>
-          )}
+      {/* Top Affiliates Section */}
+      <section className="py-16 px-4 bg-white/30 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto">
+          <TopAffiliates />
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-yellow-50 via-white to-gray-50">
+      <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Tudo que você precisa em <span className="text-yellow-600">um só lugar</span>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Por que escolher nossa plataforma?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Descubra, conecte-se e monetize com a comunidade de afiliados que mais cresce no Brasil
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <Card key={index} className="border border-yellow-200 shadow-xl hover:shadow-2xl transition-all bg-white hover:border-yellow-400 group">
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                      <Icon size={28} className="text-black" />
-                    </div>
-                    <CardTitle className="text-lg text-gray-900 font-semibold">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <CardDescription className="text-center text-gray-600">
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* How it Works */}
-      <section className="py-20 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Como <span className="text-yellow-400">funciona?</span>
-            </h2>
-            <p className="text-xl text-gray-300">
-              Simples como suas redes sociais favoritas
+              Oferecemos as melhores ferramentas e oportunidades para maximizar seus ganhos
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 shadow-xl border border-yellow-500/20">
-              <div className="w-20 h-20 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users size={32} className="text-black" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-white">1. Conecte-se</h3>
-              <p className="text-gray-300">
-                Crie seu perfil e encontre produtos incríveis para compartilhar
-              </p>
-            </div>
-
-            <div className="text-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 shadow-xl border border-yellow-500/20">
-              <div className="w-20 h-20 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <ShoppingBag size={32} className="text-black" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-white">2. Compartilhe</h3>
-              <p className="text-gray-300">
-                Poste sobre produtos que você recomenda para seus amigos
-              </p>
-            </div>
-
-            <div className="text-center bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 shadow-xl border border-yellow-500/20">
-              <div className="w-20 h-20 bg-gradient-to-r from-yellow-600 to-yellow-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                <BarChart3 size={32} className="text-black" />
-              </div>
-              <h3 className="text-xl font-bold mb-4 text-white">3. Ganhe</h3>
-              <p className="text-gray-300">
-                Receba comissões por cada venda através das suas recomendações
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-yellow-50 via-white to-gray-50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Entre em <span className="text-yellow-600">Contato</span>
-          </h2>
-          <p className="text-xl text-gray-600 mb-12">
-            Precisa de ajuda? Estamos aqui para você!
-          </p>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card className="border border-yellow-200 shadow-xl hover:shadow-2xl transition-all bg-white hover:border-yellow-400 group">
-              <CardHeader className="text-center pb-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Mail size={28} className="text-black" />
-                </div>
-                <CardTitle className="text-xl text-gray-900 font-semibold">Email</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">Envie um email para nossa equipe</p>
-                <a 
-                  href="mailto:valdtkr@gmail.com" 
-                  className="text-yellow-600 hover:text-yellow-700 font-semibold transition-colors"
-                >
-                  valdtkr@gmail.com
-                </a>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-yellow-200 shadow-xl hover:shadow-2xl transition-all bg-white hover:border-yellow-400 group">
-              <CardHeader className="text-center pb-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <Phone size={28} className="text-black" />
-                </div>
-                <CardTitle className="text-xl text-gray-900 font-semibold">WhatsApp</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">Converse conosco no WhatsApp</p>
-                <a 
-                  href="https://wa.me/5563999589965" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-yellow-600 hover:text-yellow-700 font-semibold transition-colors"
-                >
-                  +55 63 9958-9965
-                </a>
-              </CardContent>
-            </Card>
+            {features.map((feature, index) => (
+              <Card key={index} className="border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:shadow-xl transition-shadow">
+                <CardContent className="p-8 text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full mb-6">
+                    <feature.icon size={32} />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
-        <div className="max-w-4xl mx-auto text-center text-black">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Pronto para começar a ganhar?
+      <section className="py-16 px-4 bg-gradient-to-r from-orange-500 to-red-500">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Pronto para começar sua jornada como afiliado?
           </h2>
-          <p className="text-xl mb-8 text-gray-800">
-            Junte-se a milhares de pessoas que já estão monetizando suas conexões
+          <p className="text-xl mb-8 text-orange-100">
+            Junte-se a milhares de criadores que já estão ganhando dinheiro com nossa plataforma
           </p>
-          <Link to="/register">
-            <Button 
-              size="lg" 
-              className="bg-black text-yellow-400 hover:bg-gray-800 px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all rounded-xl border-2 border-black"
-            >
-              Criar Conta Gratuita
-              <ArrowRight size={20} className="ml-2" />
-            </Button>
-          </Link>
+          <Button 
+            onClick={() => navigate('/register')}
+            size="lg" 
+            className="bg-white text-orange-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
+          >
+            Criar Conta Gratuita
+            <ArrowRight size={20} className="ml-2" />
+          </Button>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="py-16 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-black border-t border-yellow-500/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <div className="text-3xl font-bold text-white mb-2">
-              Affiliate<span className="text-yellow-400">Net</span>
-            </div>
-            <p className="text-gray-400">
-              Conectando pessoas e oportunidades
-            </p>
-          </div>
-          <div className="flex justify-center space-x-8 text-sm text-gray-400">
-            <Link to="/about" className="hover:text-yellow-400 transition-colors">Sobre</Link>
-            <Link to="/help" className="hover:text-yellow-400 transition-colors">Ajuda</Link>
-            <Link to="/terms" className="hover:text-yellow-400 transition-colors">Termos</Link>
-            <Link to="/privacy" className="hover:text-yellow-400 transition-colors">Privacidade</Link>
-          </div>
-          <div className="text-center text-xs text-gray-500 mt-6">
-            © 2024 AffiliateNet. Todos os direitos reservados.
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
