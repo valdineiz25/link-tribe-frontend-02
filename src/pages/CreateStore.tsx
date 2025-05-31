@@ -15,7 +15,9 @@ import {
   Plus, 
   X, 
   ArrowLeft,
-  Image as ImageIcon
+  Image as ImageIcon,
+  CheckCircle,
+  Loader2
 } from 'lucide-react';
 
 interface Catalog {
@@ -36,18 +38,20 @@ const CreateStore: React.FC = () => {
   const [newCatalogName, setNewCatalogName] = useState('');
   const [newCatalogDescription, setNewCatalogDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
 
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     try {
-      console.log('Iniciando upload do logo:', file.name);
+      setLogoUploading(true);
+      console.log('📤 Iniciando upload do logo:', file.name);
       
       // Verificar se é uma imagem
       if (!file.type.startsWith('image/')) {
         toast({
-          title: "Erro",
+          title: "❌ Erro",
           description: "Por favor, selecione apenas arquivos de imagem.",
           variant: "destructive",
         });
@@ -57,7 +61,7 @@ const CreateStore: React.FC = () => {
       // Verificar tamanho (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast({
-          title: "Erro",
+          title: "❌ Erro",
           description: "A imagem deve ter no máximo 5MB.",
           variant: "destructive",
         });
@@ -65,27 +69,29 @@ const CreateStore: React.FC = () => {
       }
 
       const base64 = await StorageService.fileToBase64(file);
-      console.log('Logo convertido para base64, tamanho:', base64.length);
+      console.log('✅ Logo convertido para base64, tamanho:', base64.length);
       setStoreLogo(base64);
       
       toast({
-        title: "Sucesso! ✅",
+        title: "✅ Sucesso!",
         description: "Logo carregado com sucesso!",
       });
     } catch (error) {
-      console.error('Erro ao carregar logo:', error);
+      console.error('❌ Erro ao carregar logo:', error);
       toast({
-        title: "Erro",
+        title: "❌ Erro",
         description: "Erro ao carregar a imagem. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setLogoUploading(false);
     }
   };
 
   const addCatalog = () => {
     if (!newCatalogName.trim()) {
       toast({
-        title: "Erro",
+        title: "❌ Erro",
         description: "Digite o nome do catálogo.",
         variant: "destructive",
       });
@@ -93,25 +99,26 @@ const CreateStore: React.FC = () => {
     }
 
     const newCatalog: Catalog = {
-      id: Date.now().toString(),
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
       name: newCatalogName.trim(),
       description: newCatalogDescription.trim(),
       image: null
     };
-    setCatalogs([...catalogs, newCatalog]);
+    
+    setCatalogs(prevCatalogs => [...prevCatalogs, newCatalog]);
     setNewCatalogName('');
     setNewCatalogDescription('');
     
     toast({
-      title: "Catálogo adicionado! ✅",
+      title: "✅ Catálogo adicionado!",
       description: `Catálogo "${newCatalogName}" foi adicionado.`,
     });
   };
 
   const removeCatalog = (id: string) => {
-    setCatalogs(catalogs.filter(catalog => catalog.id !== id));
+    setCatalogs(prevCatalogs => prevCatalogs.filter(catalog => catalog.id !== id));
     toast({
-      title: "Catálogo removido",
+      title: "🗑️ Catálogo removido",
       description: "Catálogo foi removido com sucesso.",
     });
   };
@@ -121,11 +128,11 @@ const CreateStore: React.FC = () => {
     if (!file) return;
 
     try {
-      console.log('Iniciando upload da imagem do catálogo:', file.name);
+      console.log('📤 Iniciando upload da imagem do catálogo:', file.name);
       
       if (!file.type.startsWith('image/')) {
         toast({
-          title: "Erro",
+          title: "❌ Erro",
           description: "Por favor, selecione apenas arquivos de imagem.",
           variant: "destructive",
         });
@@ -134,7 +141,7 @@ const CreateStore: React.FC = () => {
 
       if (file.size > 5 * 1024 * 1024) {
         toast({
-          title: "Erro",
+          title: "❌ Erro",
           description: "A imagem deve ter no máximo 5MB.",
           variant: "destructive",
         });
@@ -142,20 +149,22 @@ const CreateStore: React.FC = () => {
       }
 
       const base64 = await StorageService.fileToBase64(file);
-      setCatalogs(catalogs.map(catalog => 
-        catalog.id === id 
-          ? { ...catalog, image: base64 }
-          : catalog
-      ));
+      setCatalogs(prevCatalogs => 
+        prevCatalogs.map(catalog => 
+          catalog.id === id 
+            ? { ...catalog, image: base64 }
+            : catalog
+        )
+      );
 
       toast({
-        title: "Sucesso! ✅",
+        title: "✅ Sucesso!",
         description: "Imagem do catálogo carregada!",
       });
     } catch (error) {
-      console.error('Erro ao carregar imagem do catálogo:', error);
+      console.error('❌ Erro ao carregar imagem do catálogo:', error);
       toast({
-        title: "Erro",
+        title: "❌ Erro",
         description: "Erro ao carregar a imagem. Tente novamente.",
         variant: "destructive",
       });
@@ -165,7 +174,7 @@ const CreateStore: React.FC = () => {
   const handleCreateStore = async () => {
     if (!storeName.trim()) {
       toast({
-        title: "Erro",
+        title: "❌ Campo obrigatório",
         description: "Por favor, digite o nome da loja.",
         variant: "destructive",
       });
@@ -182,23 +191,27 @@ const CreateStore: React.FC = () => {
         catalogs
       };
 
-      console.log('Criando loja com dados:', storeData);
-      addStore(storeData);
+      console.log('🏪 Criando loja com dados:', storeData);
+      const success = addStore(storeData);
       
-      toast({
-        title: "Loja criada! 🎉",
-        description: `A loja "${storeName}" foi criada com sucesso!`,
-      });
-      
-      // Aguardar um pouco para mostrar o toast antes de navegar
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1500);
+      if (success) {
+        toast({
+          title: "🎉 Loja criada com sucesso!",
+          description: `A loja "${storeName}" foi criada!`,
+        });
+        
+        // Aguardar um pouco para mostrar o toast antes de navegar
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
+      } else {
+        throw new Error('Falha na criação da loja');
+      }
       
     } catch (error) {
-      console.error('Erro ao criar loja:', error);
+      console.error('❌ Erro ao criar loja:', error);
       toast({
-        title: "Erro",
+        title: "❌ Erro na criação",
         description: "Erro ao criar a loja. Tente novamente.",
         variant: "destructive",
       });
@@ -213,7 +226,7 @@ const CreateStore: React.FC = () => {
         {/* Header */}
         <div className="flex items-center space-x-4 mb-8">
           <Button 
-            variant="outline" 
+            variant="professional" 
             size="sm"
             onClick={() => navigate(-1)}
             className="flex items-center space-x-2"
@@ -224,14 +237,14 @@ const CreateStore: React.FC = () => {
           </Button>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Criar Minha Loja
+              🏪 Criar Minha Loja
             </h1>
-            <p className="text-slate-600">Configure sua loja e organize seus catálogos</p>
+            <p className="text-slate-600">Configure sua loja e organize seus catálogos profissionalmente</p>
           </div>
         </div>
 
         {/* Informações da Loja */}
-        <Card className="shadow-lg border border-slate-200">
+        <Card className="shadow-xl border border-slate-200 bg-white/80 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Store className="w-5 h-5 text-blue-600" />
@@ -244,7 +257,9 @@ const CreateStore: React.FC = () => {
               <Label>Logo da Loja</Label>
               <div className="flex items-center space-x-4">
                 <div className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50">
-                  {storeLogo ? (
+                  {logoUploading ? (
+                    <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+                  ) : storeLogo ? (
                     <img src={storeLogo} alt="Logo" className="w-full h-full object-cover rounded-lg" />
                   ) : (
                     <ImageIcon className="w-8 h-8 text-gray-400" />
@@ -252,10 +267,10 @@ const CreateStore: React.FC = () => {
                 </div>
                 <div>
                   <label htmlFor="logo-upload" className="cursor-pointer">
-                    <Button variant="outline" size="sm" type="button" asChild>
+                    <Button variant="professional" size="sm" type="button" asChild disabled={logoUploading}>
                       <span>
                         <Upload size={16} className="mr-2" />
-                        Escolher Logo
+                        {logoUploading ? 'Carregando...' : 'Escolher Logo'}
                       </span>
                     </Button>
                   </label>
@@ -267,6 +282,7 @@ const CreateStore: React.FC = () => {
                   accept="image/*"
                   onChange={handleLogoUpload}
                   className="hidden"
+                  disabled={logoUploading}
                 />
               </div>
             </div>
@@ -280,6 +296,7 @@ const CreateStore: React.FC = () => {
                 value={storeName}
                 onChange={(e) => setStoreName(e.target.value)}
                 required
+                className="border-gray-300 focus:border-blue-500"
               />
             </div>
 
@@ -292,21 +309,22 @@ const CreateStore: React.FC = () => {
                 value={storeDescription}
                 onChange={(e) => setStoreDescription(e.target.value)}
                 rows={3}
+                className="border-gray-300 focus:border-blue-500"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Catálogos */}
-        <Card className="shadow-lg border border-slate-200">
+        <Card className="shadow-xl border border-slate-200 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>Catálogos de Produtos</CardTitle>
+            <CardTitle>📚 Catálogos de Produtos</CardTitle>
             <p className="text-sm text-gray-600">Organize seus produtos em catálogos temáticos</p>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Adicionar Novo Catálogo */}
-            <div className="border border-dashed border-gray-300 rounded-lg p-4 space-y-4">
-              <h3 className="font-medium text-gray-900">Adicionar Novo Catálogo</h3>
+            <div className="border border-dashed border-gray-300 rounded-lg p-4 space-y-4 bg-gray-50/50">
+              <h3 className="font-medium text-gray-900">➕ Adicionar Novo Catálogo</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="catalog-name">Nome do Catálogo</Label>
@@ -315,6 +333,7 @@ const CreateStore: React.FC = () => {
                     placeholder="Ex: Eletrônicos, Roupas, Casa..."
                     value={newCatalogName}
                     onChange={(e) => setNewCatalogName(e.target.value)}
+                    className="border-gray-300 focus:border-blue-500"
                   />
                 </div>
                 <div className="space-y-2">
@@ -324,6 +343,7 @@ const CreateStore: React.FC = () => {
                     placeholder="Breve descrição do catálogo"
                     value={newCatalogDescription}
                     onChange={(e) => setNewCatalogDescription(e.target.value)}
+                    className="border-gray-300 focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -336,10 +356,10 @@ const CreateStore: React.FC = () => {
             {/* Lista de Catálogos */}
             {catalogs.length > 0 && (
               <div className="space-y-4">
-                <h3 className="font-medium text-gray-900">Seus Catálogos</h3>
+                <h3 className="font-medium text-gray-900">📦 Seus Catálogos ({catalogs.length})</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {catalogs.map((catalog) => (
-                    <Card key={catalog.id} className="border border-gray-200">
+                    <Card key={catalog.id} className="border border-gray-200 bg-white shadow-md">
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-3">
                           <div className="flex-1">
@@ -401,9 +421,19 @@ const CreateStore: React.FC = () => {
           <Button 
             onClick={handleCreateStore}
             disabled={!storeName.trim() || isLoading}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
           >
-            {isLoading ? 'Criando...' : 'Criar Loja'}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Criando...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Criar Loja
+              </>
+            )}
           </Button>
         </div>
       </div>
