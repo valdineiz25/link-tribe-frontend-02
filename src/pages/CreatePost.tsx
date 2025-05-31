@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +14,7 @@ import { StorageService } from '@/services/storageService';
 const CreatePost: React.FC = () => {
   const [formData, setFormData] = useState({
     type: 'post',
-    content: '', // Mudado de description para content
+    content: '',
     productLink: '',
     productName: '',
     currentPrice: '',
@@ -55,27 +54,24 @@ const CreatePost: React.FC = () => {
       return;
     }
 
-    if (formData.type === 'reel' && !formData.mediaFile) {
-      toast({
-        title: "Erro",
-        description: "Por favor, adicione um vídeo para o reel.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
       let mediaBase64 = null;
       if (formData.mediaFile) {
         console.log('Convertendo arquivo para base64:', formData.mediaFile.name);
+        
+        toast({
+          title: "Processando arquivo...",
+          description: "Comprimindo e salvando seu arquivo.",
+        });
+        
         mediaBase64 = await StorageService.fileToBase64(formData.mediaFile);
       }
 
       const postData = {
         type: formData.type,
-        content: formData.content.trim(), // Mudado de description para content
+        content: formData.content.trim(),
         productLink: formData.productLink.trim(),
         productName: formData.productName.trim(),
         currentPrice: formData.currentPrice ? parseFloat(formData.currentPrice) : undefined,
@@ -105,7 +101,6 @@ const CreatePost: React.FC = () => {
         });
       }
       
-      // Aguardar um pouco para mostrar o toast antes de navegar
       setTimeout(() => {
         navigate('/');
       }, 1000);
@@ -133,40 +128,36 @@ const CreatePost: React.FC = () => {
     try {
       console.log('Arquivo selecionado:', file.name, file.type, file.size);
       
-      // Verificar tipo de arquivo
       const isVideo = file.type.startsWith('video/');
       const isImage = file.type.startsWith('image/');
       
-      if (formData.type === 'reel' && !isVideo) {
+      if (formData.type === 'post' && isVideo) {
         toast({
-          title: "Erro",
-          description: "Para reels, selecione apenas arquivos de vídeo.",
-          variant: "destructive",
+          title: "Atenção",
+          description: "Para vídeos, recomendamos usar o tipo 'Reel'.",
         });
-        return;
       }
       
-      if (formData.type === 'post' && !isImage) {
+      if (!isImage && !isVideo) {
         toast({
           title: "Erro",
-          description: "Para posts, selecione apenas arquivos de imagem.",
+          description: "Selecione apenas arquivos de imagem ou vídeo.",
           variant: "destructive",
         });
         return;
       }
 
-      // Verificar tamanho (max 50MB para vídeos, 5MB para imagens)
-      const maxSize = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+      const maxSize = isVideo ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
       if (file.size > maxSize) {
         toast({
           title: "Erro",
-          description: `O arquivo deve ter no máximo ${isVideo ? '50MB' : '5MB'}.`,
+          description: `O arquivo deve ter no máximo ${isVideo ? '10MB' : '5MB'}.`,
           variant: "destructive",
         });
         return;
       }
 
-      const preview = await StorageService.fileToBase64(file);
+      const preview = URL.createObjectURL(file);
       setFormData(prev => ({ 
         ...prev, 
         mediaFile: file,
@@ -174,14 +165,14 @@ const CreatePost: React.FC = () => {
       }));
       
       toast({
-        title: "Arquivo carregado! ✅",
-        description: `${isVideo ? 'Vídeo' : 'Imagem'} carregado com sucesso!`,
+        title: "Arquivo selecionado! ✅",
+        description: `${isVideo ? 'Vídeo' : 'Imagem'} pronto para upload!`,
       });
     } catch (error) {
-      console.error('Erro ao carregar arquivo:', error);
+      console.error('Erro ao selecionar arquivo:', error);
       toast({
         title: "Erro",
-        description: "Erro ao carregar o arquivo. Tente novamente.",
+        description: "Erro ao selecionar o arquivo. Tente novamente.",
         variant: "destructive",
       });
     }
@@ -190,7 +181,6 @@ const CreatePost: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
       <div className="container mx-auto p-4 max-w-2xl">
-        {/* Header */}
         <div className="flex items-center mb-6">
           <Button 
             variant="ghost" 
@@ -215,7 +205,6 @@ const CreatePost: React.FC = () => {
           
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Tipo de conteúdo */}
               <div className="space-y-2">
                 <Label htmlFor="type">Tipo de conteúdo</Label>
                 <Select value={formData.type} onValueChange={(value) => handleInputChange('type', value)}>
@@ -232,14 +221,13 @@ const CreatePost: React.FC = () => {
                     <SelectItem value="reel">
                       <div className="flex items-center">
                         <Video size={16} className="mr-2" />
-                        Reel (vídeo curto)
+                        Reel (vídeo/texto)
                       </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Categoria */}
               <div className="space-y-2">
                 <Label htmlFor="category">Categoria</Label>
                 <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
@@ -256,7 +244,6 @@ const CreatePost: React.FC = () => {
                 </Select>
               </div>
 
-              {/* Conteúdo */}
               <div className="space-y-2">
                 <Label htmlFor="content">Descrição *</Label>
                 <Textarea
@@ -270,7 +257,6 @@ const CreatePost: React.FC = () => {
                 />
               </div>
 
-              {/* Informações do Produto */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="productName">Nome do Produto</Label>
@@ -330,15 +316,14 @@ const CreatePost: React.FC = () => {
                 />
               </div>
 
-              {/* Upload de mídia */}
               <div className="space-y-2">
                 <Label htmlFor="media">
-                  {formData.type === 'reel' ? 'Vídeo *' : 'Imagem'}
+                  {formData.type === 'reel' ? 'Vídeo (opcional)' : 'Imagem (opcional)'}
                 </Label>
                 <Input
                   id="media"
                   type="file"
-                  accept={formData.type === 'reel' ? 'video/*' : 'image/*'}
+                  accept={formData.type === 'reel' ? 'video/*,image/*' : 'image/*'}
                   onChange={handleFileChange}
                   className="cursor-pointer"
                 />
@@ -348,7 +333,7 @@ const CreatePost: React.FC = () => {
                       ✓ Arquivo selecionado: {formData.mediaFile?.name}
                     </p>
                     <div className="w-32 h-32 border border-gray-300 rounded-lg overflow-hidden">
-                      {formData.type === 'reel' ? (
+                      {formData.mediaFile?.type.startsWith('video/') ? (
                         <video 
                           src={formData.mediaPreview} 
                           className="w-full h-full object-cover"
@@ -366,13 +351,12 @@ const CreatePost: React.FC = () => {
                 )}
                 <p className="text-xs text-gray-500">
                   {formData.type === 'reel' 
-                    ? 'Vídeo até 50MB (MP4, MOV, AVI) - OBRIGATÓRIO para reels'
-                    : 'Imagem até 5MB (PNG, JPG, JPEG)'
+                    ? 'Vídeo até 10MB ou imagem até 5MB (MP4, MOV, AVI, PNG, JPG, JPEG) - OPCIONAL'
+                    : 'Imagem até 5MB (PNG, JPG, JPEG) - OPCIONAL'
                   }
                 </p>
               </div>
 
-              {/* Botões */}
               <div className="flex space-x-4 pt-4">
                 <Button
                   type="button"

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { StorageService } from '@/services/storageService';
 import { Post } from '@/types/post';
@@ -24,7 +23,6 @@ export const usePosts = () => {
     try {
       console.log('Adicionando post:', post);
       
-      // Validar dados obrigatórios - usar content em vez de description
       if (!post.content || !post.content.trim()) {
         throw new Error('Conteúdo é obrigatório');
       }
@@ -32,7 +30,7 @@ export const usePosts = () => {
       const postData: Post = {
         id: Date.now().toString(),
         content: post.content.trim(),
-        description: post.content.trim(), // Para compatibilidade
+        description: post.content.trim(),
         productLink: post.productLink || '',
         productName: post.productName || '',
         currentPrice: post.currentPrice,
@@ -61,7 +59,7 @@ export const usePosts = () => {
       };
 
       StorageService.savePost(postData);
-      await fetchPosts(); // Recarregar lista
+      await fetchPosts();
       console.log('Post salvo com sucesso!');
       
       return postData;
@@ -104,12 +102,10 @@ export const useReels = () => {
     try {
       console.log('Adicionando reel:', reel);
       
-      // Validar dados obrigatórios
       if (!reel.content || !reel.content.trim()) {
         throw new Error('Conteúdo é obrigatório');
       }
       
-      // Para reels, o vídeo não é obrigatório - pode ser um post de texto também
       const reelData = {
         id: Date.now().toString(),
         content: reel.content.trim(),
@@ -142,7 +138,7 @@ export const useReels = () => {
       };
 
       StorageService.saveReel(reelData);
-      await fetchReels(); // Recarregar lista
+      await fetchReels();
       console.log('Reel salvo com sucesso!');
       
       return reelData;
