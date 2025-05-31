@@ -43,16 +43,11 @@ export const useStores = () => {
       };
 
       console.log('🔄 Salvando loja no StorageService:', newStore);
-      const success = StorageService.saveStore(newStore);
+      StorageService.saveStore(newStore);
       
-      if (success) {
-        console.log('✅ Loja salva com sucesso!');
-        fetchStores(); // Recarrega a lista
-        return true;
-      } else {
-        console.error('❌ Falha ao salvar loja');
-        return false;
-      }
+      console.log('✅ Loja salva com sucesso!');
+      fetchStores(); // Recarrega a lista
+      return true;
     } catch (error) {
       console.error('❌ Erro crítico ao adicionar loja:', error);
       return false;

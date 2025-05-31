@@ -1,4 +1,3 @@
-
 export class StorageService {
   private static STORES_KEY = 'affiliate_stores';
   private static POSTS_KEY = 'affiliate_posts';
@@ -123,20 +122,21 @@ export class StorageService {
   }
 
   // Gerenciamento de lojas
-  static saveStore(store: any): void {
+  static saveStore(store: any): boolean {
     try {
       const stores = this.getStores();
       const newStore = {
         ...store,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString()
+        id: store.id || Date.now().toString(),
+        createdAt: store.createdAt || new Date().toISOString()
       };
       stores.push(newStore);
       localStorage.setItem(this.STORES_KEY, JSON.stringify(stores));
       console.log('Loja salva com sucesso:', newStore);
+      return true;
     } catch (error) {
       console.error('Erro ao salvar loja:', error);
-      throw error;
+      return false;
     }
   }
 
@@ -147,6 +147,19 @@ export class StorageService {
     } catch (error) {
       console.error('Erro ao carregar lojas:', error);
       return [];
+    }
+  }
+
+  static deleteStore(storeId: string): boolean {
+    try {
+      const stores = this.getStores();
+      const updatedStores = stores.filter(store => store.id !== storeId);
+      localStorage.setItem(this.STORES_KEY, JSON.stringify(updatedStores));
+      console.log('Loja deletada com sucesso:', storeId);
+      return true;
+    } catch (error) {
+      console.error('Erro ao deletar loja:', error);
+      return false;
     }
   }
 

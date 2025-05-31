@@ -26,6 +26,7 @@ import AddProduct from "@/pages/AddProduct";
 import Presentation from "@/pages/Presentation";
 import Connect from "@/pages/Connect";
 import CreateStore from "@/pages/CreateStore";
+import StoreBuilder from "@/pages/StoreBuilder";
 import About from "@/pages/About";
 import Help from "@/pages/Help";
 import Terms from "@/pages/Terms";
@@ -75,6 +76,11 @@ const App = () => (
               <Route path="/create-store" element={
                 <ProtectedRoute>
                   <CreateStore />
+                </ProtectedRoute>
+              } />
+              <Route path="/store-builder" element={
+                <ProtectedRoute>
+                  <StoreBuilder />
                 </ProtectedRoute>
               } />
               <Route path="/reels" element={
