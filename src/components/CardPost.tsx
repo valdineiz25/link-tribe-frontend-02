@@ -13,6 +13,7 @@ import {
   Bookmark
 } from 'lucide-react';
 import EditPostDialog from '@/components/EditPostDialog';
+import CommentSection from '@/components/CommentSection';
 import { useToast } from '@/hooks/use-toast';
 
 interface Post {
@@ -45,6 +46,8 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
   const [commentsCount, setCommentsCount] = useState(post.comments);
   const [currentPost, setCurrentPost] = useState(post);
   const [isSaved, setIsSaved] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [postComments, setPostComments] = useState<any[]>([]);
 
   const handleLike = () => {
     const newIsLiked = !isLiked;
@@ -58,11 +61,21 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
   };
 
   const handleComment = () => {
+    setShowComments(!showComments);
+  };
+
+  const handleAddComment = (content: string) => {
+    const newComment = {
+      id: Date.now().toString(),
+      author: 'Você',
+      content,
+      timestamp: 'agora',
+      likes: 0
+    };
+
+    setPostComments(prev => [...prev, newComment]);
     setCommentsCount(prev => prev + 1);
-    toast({
-      title: "💬 Comentário adicionado!",
-      description: "Seu comentário foi publicado",
-    });
+    setShowComments(false);
   };
 
   const handleShare = () => {
@@ -276,8 +289,20 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
           
           {/* Comments preview */}
           {commentsCount > 0 && (
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 mb-2">
               Ver todos os {commentsCount} comentários
+            </div>
+          )}
+
+          {/* Comments Section */}
+          {showComments && (
+            <div className="mt-4">
+              <CommentSection
+                isOpen={showComments}
+                onClose={() => setShowComments(false)}
+                comments={postComments}
+                onAddComment={handleAddComment}
+              />
             </div>
           )}
         </div>

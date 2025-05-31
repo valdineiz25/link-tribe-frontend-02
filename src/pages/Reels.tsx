@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, MessageCircle, Share, Play, Pause, Volume2, VolumeX, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useReels } from '@/hooks/usePosts';
+import CommentSection from '@/components/CommentSection';
 
 interface Reel {
   id: string;
@@ -38,9 +38,10 @@ const Reels: React.FC = () => {
   const [pausedVideos, setPausedVideos] = useState<Set<string>>(new Set());
   const [likedReels, setLikedReels] = useState<Set<string>>(new Set());
   const [reelStats, setReelStats] = useState<{ [key: string]: { likes: number; comments: number; shares: number } }>({});
+  const [showComments, setShowComments] = useState<{ [key: string]: boolean }>({});
+  const [reelComments, setReelComments] = useState<{ [key: string]: any[] }>({});
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
-  // Initialize reel stats
   useEffect(() => {
     const stats: { [key: string]: { likes: number; comments: number; shares: number } } = {};
     reels.forEach(reel => {
@@ -78,56 +79,6 @@ const Reels: React.FC = () => {
       title: isLiked ? "💔 Descurtido!" : "❤️ Curtido!",
       description: isLiked ? "Você descurtiu este reel" : "Você curtiu este reel",
     });
-  };
-
-  const handleComment = (reelId: string) => {
-    setReelStats(prev => ({
-      ...prev,
-      [reelId]: {
-        ...prev[reelId],
-        comments: prev[reelId].comments + 1
-      }
-    }));
-
-    toast({
-      title: "💬 Comentário adicionado!",
-      description: "Seu comentário foi publicado",
-    });
-  };
-
-  const handleShare = (reelId: string) => {
-    setReelStats(prev => ({
-      ...prev,
-      [reelId]: {
-        ...prev[reelId],
-        shares: prev[reelId].shares + 1
-      }
-    }));
-
-    if (navigator.share) {
-      navigator.share({
-        title: 'Reel incrível da AffiliateNet',
-        text: 'Confira este reel incrível!',
-        url: window.location.href,
-      }).then(() => {
-        toast({
-          title: "📤 Compartilhado!",
-          description: "Reel compartilhado com sucesso",
-        });
-      }).catch(() => {
-        navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: "📤 Link copiado!",
-          description: "Link copiado para a área de transferência",
-        });
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast({
-        title: "📤 Link copiado!",
-        description: "Link copiado para a área de transferência",
-      });
-    }
   };
 
   const togglePlay = (reelId: string) => {
@@ -170,7 +121,6 @@ const Reels: React.FC = () => {
 
   const getAuthorName = (reel: Reel) => reel.user?.name || 'Usuário Afiliado';
 
-  // Auto-play the current video when it comes into view
   useEffect(() => {
     if (reels.length > 0 && currentReelIndex < reels.length) {
       const currentReel = reels[currentReelIndex];
@@ -181,7 +131,6 @@ const Reels: React.FC = () => {
         video.play().catch(console.error);
       }
 
-      // Pause other videos
       Object.keys(videoRefs.current).forEach(reelId => {
         if (reelId !== currentReel.id) {
           const otherVideo = videoRefs.current[reelId];
@@ -193,7 +142,6 @@ const Reels: React.FC = () => {
     }
   }, [currentReelIndex, reels, pausedVideos]);
 
-  // Handle scroll to change current reel
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -208,6 +156,76 @@ const Reels: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [currentReelIndex, reels.length]);
+
+  const handleComment = (reelId: string) => {
+    setShowComments(prev => ({
+      ...prev,
+      [reelId]: !prev[reelId]
+    }));
+  };
+
+  const handleAddComment = (reelId: string, content: string) => {
+    const newComment = {
+      id: Date.now().toString(),
+      author: 'Você',
+      content,
+      timestamp: 'agora',
+      likes: 0
+    };
+
+    setReelComments(prev => ({
+      ...prev,
+      [reelId]: [...(prev[reelId] || []), newComment]
+    }));
+
+    setReelStats(prev => ({
+      ...prev,
+      [reelId]: {
+        ...prev[reelId],
+        comments: prev[reelId].comments + 1
+      }
+    }));
+
+    setShowComments(prev => ({
+      ...prev,
+      [reelId]: false
+    }));
+  };
+
+  const handleShare = (reelId: string) => {
+    setReelStats(prev => ({
+      ...prev,
+      [reelId]: {
+        ...prev[reelId],
+        shares: prev[reelId].shares + 1
+      }
+    }));
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'Reel incrível da AffiliateNet',
+        text: 'Confira este reel incrível!',
+        url: window.location.href,
+      }).then(() => {
+        toast({
+          title: "📤 Compartilhado!",
+          description: "Reel compartilhado com sucesso",
+        });
+      }).catch(() => {
+        navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "📤 Link copiado!",
+          description: "Link copiado para a área de transferência",
+        });
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "📤 Link copiado!",
+        description: "Link copiado para a área de transferência",
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -411,6 +429,18 @@ const Reels: React.FC = () => {
                       <span className="text-xs mt-1">{reelStats[reel.id]?.shares || 0}</span>
                     </Button>
                   </div>
+
+                  {/* Comments Section */}
+                  {showComments[reel.id] && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm p-4 max-h-80 overflow-hidden">
+                      <CommentSection
+                        isOpen={showComments[reel.id]}
+                        onClose={() => setShowComments(prev => ({ ...prev, [reel.id]: false }))}
+                        comments={reelComments[reel.id] || []}
+                        onAddComment={(content) => handleAddComment(reel.id, content)}
+                      />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
