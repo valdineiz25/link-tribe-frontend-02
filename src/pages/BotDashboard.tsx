@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { BotManager, BotSystemConfig } from '@/services/botSystem/BotManager';
 import { useToast } from '@/hooks/use-toast';
-import { Bot, Activity, BarChart3, Shield, Users, Zap, Brain } from 'lucide-react';
+import { Bot, Activity, BarChart3, Shield, Users, Zap } from 'lucide-react';
 
 const BotDashboard: React.FC = () => {
   const { toast } = useToast();
@@ -20,7 +19,7 @@ const BotDashboard: React.FC = () => {
     enableAntiSpamBot: true,
     enableAnalyticsBot: true,
     enableCustomerSupportBot: true,
-    enableGrowthBot: true,
+    enableGrowthBot: false,
     maxConcurrentOperations: 100,
     analyticsUpdateInterval: 300000
   });
@@ -119,11 +118,10 @@ const BotDashboard: React.FC = () => {
   const getBotIcon = (botId: string) => {
     const icons = {
       moderation: Shield,
-      recommendation: Brain,
+      recommendation: Bot,
       antispam: Zap,
       analytics: BarChart3,
-      support: Users,
-      growth: Activity
+      support: Users
     };
     return icons[botId as keyof typeof icons] || Bot;
   };
@@ -134,8 +132,7 @@ const BotDashboard: React.FC = () => {
       recommendation: "Sugere produtos inteligentes baseado no comportamento do usuário",
       antispam: "Bloqueia spam mas protege afiliados legítimos",
       analytics: "Monitora cliques e conversões em tempo real",
-      support: "Responde dúvidas sobre comissões e pagamentos 24/7",
-      growth: "Identifica oportunidades de crescimento para afiliados"
+      support: "Responde dúvidas sobre comissões e pagamentos 24/7"
     };
     return descriptions[botId as keyof typeof descriptions] || "Bot inteligente da AffiliateNet";
   };

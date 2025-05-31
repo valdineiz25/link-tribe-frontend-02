@@ -1,10 +1,8 @@
-
 import { ModerationBot } from './bots/ModerationBot';
 import { RecommendationBot } from './bots/RecommendationBot';
 import { AntiSpamBot } from './bots/AntiSpamBot';
 import { AnalyticsBot } from './bots/AnalyticsBot';
 import { CustomerSupportBot } from './bots/CustomerSupportBot';
-import { GrowthBot } from './bots/GrowthBot';
 
 export interface BotSystemConfig {
   enableModerationBot: boolean;
@@ -73,11 +71,6 @@ export class BotManager {
     if (this.config.enableCustomerSupportBot) {
       this.bots.set('support', new CustomerSupportBot());
       console.log('✅ Bot de Atendimento ativado');
-    }
-
-    if (this.config.enableGrowthBot) {
-      this.bots.set('growth', new GrowthBot());
-      console.log('✅ Bot de Growth ativado');
     }
 
     console.log(`🚀 Sistema de bots inicializado com ${this.bots.size} bots ativos`);
