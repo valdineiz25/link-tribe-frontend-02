@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import RoleProtectedRoute from "@/components/RoleProtectedRoute";
 import Navbar from "@/components/Navbar";
 
 // Pages
@@ -32,6 +33,8 @@ import Help from "@/pages/Help";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import MyStore from "@/pages/MyStore";
+import AffiliateDashboard from "@/pages/AffiliateDashboard";
+import ConsumerDashboard from "@/pages/ConsumerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -59,36 +62,68 @@ const App: React.FC = () => (
                   <Feed />
                 </ProtectedRoute>
               } />
+              
+              {/* Dashboards específicos por tipo de usuário */}
+              <Route path="/dashboard-afiliado" element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute requiredRole="affiliate">
+                    <AffiliateDashboard />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/dashboard-usuario" element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute requiredRole="consumer">
+                    <ConsumerDashboard />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              } />
+              
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
               } />
+              
+              {/* Rotas protegidas para afiliados */}
               <Route path="/create-post" element={
                 <ProtectedRoute>
-                  <CreatePost />
+                  <RoleProtectedRoute requiredRole="affiliate">
+                    <CreatePost />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               <Route path="/add-product" element={
                 <ProtectedRoute>
-                  <AddProduct />
+                  <RoleProtectedRoute requiredRole="affiliate">
+                    <AddProduct />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               <Route path="/create-store" element={
                 <ProtectedRoute>
-                  <CreateStore />
+                  <RoleProtectedRoute requiredRole="affiliate">
+                    <CreateStore />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               <Route path="/my-store" element={
                 <ProtectedRoute>
-                  <MyStore />
+                  <RoleProtectedRoute requiredRole="affiliate">
+                    <MyStore />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               <Route path="/store-builder" element={
                 <ProtectedRoute>
-                  <StoreBuilder />
+                  <RoleProtectedRoute requiredRole="affiliate">
+                    <StoreBuilder />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
+              
+              {/* Rotas compartilhadas */}
               <Route path="/reels" element={
                 <ProtectedRoute>
                   <Reels />

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -118,32 +117,48 @@ const Navbar: React.FC = () => {
                   </Button>
                 </Link>
 
-                <Link to="/my-store">
-                  <Button 
-                    variant={isActive('/my-store') ? 'default' : 'ghost'} 
-                    size="sm"
-                    className="flex items-center space-x-2"
-                  >
-                    <Store size={16} />
-                    <span>Minha Loja</span>
-                    {stores.length > 0 && (
-                      <Badge variant="secondary" className="ml-1 text-xs">
-                        {stores.length}
-                      </Badge>
-                    )}
-                  </Button>
-                </Link>
-
-                <Link to="/dashboard">
-                  <Button 
-                    variant={isActive('/dashboard') ? 'default' : 'ghost'} 
-                    size="sm"
-                    className="flex items-center space-x-2"
-                  >
-                    <BarChart3 size={16} />
-                    <span>Dashboard</span>
-                  </Button>
-                </Link>
+                {/* Dashboard específico por tipo de usuário */}
+                {isAffiliate ? (
+                  <>
+                    <Link to="/dashboard-afiliado">
+                      <Button 
+                        variant={isActive('/dashboard-afiliado') ? 'default' : 'ghost'} 
+                        size="sm"
+                        className="flex items-center space-x-2"
+                      >
+                        <BarChart3 size={16} />
+                        <span>Dashboard</span>
+                      </Button>
+                    </Link>
+                    
+                    <Link to="/my-store">
+                      <Button 
+                        variant={isActive('/my-store') ? 'default' : 'ghost'} 
+                        size="sm"
+                        className="flex items-center space-x-2"
+                      >
+                        <Store size={16} />
+                        <span>Minha Loja</span>
+                        {stores.length > 0 && (
+                          <Badge variant="secondary" className="ml-1 text-xs">
+                            {stores.length}
+                          </Badge>
+                        )}
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <Link to="/dashboard-usuario">
+                    <Button 
+                      variant={isActive('/dashboard-usuario') ? 'default' : 'ghost'} 
+                      size="sm"
+                      className="flex items-center space-x-2"
+                    >
+                      <BarChart3 size={16} />
+                      <span>Meu Painel</span>
+                    </Button>
+                  </Link>
+                )}
 
                 <Link to="/groups">
                   <Button 
@@ -288,32 +303,48 @@ const Navbar: React.FC = () => {
                 </Button>
               </Link>
 
-              <Link to="/my-store">
-                <Button 
-                  variant={isActive('/my-store') ? 'default' : 'ghost'} 
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <Store size={16} />
-                  <span>Minha Loja</span>
-                  {stores.length > 0 && (
-                    <Badge variant="secondary" className="ml-1 text-xs">
-                      {stores.length}
-                    </Badge>
-                  )}
-                </Button>
-              </Link>
-
-              <Link to="/dashboard">
-                <Button 
-                  variant={isActive('/dashboard') ? 'default' : 'ghost'} 
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <BarChart3 size={16} />
-                  <span>Dashboard</span>
-                </Button>
-              </Link>
+              {/* Dashboard específico por tipo de usuário no mobile */}
+              {isAffiliate ? (
+                <>
+                  <Link to="/dashboard-afiliado">
+                    <Button 
+                      variant={isActive('/dashboard-afiliado') ? 'default' : 'ghost'} 
+                      size="sm"
+                      className="flex items-center space-x-2"
+                    >
+                      <BarChart3 size={16} />
+                      <span>Dashboard</span>
+                    </Button>
+                  </Link>
+                  
+                  <Link to="/my-store">
+                    <Button 
+                      variant={isActive('/my-store') ? 'default' : 'ghost'} 
+                      size="sm"
+                      className="flex items-center space-x-2"
+                    >
+                      <Store size={16} />
+                      <span>Minha Loja</span>
+                      {stores.length > 0 && (
+                        <Badge variant="secondary" className="ml-1 text-xs">
+                          {stores.length}
+                        </Badge>
+                      )}
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <Link to="/dashboard-usuario">
+                  <Button 
+                    variant={isActive('/dashboard-usuario') ? 'default' : 'ghost'} 
+                    size="sm"
+                    className="flex items-center space-x-2"
+                  >
+                    <BarChart3 size={16} />
+                    <span>Meu Painel</span>
+                  </Button>
+                </Link>
+              )}
 
               <Link to="/groups">
                 <Button 
