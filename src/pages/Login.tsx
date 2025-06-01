@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -9,36 +9,104 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Eye, EyeOff, Mail, Lock, LogIn, User, DollarSign, CheckCircle, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const schema = yup.object({
+type UserType = 'user' | 'affiliate';
+
+const userSchema = yup.object({
   email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
   password: yup.string().min(6, 'Senha deve ter pelo menos 6 caracteres').required('Senha é obrigatória'),
 });
 
-type LoginFormData = yup.InferType<typeof schema>;
+const affiliateSchema = yup.object({
+  email: yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
+  password: yup.string().min(6, 'Senha deve ter pelo menos 6 caracteres').required('Senha é obrigatória'),
+  platform: yup.string().required('Selecione sua plataforma'),
+  affiliateId: yup.string().required('ID de afiliado é obrigatório'),
+});
+
+type UserFormData = yup.InferType<typeof userSchema>;
+type AffiliateFormData = yup.InferType<typeof affiliateSchema>;
 
 const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [userType, setUserType] = useState<UserType>('user');
+  const [isValidatingAffiliate, setIsValidatingAffiliate] = useState(false);
+  const [affiliateValidationStatus, setAffiliateValidationStatus] = useState<'none' | 'valid' | 'invalid'>('none');
+
+  const currentSchema = userType === 'user' ? userSchema : affiliateSchema;
   
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<LoginFormData>({
-    resolver: yupResolver(schema),
+    setValue,
+    watch,
+  } = useForm<UserFormData | AffiliateFormData>({
+    resolver: yupResolver(currentSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const watchedAffiliateId = watch('affiliateId' as keyof (UserFormData | AffiliateFormData));
+  const watchedPlatform = watch('platform' as keyof (UserFormData | AffiliateFormData));
+
+  // Validação de ID de afiliado em tempo real
+  React.useEffect(() => {
+    if (userType === 'affiliate' && watchedAffiliateId && watchedPlatform) {
+      const validateAffiliateId = async () => {
+        setIsValidatingAffiliate(true);
+        setAffiliateValidationStatus('none');
+        
+        try {
+          // Simulação de validação de API
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          
+          // Simulação: IDs que começam com 'test' são inválidos
+          if (watchedAffiliateId.toLowerCase().startsWith('test')) {
+            setAffiliateValidationStatus('invalid');
+          } else {
+            setAffiliateValidationStatus('valid');
+          }
+        } catch (error) {
+          setAffiliateValidationStatus('invalid');
+        } finally {
+          setIsValidatingAffiliate(false);
+        }
+      };
+
+      const timeoutId = setTimeout(validateAffiliateId, 800);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [watchedAffiliateId, watchedPlatform, userType]);
+
+  const onSubmit = async (data: UserFormData | AffiliateFormData) => {
     try {
+      if (userType === 'affiliate') {
+        const affiliateData = data as AffiliateFormData;
+        if (affiliateValidationStatus !== 'valid') {
+          toast({
+            title: "ID de afiliado inválido",
+            description: "Verifique seu ID ou cadastre-se na plataforma parceira primeiro.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        console.log('Login de afiliado:', affiliateData);
+        toast({
+          title: "Validando afiliado...",
+          description: `Verificando credenciais na ${affiliateData.platform}`,
+        });
+      }
+
       await login(data.email, data.password);
       toast({
         title: "Login realizado com sucesso!",
-        description: "Bem-vindo de volta!",
+        description: userType === 'affiliate' ? "Bem-vindo, afiliado!" : "Bem-vindo de volta!",
       });
       navigate('/feed');
     } catch (error) {
@@ -85,19 +153,50 @@ const Login: React.FC = () => {
           <CardHeader className="space-y-1 pb-6">
             <CardTitle className="text-2xl text-center font-bold text-slate-800">Fazer Login</CardTitle>
             <CardDescription className="text-center text-slate-600">
-              Entre com suas credenciais para continuar
+              Escolha seu tipo de acesso
             </CardDescription>
+            
+            {/* Seleção de Tipo de Usuário */}
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              <Button
+                type="button"
+                variant={userType === 'user' ? 'default' : 'outline'}
+                onClick={() => {
+                  setUserType('user');
+                  setAffiliateValidationStatus('none');
+                }}
+                className="h-12 flex items-center space-x-2"
+              >
+                <User className="h-4 w-4" />
+                <span>Usuário</span>
+              </Button>
+              <Button
+                type="button"
+                variant={userType === 'affiliate' ? 'default' : 'outline'}
+                onClick={() => {
+                  setUserType('affiliate');
+                  setAffiliateValidationStatus('none');
+                }}
+                className="h-12 flex items-center space-x-2"
+              >
+                <DollarSign className="h-4 w-4" />
+                <span>Afiliado</span>
+              </Button>
+            </div>
           </CardHeader>
+          
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium">E-mail</Label>
+                <Label htmlFor="email" className="text-slate-700 font-medium">
+                  {userType === 'affiliate' ? 'E-mail profissional' : 'E-mail'}
+                </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="seu@email.com"
+                    placeholder={userType === 'affiliate' ? 'seu@email.profissional.com' : 'seu@email.com'}
                     {...register('email')}
                     className={`pl-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${errors.email ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                   />
@@ -131,6 +230,63 @@ const Login: React.FC = () => {
                 )}
               </div>
 
+              {/* Campos específicos para afiliados */}
+              {userType === 'affiliate' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="platform" className="text-slate-700 font-medium">Plataforma de Afiliação</Label>
+                    <Select onValueChange={(value) => setValue('platform' as any, value)}>
+                      <SelectTrigger className="border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white">
+                        <SelectValue placeholder="Selecione sua plataforma" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="amazon">Amazon Associates</SelectItem>
+                        <SelectItem value="shopee">Shopee Affiliate</SelectItem>
+                        <SelectItem value="mercadolivre">Mercado Livre</SelectItem>
+                        <SelectItem value="magazineluiza">Magazine Luiza</SelectItem>
+                        <SelectItem value="shein">Shein Affiliate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.platform && (
+                      <p className="text-red-500 text-sm font-medium">{errors.platform.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="affiliateId" className="text-slate-700 font-medium">ID de Afiliado</Label>
+                    <div className="relative">
+                      <Input
+                        id="affiliateId"
+                        type="text"
+                        placeholder="Seu ID de afiliado"
+                        {...register('affiliateId')}
+                        className={`pr-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${errors.affiliateId ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                      />
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        {isValidatingAffiliate && (
+                          <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                        )}
+                        {!isValidatingAffiliate && affiliateValidationStatus === 'valid' && (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        )}
+                        {!isValidatingAffiliate && affiliateValidationStatus === 'invalid' && (
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                        )}
+                      </div>
+                    </div>
+                    {errors.affiliateId && (
+                      <p className="text-red-500 text-sm font-medium">{errors.affiliateId.message}</p>
+                    )}
+                    {affiliateValidationStatus === 'valid' && (
+                      <p className="text-green-600 text-sm font-medium">✅ ID de afiliado válido</p>
+                    )}
+                    {affiliateValidationStatus === 'invalid' && (
+                      <p className="text-red-500 text-sm font-medium">❌ ID não encontrado. Verifique ou cadastre-se na plataforma parceira primeiro.</p>
+                    )}
+                  </div>
+                </>
+              )}
+
               <div className="flex justify-end">
                 <button
                   type="button"
@@ -144,7 +300,7 @@ const Login: React.FC = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
-                disabled={isSubmitting}
+                disabled={isSubmitting || (userType === 'affiliate' && affiliateValidationStatus !== 'valid')}
               >
                 {isSubmitting ? 'Entrando...' : 'Entrar'}
               </Button>
