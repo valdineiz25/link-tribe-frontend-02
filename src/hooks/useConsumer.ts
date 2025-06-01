@@ -33,7 +33,7 @@ export const useConsumer = () => {
   }, [user]);
 
   const isConsumer = consumerProfile?.type === 'consumer';
-  const canCreatePosts = !consumerProfile?.restrictions.canCreatePosts ?? true;
+  const canCreatePosts = consumerProfile ? !consumerProfile.restrictions.canCreatePosts : true;
 
   const addToWishlist = (item: WishlistItem) => {
     if (user && isConsumer) {

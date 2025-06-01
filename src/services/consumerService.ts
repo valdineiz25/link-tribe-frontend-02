@@ -26,7 +26,7 @@ export class ConsumerService {
 
   static canCreatePosts(userId: string): boolean {
     const profile = this.getConsumerProfile(userId);
-    return !profile?.restrictions.canCreatePosts ?? true; // Se não for consumidor, pode postar
+    return profile ? !profile.restrictions.canCreatePosts : true;
   }
 
   static addToWishlist(userId: string, item: WishlistItem): boolean {
