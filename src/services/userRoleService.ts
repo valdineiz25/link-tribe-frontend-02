@@ -1,4 +1,3 @@
-
 import { User } from '@/types/user';
 import { UserRole, AffiliateStats } from '@/types/affiliate';
 
@@ -10,9 +9,11 @@ export class UserRoleService {
     try {
       const roles = localStorage.getItem(this.USER_ROLES_KEY);
       const userRoles: UserRole[] = roles ? JSON.parse(roles) : [];
-      return userRoles.find(role => role.userId === userId) || null;
+      const role = userRoles.find(role => role.userId === userId) || null;
+      console.log(`🔍 getUserRole(${userId}):`, role);
+      return role;
     } catch (error) {
-      console.error('Erro ao buscar role do usuário:', error);
+      console.error('❌ Erro ao buscar role do usuário:', error);
       return null;
     }
   }
@@ -25,14 +26,17 @@ export class UserRoleService {
       const existingIndex = userRoles.findIndex(role => role.userId === userRole.userId);
       if (existingIndex >= 0) {
         userRoles[existingIndex] = userRole;
+        console.log('✏️ Role atualizada:', userRole);
       } else {
         userRoles.push(userRole);
+        console.log('➕ Nova role criada:', userRole);
       }
       
       localStorage.setItem(this.USER_ROLES_KEY, JSON.stringify(userRoles));
+      console.log('💾 Roles salvas no localStorage:', userRoles);
       return true;
     } catch (error) {
-      console.error('Erro ao salvar role do usuário:', error);
+      console.error('❌ Erro ao salvar role do usuário:', error);
       return false;
     }
   }
@@ -55,14 +59,16 @@ export class UserRoleService {
   static getAffiliateStats(userId: string): AffiliateStats {
     try {
       const stats = localStorage.getItem(`${this.AFFILIATE_STATS_KEY}_${userId}`);
-      return stats ? JSON.parse(stats) : {
+      const result = stats ? JSON.parse(stats) : {
         totalProducts: 0,
         monthlyCommissions: 0,
         todayVisits: 0,
         topProducts: []
       };
+      console.log(`📊 getAffiliateStats(${userId}):`, result);
+      return result;
     } catch (error) {
-      console.error('Erro ao buscar estatísticas do afiliado:', error);
+      console.error('❌ Erro ao buscar estatísticas do afiliado:', error);
       return {
         totalProducts: 0,
         monthlyCommissions: 0,
@@ -75,23 +81,27 @@ export class UserRoleService {
   static updateAffiliateStats(userId: string, stats: AffiliateStats): boolean {
     try {
       localStorage.setItem(`${this.AFFILIATE_STATS_KEY}_${userId}`, JSON.stringify(stats));
+      console.log(`💾 Stats de afiliado salvadas para ${userId}:`, stats);
       return true;
     } catch (error) {
-      console.error('Erro ao atualizar estatísticas do afiliado:', error);
+      console.error('❌ Erro ao atualizar estatísticas do afiliado:', error);
       return false;
     }
   }
 
-  // Mock data para demonstração
+  // Mock data para demonstração - FORÇAR CRIAÇÃO COMO AFILIADO PARA TESTE
   static initializeMockData(userId: string): void {
-    // Configurar usuário como afiliado
+    console.log('🎭 Inicializando dados mock para:', userId);
+    
+    // Configurar usuário como afiliado para teste
     const mockRole: UserRole = {
       userId,
-      type: 'affiliate',
+      type: 'affiliate', // FORÇANDO COMO AFILIADO PARA TESTE
       canCreateStore: true,
       accountAge: 30,
       validAffiliateLinks: 5
     };
+    console.log('🎭 Criando role de afiliado para teste:', mockRole);
     this.setUserRole(mockRole);
 
     // Configurar estatísticas mock
@@ -105,6 +115,7 @@ export class UserRoleService {
         { id: '3', name: 'Smartwatch', clicks: 28 }
       ]
     };
+    console.log('📊 Criando stats mock:', mockStats);
     this.updateAffiliateStats(userId, mockStats);
   }
 }

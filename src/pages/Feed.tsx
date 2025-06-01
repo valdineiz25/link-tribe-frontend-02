@@ -19,6 +19,16 @@ const Feed: React.FC = () => {
     loading: consumerLoading
   } = useConsumer();
 
+  // Debug logs para identificar o problema
+  console.log('🔍 Feed Debug:', {
+    user: user ? { id: user.id, name: user.name } : null,
+    userRole,
+    isAffiliate,
+    isConsumer,
+    roleLoading,
+    consumerLoading
+  });
+
   if (roleLoading || consumerLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50 flex items-center justify-center">
@@ -30,16 +40,19 @@ const Feed: React.FC = () => {
     );
   }
 
-  // Determinar qual feed exibir baseado no tipo de usuário
+  // Debug: Mostrar qual feed está sendo renderizado
   if (isAffiliate) {
+    console.log('✅ Renderizando AffiliateFeed para usuário:', user?.name);
     return <AffiliateFeed />;
   }
 
   if (isConsumer) {
+    console.log('✅ Renderizando ConsumerFeed para usuário:', user?.name);
     return <ConsumerFeed />;
   }
 
-  // Fallback para usuários sem tipo definido (usar consumer por padrão)
+  // Fallback - sempre mostrar consumer por padrão
+  console.log('⚠️ Usando fallback ConsumerFeed para usuário:', user?.name);
   return <ConsumerFeed />;
 };
 
