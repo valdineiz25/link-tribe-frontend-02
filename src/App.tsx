@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import RoleProtectedRoute from "@/components/RoleProtectedRoute";
 import Navbar from "@/components/Navbar";
 
 // Pages
@@ -33,8 +33,6 @@ import Help from "@/pages/Help";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import MyStore from "@/pages/MyStore";
-import AffiliateDashboard from "@/pages/AffiliateDashboard";
-import ConsumerDashboard from "@/pages/ConsumerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -57,26 +55,11 @@ const App: React.FC = () => (
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              
+              {/* Rotas protegidas simples */}
               <Route path="/feed" element={
                 <ProtectedRoute>
                   <Feed />
-                </ProtectedRoute>
-              } />
-              
-              {/* Dashboards específicos por tipo de usuário */}
-              <Route path="/dashboard-afiliado" element={
-                <ProtectedRoute>
-                  <RoleProtectedRoute requiredRole="affiliate">
-                    <AffiliateDashboard />
-                  </RoleProtectedRoute>
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/dashboard-usuario" element={
-                <ProtectedRoute>
-                  <RoleProtectedRoute requiredRole="consumer">
-                    <ConsumerDashboard />
-                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               
@@ -86,74 +69,72 @@ const App: React.FC = () => (
                 </ProtectedRoute>
               } />
               
-              {/* Rotas protegidas para afiliados */}
               <Route path="/create-post" element={
                 <ProtectedRoute>
-                  <RoleProtectedRoute requiredRole="affiliate">
-                    <CreatePost />
-                  </RoleProtectedRoute>
-                </ProtectedRoute>
-              } />
-              <Route path="/add-product" element={
-                <ProtectedRoute>
-                  <RoleProtectedRoute requiredRole="affiliate">
-                    <AddProduct />
-                  </RoleProtectedRoute>
-                </ProtectedRoute>
-              } />
-              <Route path="/create-store" element={
-                <ProtectedRoute>
-                  <RoleProtectedRoute requiredRole="affiliate">
-                    <CreateStore />
-                  </RoleProtectedRoute>
-                </ProtectedRoute>
-              } />
-              <Route path="/my-store" element={
-                <ProtectedRoute>
-                  <RoleProtectedRoute requiredRole="affiliate">
-                    <MyStore />
-                  </RoleProtectedRoute>
-                </ProtectedRoute>
-              } />
-              <Route path="/store-builder" element={
-                <ProtectedRoute>
-                  <RoleProtectedRoute requiredRole="affiliate">
-                    <StoreBuilder />
-                  </RoleProtectedRoute>
+                  <CreatePost />
                 </ProtectedRoute>
               } />
               
-              {/* Rotas compartilhadas */}
+              <Route path="/add-product" element={
+                <ProtectedRoute>
+                  <AddProduct />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/create-store" element={
+                <ProtectedRoute>
+                  <CreateStore />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/my-store" element={
+                <ProtectedRoute>
+                  <MyStore />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/store-builder" element={
+                <ProtectedRoute>
+                  <StoreBuilder />
+                </ProtectedRoute>
+              } />
+              
               <Route path="/reels" element={
                 <ProtectedRoute>
                   <Reels />
                 </ProtectedRoute>
               } />
+              
               <Route path="/marketplace" element={
                 <ProtectedRoute>
                   <Marketplace />
                 </ProtectedRoute>
               } />
+              
               <Route path="/profile/:id" element={
                 <ProtectedRoute>
                   <Profile />
                 </ProtectedRoute>
               } />
+              
               <Route path="/groups" element={
                 <ProtectedRoute>
                   <Groups />
                 </ProtectedRoute>
               } />
+              
               <Route path="/chat" element={
                 <ProtectedRoute>
                   <Chat />
                 </ProtectedRoute>
               } />
+              
               <Route path="/settings" element={
                 <ProtectedRoute>
                   <Settings />
                 </ProtectedRoute>
               } />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

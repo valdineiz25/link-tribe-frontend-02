@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,9 +12,7 @@ import {
   Users, 
   MessageCircle, 
   Settings, 
-  User, 
   LogOut, 
-  Plus,
   Store,
   BarChart3,
   ShoppingBag,
@@ -117,45 +116,31 @@ const Navbar: React.FC = () => {
                   </Button>
                 </Link>
 
-                {/* Dashboard específico por tipo de usuário */}
-                {isAffiliate ? (
-                  <>
-                    <Link to="/dashboard-afiliado">
-                      <Button 
-                        variant={isActive('/dashboard-afiliado') ? 'default' : 'ghost'} 
-                        size="sm"
-                        className="flex items-center space-x-2"
-                      >
-                        <BarChart3 size={16} />
-                        <span>Dashboard</span>
-                      </Button>
-                    </Link>
-                    
-                    <Link to="/my-store">
-                      <Button 
-                        variant={isActive('/my-store') ? 'default' : 'ghost'} 
-                        size="sm"
-                        className="flex items-center space-x-2"
-                      >
-                        <Store size={16} />
-                        <span>Minha Loja</span>
-                        {stores.length > 0 && (
-                          <Badge variant="secondary" className="ml-1 text-xs">
-                            {stores.length}
-                          </Badge>
-                        )}
-                      </Button>
-                    </Link>
-                  </>
-                ) : (
-                  <Link to="/dashboard-usuario">
+                <Link to="/dashboard">
+                  <Button 
+                    variant={isActive('/dashboard') ? 'default' : 'ghost'} 
+                    size="sm"
+                    className="flex items-center space-x-2"
+                  >
+                    <BarChart3 size={16} />
+                    <span>Dashboard</span>
+                  </Button>
+                </Link>
+
+                {isAffiliate && (
+                  <Link to="/my-store">
                     <Button 
-                      variant={isActive('/dashboard-usuario') ? 'default' : 'ghost'} 
+                      variant={isActive('/my-store') ? 'default' : 'ghost'} 
                       size="sm"
                       className="flex items-center space-x-2"
                     >
-                      <BarChart3 size={16} />
-                      <span>Meu Painel</span>
+                      <Store size={16} />
+                      <span>Minha Loja</span>
+                      {stores.length > 0 && (
+                        <Badge variant="secondary" className="ml-1 text-xs">
+                          {stores.length}
+                        </Badge>
+                      )}
                     </Button>
                   </Link>
                 )}
@@ -234,142 +219,36 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Mobile Navigation */}
-        <div
-          className={`fixed top-0 left-0 w-full h-full bg-white z-50 transition-opacity ${
-            isMenuOpen ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b">
-              <Link to="/feed" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">AN</span>
-                </div>
-                <span className="font-bold text-xl bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                  AffiliateNet
-                </span>
-              </Link>
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 text-gray-500 hover:text-gray-700"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="flex flex-col p-4">
-              <Link to="/feed">
-                <Button 
-                  variant={isActive('/feed') ? 'default' : 'ghost'} 
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <Home size={16} />
-                  <span>Feed</span>
+        {isMenuOpen && (
+          <div className="md:hidden bg-white border-t p-4">
+            <div className="flex flex-col space-y-2">
+              <Link to="/feed" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Home size={16} className="mr-2" />
+                  Feed
                 </Button>
               </Link>
-
-              <Link to="/reels">
-                <Button 
-                  variant={isActive('/reels') ? 'default' : 'ghost'} 
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <Video size={16} />
-                  <span>Reels</span>
+              <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">
+                  <BarChart3 size={16} className="mr-2" />
+                  Dashboard
                 </Button>
               </Link>
-
-              <Link to="/marketplace">
-                <Button 
-                  variant={isActive('/marketplace') ? 'default' : 'ghost'} 
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <ShoppingBag size={16} />
-                  <span>Marketplace</span>
+              <Link to="/marketplace" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">
+                  <ShoppingBag size={16} className="mr-2" />
+                  Marketplace
                 </Button>
               </Link>
-
-              {/* Dashboard específico por tipo de usuário no mobile */}
-              {isAffiliate ? (
-                <>
-                  <Link to="/dashboard-afiliado">
-                    <Button 
-                      variant={isActive('/dashboard-afiliado') ? 'default' : 'ghost'} 
-                      size="sm"
-                      className="flex items-center space-x-2"
-                    >
-                      <BarChart3 size={16} />
-                      <span>Dashboard</span>
-                    </Button>
-                  </Link>
-                  
-                  <Link to="/my-store">
-                    <Button 
-                      variant={isActive('/my-store') ? 'default' : 'ghost'} 
-                      size="sm"
-                      className="flex items-center space-x-2"
-                    >
-                      <Store size={16} />
-                      <span>Minha Loja</span>
-                      {stores.length > 0 && (
-                        <Badge variant="secondary" className="ml-1 text-xs">
-                          {stores.length}
-                        </Badge>
-                      )}
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <Link to="/dashboard-usuario">
-                  <Button 
-                    variant={isActive('/dashboard-usuario') ? 'default' : 'ghost'} 
-                    size="sm"
-                    className="flex items-center space-x-2"
-                  >
-                    <BarChart3 size={16} />
-                    <span>Meu Painel</span>
-                  </Button>
-                </Link>
-              )}
-
-              <Link to="/groups">
-                <Button 
-                  variant={isActive('/groups') ? 'default' : 'ghost'} 
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <Users size={16} />
-                  <span>Grupos</span>
-                </Button>
-              </Link>
-
-              <Link to="/chat">
-                <Button 
-                  variant={isActive('/chat') ? 'default' : 'ghost'} 
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <MessageCircle size={16} />
-                  <span>Chat</span>
+              <Link to="/chat" onClick={() => setIsMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">
+                  <MessageCircle size={16} className="mr-2" />
+                  Chat
                 </Button>
               </Link>
             </div>
           </div>
-        </div>
+        )}
       </nav>
 
       {/* User Type Switcher Modal */}
