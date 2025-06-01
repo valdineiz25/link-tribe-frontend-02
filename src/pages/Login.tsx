@@ -48,10 +48,6 @@ const Login: React.FC = () => {
     resolver: yupResolver(affiliateSchema),
   });
 
-  // Get the current form based on user type
-  const currentForm = userType === 'user' ? userForm : affiliateForm;
-  const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = currentForm;
-
   const watchedAffiliateId = userType === 'affiliate' ? (affiliateForm.watch('affiliateId') || '') : '';
   const watchedPlatform = userType === 'affiliate' ? (affiliateForm.watch('platform') || '') : '';
 
@@ -84,30 +80,45 @@ const Login: React.FC = () => {
     }
   }, [watchedAffiliateId, watchedPlatform, userType]);
 
-  const onSubmit = async (data: UserFormData | AffiliateFormData) => {
+  const onUserSubmit = async (data: UserFormData) => {
     try {
-      if (userType === 'affiliate') {
-        const affiliateData = data as AffiliateFormData;
-        if (affiliateValidationStatus !== 'valid') {
-          toast({
-            title: "ID de afiliado inválido",
-            description: "Verifique seu ID ou cadastre-se na plataforma parceira primeiro.",
-            variant: "destructive",
-          });
-          return;
-        }
-        
-        console.log('Login de afiliado:', affiliateData);
+      await login(data.email, data.password);
+      toast({
+        title: "Login realizado com sucesso!",
+        description: "Bem-vindo de volta!",
+      });
+      navigate('/feed');
+    } catch (error) {
+      console.error('Erro no login:', error);
+      toast({
+        title: "Erro no login",
+        description: "Verifique suas credenciais e tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const onAffiliateSubmit = async (data: AffiliateFormData) => {
+    try {
+      if (affiliateValidationStatus !== 'valid') {
         toast({
-          title: "Validando afiliado...",
-          description: `Verificando credenciais na ${affiliateData.platform}`,
+          title: "ID de afiliado inválido",
+          description: "Verifique seu ID ou cadastre-se na plataforma parceira primeiro.",
+          variant: "destructive",
         });
+        return;
       }
+      
+      console.log('Login de afiliado:', data);
+      toast({
+        title: "Validando afiliado...",
+        description: `Verificando credenciais na ${data.platform}`,
+      });
 
       await login(data.email, data.password);
       toast({
         title: "Login realizado com sucesso!",
-        description: userType === 'affiliate' ? "Bem-vindo, afiliado!" : "Bem-vindo de volta!",
+        description: "Bem-vindo, afiliado!",
       });
       navigate('/feed');
     } catch (error) {
@@ -189,125 +200,181 @@ const Login: React.FC = () => {
           </CardHeader>
           
           <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium">
-                  {userType === 'affiliate' ? 'E-mail profissional' : 'E-mail'}
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder={userType === 'affiliate' ? 'seu@email.profissional.com' : 'seu@email.com'}
-                    {...register('email')}
-                    className={`pl-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${errors.email ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
-                  />
+            {userType === 'user' ? (
+              <form onSubmit={userForm.handleSubmit(onUserSubmit)} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-slate-700 font-medium">E-mail</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      {...userForm.register('email')}
+                      className={`pl-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${userForm.formState.errors.email ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                    />
+                  </div>
+                  {userForm.formState.errors.email && (
+                    <p className="text-red-500 text-sm font-medium">{userForm.formState.errors.email.message}</p>
+                  )}
                 </div>
-                {errors.email && (
-                  <p className="text-red-500 text-sm font-medium">{errors.email.message}</p>
-                )}
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-700 font-medium">Senha</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    {...register('password')}
-                    className={`pl-11 pr-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${errors.password ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-slate-700 font-medium">Senha</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      {...userForm.register('password')}
+                      className={`pl-11 pr-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${userForm.formState.errors.password ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                  {userForm.formState.errors.password && (
+                    <p className="text-red-500 text-sm font-medium">{userForm.formState.errors.password.message}</p>
+                  )}
+                </div>
+
+                <div className="flex justify-end">
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    onClick={handleForgotPassword}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
                   >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    Esqueci a senha
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-red-500 text-sm font-medium">{errors.password.message}</p>
-                )}
-              </div>
 
-              {/* Campos específicos para afiliados */}
-              {userType === 'affiliate' && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="platform" className="text-slate-700 font-medium">Plataforma de Afiliação</Label>
-                    <Select onValueChange={(value) => affiliateForm.setValue('platform', value)}>
-                      <SelectTrigger className="border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white">
-                        <SelectValue placeholder="Selecione sua plataforma" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="amazon">Amazon Associates</SelectItem>
-                        <SelectItem value="shopee">Shopee Affiliate</SelectItem>
-                        <SelectItem value="mercadolivre">Mercado Livre</SelectItem>
-                        <SelectItem value="magazineluiza">Magazine Luiza</SelectItem>
-                        <SelectItem value="shein">Shein Affiliate</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {(affiliateForm.formState.errors as any).platform && (
-                      <p className="text-red-500 text-sm font-medium">{(affiliateForm.formState.errors as any).platform.message}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="affiliateId" className="text-slate-700 font-medium">ID de Afiliado</Label>
-                    <div className="relative">
-                      <Input
-                        id="affiliateId"
-                        type="text"
-                        placeholder="Seu ID de afiliado"
-                        {...affiliateForm.register('affiliateId')}
-                        className={`pr-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${(affiliateForm.formState.errors as any).affiliateId ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
-                      />
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        {isValidatingAffiliate && (
-                          <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-                        )}
-                        {!isValidatingAffiliate && affiliateValidationStatus === 'valid' && (
-                          <CheckCircle className="h-4 w-4 text-green-500" />
-                        )}
-                        {!isValidatingAffiliate && affiliateValidationStatus === 'invalid' && (
-                          <AlertCircle className="h-4 w-4 text-red-500" />
-                        )}
-                      </div>
-                    </div>
-                    {(affiliateForm.formState.errors as any).affiliateId && (
-                      <p className="text-red-500 text-sm font-medium">{(affiliateForm.formState.errors as any).affiliateId.message}</p>
-                    )}
-                    {affiliateValidationStatus === 'valid' && (
-                      <p className="text-green-600 text-sm font-medium">✅ ID de afiliado válido</p>
-                    )}
-                    {affiliateValidationStatus === 'invalid' && (
-                      <p className="text-red-500 text-sm font-medium">❌ ID não encontrado. Verifique ou cadastre-se na plataforma parceira primeiro.</p>
-                    )}
-                  </div>
-                </>
-              )}
-
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                  disabled={userForm.formState.isSubmitting}
                 >
-                  Esqueci a senha
-                </button>
-              </div>
+                  {userForm.formState.isSubmitting ? 'Entrando...' : 'Entrar'}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={affiliateForm.handleSubmit(onAffiliateSubmit)} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-slate-700 font-medium">E-mail profissional</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.profissional.com"
+                      {...affiliateForm.register('email')}
+                      className={`pl-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${affiliateForm.formState.errors.email ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                    />
+                  </div>
+                  {affiliateForm.formState.errors.email && (
+                    <p className="text-red-500 text-sm font-medium">{affiliateForm.formState.errors.email.message}</p>
+                  )}
+                </div>
 
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
-                disabled={isSubmitting || (userType === 'affiliate' && affiliateValidationStatus !== 'valid')}
-              >
-                {isSubmitting ? 'Entrando...' : 'Entrar'}
-              </Button>
-            </form>
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-slate-700 font-medium">Senha</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      {...affiliateForm.register('password')}
+                      className={`pl-11 pr-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${affiliateForm.formState.errors.password ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  </div>
+                  {affiliateForm.formState.errors.password && (
+                    <p className="text-red-500 text-sm font-medium">{affiliateForm.formState.errors.password.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="platform" className="text-slate-700 font-medium">Plataforma de Afiliação</Label>
+                  <Select onValueChange={(value) => affiliateForm.setValue('platform', value)}>
+                    <SelectTrigger className="border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white">
+                      <SelectValue placeholder="Selecione sua plataforma" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="amazon">Amazon Associates</SelectItem>
+                      <SelectItem value="shopee">Shopee Affiliate</SelectItem>
+                      <SelectItem value="mercadolivre">Mercado Livre</SelectItem>
+                      <SelectItem value="magazineluiza">Magazine Luiza</SelectItem>
+                      <SelectItem value="shein">Shein Affiliate</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {affiliateForm.formState.errors.platform && (
+                    <p className="text-red-500 text-sm font-medium">{affiliateForm.formState.errors.platform.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="affiliateId" className="text-slate-700 font-medium">ID de Afiliado</Label>
+                  <div className="relative">
+                    <Input
+                      id="affiliateId"
+                      type="text"
+                      placeholder="Seu ID de afiliado"
+                      {...affiliateForm.register('affiliateId')}
+                      className={`pr-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${affiliateForm.formState.errors.affiliateId ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                    />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      {isValidatingAffiliate && (
+                        <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                      )}
+                      {!isValidatingAffiliate && affiliateValidationStatus === 'valid' && (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      )}
+                      {!isValidatingAffiliate && affiliateValidationStatus === 'invalid' && (
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                      )}
+                    </div>
+                  </div>
+                  {affiliateForm.formState.errors.affiliateId && (
+                    <p className="text-red-500 text-sm font-medium">{affiliateForm.formState.errors.affiliateId.message}</p>
+                  )}
+                  {affiliateValidationStatus === 'valid' && (
+                    <p className="text-green-600 text-sm font-medium">✅ ID de afiliado válido</p>
+                  )}
+                  {affiliateValidationStatus === 'invalid' && (
+                    <p className="text-red-500 text-sm font-medium">❌ ID não encontrado. Verifique ou cadastre-se na plataforma parceira primeiro.</p>
+                  )}
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                  >
+                    Esqueci a senha
+                  </button>
+                </div>
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                  disabled={affiliateForm.formState.isSubmitting || affiliateValidationStatus !== 'valid'}
+                >
+                  {affiliateForm.formState.isSubmitting ? 'Entrando...' : 'Entrar'}
+                </Button>
+              </form>
+            )}
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
