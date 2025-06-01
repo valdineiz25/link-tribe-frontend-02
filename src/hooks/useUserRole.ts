@@ -35,22 +35,29 @@ export const useUserRole = () => {
         const stats = UserRoleService.getAffiliateStats(user.id);
         console.log('📊 Stats encontradas:', stats);
         setAffiliateStats(stats);
+      } else {
+        // Limpar stats se for consumer
+        setAffiliateStats(null);
       }
 
       setLoading(false);
     } else {
       console.log('❌ useUserRole: Nenhum usuário logado');
+      setUserRole(null);
+      setAffiliateStats(null);
       setLoading(false);
     }
   }, [user]);
 
   const isAffiliate = userRole?.type === 'affiliate';
+  const isConsumer = userRole?.type === 'consumer';
   const canCreateStore = UserRoleService.canCreateStore(user?.id || '');
   const hasStore = userRole?.storeId !== undefined;
 
   console.log('🎯 useUserRole resultado:', {
     userRole: userRole?.type,
     isAffiliate,
+    isConsumer,
     canCreateStore,
     hasStore,
     loading
@@ -63,13 +70,35 @@ export const useUserRole = () => {
     }
   };
 
+  const switchUserType = (newType: 'affiliate' | 'consumer') => {
+    if (user) {
+      const success = UserRoleService.switchUserType(user.id, newType);
+      if (success) {
+        // Recarregar dados
+        const updatedRole = UserRoleService.getUserRole(user.id);
+        setUserRole(updatedRole);
+        
+        if (newType === 'affiliate') {
+          const stats = UserRoleService.getAffiliateStats(user.id);
+          setAffiliateStats(stats);
+        } else {
+          setAffiliateStats(null);
+        }
+      }
+      return success;
+    }
+    return false;
+  };
+
   return {
     userRole,
     affiliateStats,
     loading,
     isAffiliate,
+    isConsumer,
     canCreateStore,
     hasStore,
-    updateAffiliateStats
+    updateAffiliateStats,
+    switchUserType
   };
 };

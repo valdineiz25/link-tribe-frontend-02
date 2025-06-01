@@ -1,3 +1,4 @@
+
 import { User } from '@/types/user';
 import { UserRole, AffiliateStats } from '@/types/affiliate';
 
@@ -89,33 +90,77 @@ export class UserRoleService {
     }
   }
 
-  // Mock data para demonstração - FORÇAR CRIAÇÃO COMO AFILIADO PARA TESTE
+  // Inicializar dados mock baseado no ID do usuário
   static initializeMockData(userId: string): void {
     console.log('🎭 Inicializando dados mock para:', userId);
     
-    // Configurar usuário como afiliado para teste
+    // Verificar se userId termina com número par ou ímpar para determinar o tipo
+    const lastChar = userId.charAt(userId.length - 1);
+    const isEvenUser = parseInt(lastChar) % 2 === 0;
+    
+    // Usuários com ID terminando em número par = consumer
+    // Usuários com ID terminando em número ímpar = affiliate
+    const userType = isEvenUser ? 'consumer' : 'affiliate';
+    
     const mockRole: UserRole = {
       userId,
-      type: 'affiliate', // FORÇANDO COMO AFILIADO PARA TESTE
-      canCreateStore: true,
-      accountAge: 30,
-      validAffiliateLinks: 5
+      type: userType,
+      canCreateStore: userType === 'affiliate',
+      accountAge: userType === 'affiliate' ? 30 : 15,
+      validAffiliateLinks: userType === 'affiliate' ? 5 : 0
     };
-    console.log('🎭 Criando role de afiliado para teste:', mockRole);
+    
+    console.log(`🎭 Criando role de ${userType} para usuário ${userId}:`, mockRole);
     this.setUserRole(mockRole);
 
-    // Configurar estatísticas mock
-    const mockStats: AffiliateStats = {
-      totalProducts: 12,
-      monthlyCommissions: 1240.50,
-      todayVisits: 75,
-      topProducts: [
-        { id: '1', name: 'Smartphone Galaxy', clicks: 45 },
-        { id: '2', name: 'Fone Bluetooth', clicks: 32 },
-        { id: '3', name: 'Smartwatch', clicks: 28 }
-      ]
-    };
-    console.log('📊 Criando stats mock:', mockStats);
-    this.updateAffiliateStats(userId, mockStats);
+    // Configurar estatísticas mock apenas para afiliados
+    if (userType === 'affiliate') {
+      const mockStats: AffiliateStats = {
+        totalProducts: 12,
+        monthlyCommissions: 1240.50,
+        todayVisits: 75,
+        topProducts: [
+          { id: '1', name: 'Smartphone Galaxy', clicks: 45 },
+          { id: '2', name: 'Fone Bluetooth', clicks: 32 },
+          { id: '3', name: 'Smartwatch', clicks: 28 }
+        ]
+      };
+      console.log('📊 Criando stats mock para afiliado:', mockStats);
+      this.updateAffiliateStats(userId, mockStats);
+    }
+  }
+
+  // Método para alternar tipo de usuário
+  static switchUserType(userId: string, newType: 'affiliate' | 'consumer'): boolean {
+    try {
+      const currentRole = this.getUserRole(userId);
+      if (!currentRole) return false;
+
+      const updatedRole: UserRole = {
+        ...currentRole,
+        type: newType,
+        canCreateStore: newType === 'affiliate',
+        validAffiliateLinks: newType === 'affiliate' ? 5 : 0
+      };
+
+      this.setUserRole(updatedRole);
+
+      // Se virou afiliado, criar stats
+      if (newType === 'affiliate') {
+        const mockStats: AffiliateStats = {
+          totalProducts: 0,
+          monthlyCommissions: 0,
+          todayVisits: 0,
+          topProducts: []
+        };
+        this.updateAffiliateStats(userId, mockStats);
+      }
+
+      console.log(`🔄 Usuário ${userId} alterado para ${newType}`);
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao alterar tipo de usuário:', error);
+      return false;
+    }
   }
 }
