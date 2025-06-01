@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,12 +13,15 @@ import {
   Bookmark,
   Repeat,
   BarChart3,
-  Edit
+  Edit,
+  Shield
 } from 'lucide-react';
 import EditPostDialog from '@/components/EditPostDialog';
 import CommentSection from '@/components/CommentSection';
+import { ConsumerActions } from '@/components/ConsumerActions';
 import { AffiBoostIndicator } from '@/components/AffiBoostIndicator';
 import { useToast } from '@/hooks/use-toast';
+import { useConsumer } from '@/hooks/useConsumer';
 
 interface Post {
   id: string;
@@ -52,15 +54,18 @@ interface CardPostProps {
   onUpdatePost?: (updatedPost: Post) => void;
   isOwner?: boolean;
   isAffiliateView?: boolean;
+  isConsumerView?: boolean;
 }
 
 const CardPost: React.FC<CardPostProps> = ({ 
   post, 
   onUpdatePost, 
   isOwner = false,
-  isAffiliateView = false 
+  isAffiliateView = false,
+  isConsumerView = false 
 }) => {
   const { toast } = useToast();
+  const { addToWishlist, trackProductView } = useConsumer();
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
   const [commentsCount, setCommentsCount] = useState(post.comments);
@@ -69,7 +74,6 @@ const CardPost: React.FC<CardPostProps> = ({
   const [showComments, setShowComments] = useState(false);
   const [postComments, setPostComments] = useState<any[]>([]);
   const [showAffiBoostDetails, setShowAffiBoostDetails] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleLike = () => {
     const newIsLiked = !isLiked;
@@ -101,29 +105,41 @@ const CardPost: React.FC<CardPostProps> = ({
   };
 
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Post da AffiliateNet',
-        text: currentPost.content,
-        url: window.location.href,
-      }).then(() => {
-        toast({
-          title: "📤 Compartilhado!",
-          description: "Post compartilhado com sucesso",
+    if (isConsumerView) {
+      // Compartilhamento sem comissão para consumidores
+      if (navigator.share) {
+        navigator.share({
+          title: 'Produto interessante',
+          text: currentPost.content,
+          url: window.location.href,
+        }).then(() => {
+          toast({
+            title: "📤 Compartilhado!",
+            description: "Produto compartilhado com seus amigos",
+          });
+        }).catch(() => {
+          navigator.clipboard.writeText(window.location.href);
+          toast({
+            title: "📤 Link copiado!",
+            description: "Link copiado para a área de transferência",
+          });
         });
-      }).catch(() => {
+      } else {
         navigator.clipboard.writeText(window.location.href);
         toast({
           title: "📤 Link copiado!",
           description: "Link copiado para a área de transferência",
         });
-      });
+      }
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast({
-        title: "📤 Link copiado!",
-        description: "Link copiado para a área de transferência",
-      });
+      // Compartilhamento normal para afiliados
+      if (navigator.share) {
+        navigator.share({
+          title: 'Post da AffiliateNet',
+          text: currentPost.content,
+          url: window.location.href,
+        });
+      }
     }
   };
 
@@ -134,6 +150,32 @@ const CardPost: React.FC<CardPostProps> = ({
       title: newIsSaved ? "🔖 Post salvo!" : "🗑️ Post removido dos salvos",
       description: newIsSaved ? "Post adicionado aos seus favoritos" : "Post removido dos seus favoritos",
     });
+  };
+
+  const handleAddToWishlist = () => {
+    if (currentPost.productName && currentPost.productLink) {
+      const wishlistItem = {
+        productId: currentPost.id,
+        productName: currentPost.productName,
+        productImage: currentPost.image || '',
+        currentPrice: currentPost.currentPrice || 0,
+        targetPrice: currentPost.promotionalPrice,
+        addedAt: new Date().toISOString(),
+        storeUrl: currentPost.productLink,
+        affiliateLink: currentPost.productLink
+      };
+
+      const success = addToWishlist(wishlistItem);
+      if (success) {
+        toast({
+          title: "❤️ Adicionado à lista!",
+          description: "Produto salvo na sua lista de desejos",
+        });
+
+        // Rastrear visualização do produto
+        trackProductView(currentPost.id, currentPost.productName, post.authorName);
+      }
+    }
   };
 
   const handleRepost = () => {
@@ -186,45 +228,47 @@ const CardPost: React.FC<CardPostProps> = ({
                 <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">
                   {currentPost.category}
                 </span>
-                {/* Tag especial para afiliados */}
-                {currentPost.isOwnProduct && (
+                
+                {/* Tags diferenciadas por tipo de usuário */}
+                {currentPost.isOwnProduct && isAffiliateView && (
                   <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs">
                     Seu Produto
                   </Badge>
                 )}
-                {/* Tag discreta para usuários comuns */}
-                {!isAffiliateView && currentPost.isSponsored && (
-                  <Badge variant="outline" className="text-xs text-gray-500">
-                    Patrocinado
-                  </Badge>
+                {isConsumerView && currentPost.isSponsored && (
+                  <div className="flex items-center space-x-1">
+                    <Badge variant="outline" className="text-xs text-gray-500 flex items-center space-x-1">
+                      <Shield size={10} />
+                      <span>Link Verificado</span>
+                    </Badge>
+                  </div>
                 )}
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            {/* AffiBoost Score (apenas para afiliados) */}
-            {isAffiliateView && currentPost.affiBoostScore && (
-              <div 
-                className="cursor-pointer"
-                onClick={() => setShowAffiBoostDetails(!showAffiBoostDetails)}
-              >
-                <AffiBoostIndicator 
-                  score={currentPost.affiBoostScore} 
-                  compact={true}
-                />
-              </div>
-            )}
-            
-            {isOwner && (
-              <EditPostDialog 
-                post={currentPost} 
-                onSave={handlePostUpdate}
+          
+          {/* AffiBoost Score (apenas para afiliados) */}
+          {isAffiliateView && currentPost.affiBoostScore && (
+            <div 
+              className="cursor-pointer"
+              onClick={() => setShowAffiBoostDetails(!showAffiBoostDetails)}
+            >
+              <AffiBoostIndicator 
+                score={currentPost.affiBoostScore} 
+                compact={true}
               />
-            )}
-            <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-400">
-              <MoreHorizontal size={20} />
-            </Button>
-          </div>
+            </div>
+          )}
+          
+          {isOwner && (
+            <EditPostDialog 
+              post={currentPost} 
+              onSave={handlePostUpdate}
+            />
+          )}
+          <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-400">
+            <MoreHorizontal size={20} />
+          </Button>
         </div>
 
         {/* AffiBoost Details (apenas para afiliados) */}
@@ -303,37 +347,46 @@ const CardPost: React.FC<CardPostProps> = ({
         )}
       </CardContent>
 
-      {/* Footer - Ações diferenciadas */}
+      {/* Footer - Ações diferenciadas por tipo de usuário */}
       <CardFooter className="p-4 pt-2">
         <div className="w-full">
-          {/* Action buttons */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLike}
-                className={`p-0 h-auto hover:bg-transparent ${
-                  isLiked ? 'text-red-500' : 'text-gray-700'
-                }`}
-              >
-                <Heart 
-                  size={24} 
-                  className={isLiked ? 'fill-current' : ''} 
-                />
-              </Button>
+          {isConsumerView ? (
+            <ConsumerActions
+              post={currentPost}
+              isLiked={isLiked}
+              isSaved={isSaved}
+              onLike={handleLike}
+              onComment={handleComment}
+              onSave={handleSave}
+              onShare={handleShare}
+              onAddToWishlist={handleAddToWishlist}
+            />
+          ) : (
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLike}
+                  className={`p-0 h-auto hover:bg-transparent ${
+                    isLiked ? 'text-red-500' : 'text-gray-700'
+                  }`}
+                >
+                  <Heart 
+                    size={24} 
+                    className={isLiked ? 'fill-current' : ''} 
+                  />
+                </Button>
 
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleComment}
-                className="p-0 h-auto text-gray-700 hover:bg-transparent"
-              >
-                <MessageCircle size={24} />
-              </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleComment}
+                  className="p-0 h-auto text-gray-700 hover:bg-transparent"
+                >
+                  <MessageCircle size={24} />
+                </Button>
 
-              {/* Botão diferenciado por tipo de usuário */}
-              {isAffiliateView ? (
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -342,42 +395,9 @@ const CardPost: React.FC<CardPostProps> = ({
                 >
                   <Share2 size={24} />
                 </Button>
-              ) : (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleSave}
-                  className="p-0 h-auto text-gray-700 hover:bg-transparent"
-                >
-                  <Bookmark size={24} className={isSaved ? 'fill-current' : ''} />
-                </Button>
-              )}
-            </div>
-            
-            {/* Ações extras para afiliados em seus próprios produtos */}
-            {isAffiliateView && currentPost.isOwnProduct && (
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleRepost}
-                  className="p-2 text-blue-600 hover:bg-blue-50"
-                  title="Repostar em grupos"
-                >
-                  <Repeat size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleViewStats}
-                  className="p-2 text-green-600 hover:bg-green-50"
-                  title="Ver estatísticas"
-                >
-                  <BarChart3 size={16} />
-                </Button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
           
           {/* Likes count */}
           <div className="text-sm font-semibold text-gray-900 mb-1">

@@ -1,13 +1,15 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useConsumer } from '@/hooks/useConsumer';
 import FeedHeader from '@/components/FeedHeader';
 import CategoryFilter from '@/components/CategoryFilter';
 import PostCreation from '@/components/PostCreation';
+import RestrictedPostCreation from '@/components/RestrictedPostCreation';
 import PostList from '@/components/PostList';
 import Stories from '@/components/Stories';
 import AffiliateHeader from '@/components/AffiliateHeader';
+import ConsumerHeader from '@/components/ConsumerHeader';
 import AffiliateStorePreview from '@/components/AffiliateStorePreview';
 import CreateStoreButton from '@/components/CreateStoreButton';
 import StoreCreationWizard from '@/components/StoreCreationWizard';
@@ -34,6 +36,15 @@ const Feed: React.FC = () => {
     canCreateStore, 
     hasStore 
   } = useUserRole();
+
+  // Consumer data
+  const {
+    consumerProfile,
+    wishlist,
+    loading: consumerLoading,
+    isConsumer,
+    canCreatePosts
+  } = useConsumer();
   
   // Aplicar algoritmo AffiBoost
   const { 
@@ -73,6 +84,15 @@ const Feed: React.FC = () => {
   };
 
   const handleTogglePostCreation = () => {
+    if (!canCreatePosts) {
+      toast({
+        title: "🔒 Ação restrita",
+        description: "Usuários compradores não podem criar posts de produtos. Cadastre-se como afiliado para vender!",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsCreatingPost(!isCreatingPost);
     if (!isCreatingPost) {
       toast({
@@ -94,6 +114,20 @@ const Feed: React.FC = () => {
     toast({
       title: "🔔 Notificações",
       description: "João comprou seu produto via seu link! +R$ 15,90",
+    });
+  };
+
+  const handleViewWishlist = () => {
+    toast({
+      title: "❤️ Lista de Desejos",
+      description: `Você tem ${wishlist.length} produtos salvos!`,
+    });
+  };
+
+  const handleViewOffers = () => {
+    toast({
+      title: "🎁 Ofertas Personalizadas",
+      description: "Confira os descontos especiais selecionados para você!",
     });
   };
 
@@ -129,8 +163,8 @@ const Feed: React.FC = () => {
 
   // Filtrar posts baseado no tipo de usuário
   let filteredPosts = postsToShow;
-  if (!isAffiliate) {
-    // Para usuários comuns, mostrar apenas posts orgânicos com tag discreta
+  if (isConsumer) {
+    // Para usuários compradores, mostrar apenas posts com tag discreta
     filteredPosts = postsToShow.map(post => ({
       ...post,
       isSponsored: post.productLink ? true : false
@@ -159,20 +193,22 @@ const Feed: React.FC = () => {
     isOwnProduct: isAffiliate && post.user?.id === user?.id
   }));
 
-  if (loading || roleLoading || isRanking) {
+  if (loading || roleLoading || consumerLoading || isRanking) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
           <p className="text-gray-600">
             {loading ? 'Carregando feed...' : 
-             roleLoading ? 'Verificando permissões...' : 
+             roleLoading || consumerLoading ? 'Verificando perfil...' : 
              'Aplicando AffiBoost Algorithm...'}
           </p>
         </div>
       </div>
     );
   }
+
+  const personalizedOffers = isConsumer && consumerProfile ? 5 : 0; // Mock data
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50 pb-16 md:pb-0">
@@ -182,6 +218,13 @@ const Feed: React.FC = () => {
           <AffiliateHeader 
             stats={affiliateStats}
             onNotificationClick={handleNotificationClick}
+          />
+        ) : isConsumer ? (
+          <ConsumerHeader
+            wishlistCount={wishlist.length}
+            personalizedOffersCount={personalizedOffers}
+            onViewWishlist={handleViewWishlist}
+            onViewOffers={handleViewOffers}
           />
         ) : (
           <FeedHeader />
@@ -246,23 +289,32 @@ const Feed: React.FC = () => {
           />
         </div>
 
-        {/* Post creation */}
+        {/* Post creation - diferenciado por tipo de usuário */}
         <div className="bg-white rounded-xl shadow-lg border border-yellow-200 p-4">
-          <PostCreation 
-            isCreating={isCreatingPost}
-            onToggleCreating={handleTogglePostCreation}
-          />
+          {canCreatePosts ? (
+            <PostCreation 
+              isCreating={isCreatingPost}
+              onToggleCreating={handleTogglePostCreation}
+            />
+          ) : (
+            <RestrictedPostCreation />
+          )}
         </div>
 
         {/* Posts feed */}
         {formattedPosts.length === 0 ? (
           <div className="text-center py-16">
-            <div className="text-8xl mb-6">📝</div>
+            <div className="text-8xl mb-6">
+              {isConsumer ? '🛍️' : '📝'}
+            </div>
             <h3 className="text-2xl font-bold text-gray-700 mb-2">
-              Ainda não há posts!
+              {isConsumer ? 'Explore produtos incríveis!' : 'Ainda não há posts!'}
             </h3>
             <p className="text-gray-500 text-lg mb-4">
-              Seja o primeiro a compartilhar algo interessante.
+              {isConsumer 
+                ? 'Navegue pelas categorias e descubra ofertas exclusivas.'
+                : 'Seja o primeiro a compartilhar algo interessante.'
+              }
             </p>
           </div>
         ) : (
@@ -272,6 +324,7 @@ const Feed: React.FC = () => {
             onUpdatePost={handleUpdatePost}
             selectedCategory={selectedCategory}
             isAffiliateView={isAffiliate}
+            isConsumerView={isConsumer}
           />
         )}
       </div>
@@ -279,7 +332,7 @@ const Feed: React.FC = () => {
       {/* Botão "Criar Loja" flutuante (apenas para afiliados) */}
       {isAffiliate && (
         <CreateStoreButton
-          onClick={handleCreateStore}
+          onClick={() => setShowStoreWizard(true)}
           canCreate={canCreateStore}
         />
       )}
