@@ -39,20 +39,21 @@ const Login: React.FC = () => {
   const [isValidatingAffiliate, setIsValidatingAffiliate] = useState(false);
   const [affiliateValidationStatus, setAffiliateValidationStatus] = useState<'none' | 'valid' | 'invalid'>('none');
 
-  const currentSchema = userType === 'user' ? userSchema : affiliateSchema;
-  
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setValue,
-    watch,
-  } = useForm<UserFormData | AffiliateFormData>({
-    resolver: yupResolver(currentSchema),
+  // Use separate forms for each user type to avoid TypeScript issues
+  const userForm = useForm<UserFormData>({
+    resolver: yupResolver(userSchema),
   });
 
-  const watchedAffiliateId = watch('affiliateId' as keyof (UserFormData | AffiliateFormData));
-  const watchedPlatform = watch('platform' as keyof (UserFormData | AffiliateFormData));
+  const affiliateForm = useForm<AffiliateFormData>({
+    resolver: yupResolver(affiliateSchema),
+  });
+
+  // Get the current form based on user type
+  const currentForm = userType === 'user' ? userForm : affiliateForm;
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = currentForm;
+
+  const watchedAffiliateId = userType === 'affiliate' ? (affiliateForm.watch('affiliateId') || '') : '';
+  const watchedPlatform = userType === 'affiliate' ? (affiliateForm.watch('platform') || '') : '';
 
   // Validação de ID de afiliado em tempo real
   React.useEffect(() => {
@@ -134,6 +135,14 @@ const Login: React.FC = () => {
     });
   };
 
+  const handleUserTypeChange = (newUserType: UserType) => {
+    setUserType(newUserType);
+    setAffiliateValidationStatus('none');
+    // Reset both forms when switching
+    userForm.reset();
+    affiliateForm.reset();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10"></div>
@@ -161,10 +170,7 @@ const Login: React.FC = () => {
               <Button
                 type="button"
                 variant={userType === 'user' ? 'default' : 'outline'}
-                onClick={() => {
-                  setUserType('user');
-                  setAffiliateValidationStatus('none');
-                }}
+                onClick={() => handleUserTypeChange('user')}
                 className="h-12 flex items-center space-x-2"
               >
                 <User className="h-4 w-4" />
@@ -173,10 +179,7 @@ const Login: React.FC = () => {
               <Button
                 type="button"
                 variant={userType === 'affiliate' ? 'default' : 'outline'}
-                onClick={() => {
-                  setUserType('affiliate');
-                  setAffiliateValidationStatus('none');
-                }}
+                onClick={() => handleUserTypeChange('affiliate')}
                 className="h-12 flex items-center space-x-2"
               >
                 <DollarSign className="h-4 w-4" />
@@ -235,7 +238,7 @@ const Login: React.FC = () => {
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="platform" className="text-slate-700 font-medium">Plataforma de Afiliação</Label>
-                    <Select onValueChange={(value) => setValue('platform' as any, value)}>
+                    <Select onValueChange={(value) => affiliateForm.setValue('platform', value)}>
                       <SelectTrigger className="border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white">
                         <SelectValue placeholder="Selecione sua plataforma" />
                       </SelectTrigger>
@@ -247,8 +250,8 @@ const Login: React.FC = () => {
                         <SelectItem value="shein">Shein Affiliate</SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors.platform && (
-                      <p className="text-red-500 text-sm font-medium">{errors.platform.message}</p>
+                    {(affiliateForm.formState.errors as any).platform && (
+                      <p className="text-red-500 text-sm font-medium">{(affiliateForm.formState.errors as any).platform.message}</p>
                     )}
                   </div>
 
@@ -259,8 +262,8 @@ const Login: React.FC = () => {
                         id="affiliateId"
                         type="text"
                         placeholder="Seu ID de afiliado"
-                        {...register('affiliateId')}
-                        className={`pr-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${errors.affiliateId ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
+                        {...affiliateForm.register('affiliateId')}
+                        className={`pr-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500 bg-white ${(affiliateForm.formState.errors as any).affiliateId ? 'border-red-400 focus:border-red-500 focus:ring-red-500' : ''}`}
                       />
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                         {isValidatingAffiliate && (
@@ -274,8 +277,8 @@ const Login: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    {errors.affiliateId && (
-                      <p className="text-red-500 text-sm font-medium">{errors.affiliateId.message}</p>
+                    {(affiliateForm.formState.errors as any).affiliateId && (
+                      <p className="text-red-500 text-sm font-medium">{(affiliateForm.formState.errors as any).affiliateId.message}</p>
                     )}
                     {affiliateValidationStatus === 'valid' && (
                       <p className="text-green-600 text-sm font-medium">✅ ID de afiliado válido</p>
