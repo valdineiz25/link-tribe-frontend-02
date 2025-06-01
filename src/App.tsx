@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -125,13 +124,16 @@ const App: React.FC = () => (
                 </ProtectedRoute>
               } />
               
-              {/* Rotas compartilhadas */}
+              {/* Dashboard apenas para afiliados */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <RoleProtectedRoute requiredRole="affiliate" fallbackPath="/consumer-feed">
+                    <Dashboard />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               
+              {/* Rotas compartilhadas */}
               <Route path="/reels" element={
                 <ProtectedRoute>
                   <Reels />

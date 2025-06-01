@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,13 +24,15 @@ import {
   UserX,
   Link,
   BarChart3,
-  Shield
+  Shield,
+  LogIn
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { StorageService } from '@/services/storageService';
 import { GroupHeader } from '@/components/groups/GroupHeader';
 import { GroupPost } from '@/components/groups/GroupPost';
 import { FloatingActionButton } from '@/components/groups/FloatingActionButton';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface Group {
   id: string;
@@ -79,6 +80,7 @@ interface Message {
 
 const Groups: React.FC = () => {
   const { toast } = useToast();
+  const { isAffiliate, isConsumer } = useUserRole();
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
@@ -242,6 +244,13 @@ const Groups: React.FC = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleJoinGroup = (group: Group) => {
+    toast({
+      title: "Solicitação enviada",
+      description: `Sua solicitação para entrar no grupo "${group.name}" foi enviada.`,
+    });
   };
 
   const handleSendMessage = () => {
@@ -424,7 +433,10 @@ const Groups: React.FC = () => {
             Grupos Profissionais
           </h1>
           <p className="text-gray-300 max-w-2xl mx-auto">
-            Conecte-se com outros afiliados, compartilhe experiências e construa relacionamentos estratégicos
+            {isConsumer 
+              ? "Conecte-se com outros usuários, participe de discussões e encontre as melhores ofertas"
+              : "Conecte-se com outros afiliados, compartilhe experiências e construa relacionamentos estratégicos"
+            }
           </p>
         </div>
 
@@ -438,16 +450,32 @@ const Groups: React.FC = () => {
               className="pl-10 h-12 bg-slate-800/50 border-purple-500/20 text-white placeholder-gray-400 focus:border-purple-500"
             />
           </div>
-          <Button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="h-12 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300"
-          >
-            <Plus size={20} className="mr-2" />
-            Criar Grupo
-          </Button>
+          
+          {/* Botão diferente para consumidores e afiliados */}
+          {isAffiliate ? (
+            <Button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="h-12 px-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300"
+            >
+              <Plus size={20} className="mr-2" />
+              Criar Grupo
+            </Button>
+          ) : (
+            <Button
+              onClick={() => toast({
+                title: "Grupos disponíveis",
+                description: "Navegue pelos grupos abaixo e clique para entrar.",
+              })}
+              className="h-12 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-lg transform hover:scale-105 transition-all duration-300"
+            >
+              <LogIn size={20} className="mr-2" />
+              Entrar em Grupos
+            </Button>
+          )}
         </div>
 
-        {showCreateForm && (
+        {/* Formulário de criação apenas para afiliados */}
+        {showCreateForm && isAffiliate && (
           <Card className="bg-slate-800/50 border-purple-500/20 shadow-2xl">
             <CardHeader className="bg-gradient-to-r from-purple-600/20 to-blue-600/20">
               <CardTitle className="text-white flex items-center">
@@ -514,7 +542,13 @@ const Groups: React.FC = () => {
             <Card 
               key={group.id} 
               className="hover:shadow-2xl transition-all duration-300 cursor-pointer bg-slate-800/50 border-purple-500/20 text-white transform hover:scale-105 hover:shadow-purple-500/25"
-              onClick={() => setSelectedGroup(group)}
+              onClick={() => {
+                if (isConsumer) {
+                  handleJoinGroup(group);
+                } else {
+                  setSelectedGroup(group);
+                }
+              }}
             >
               {group.banner && (
                 <div className="relative h-32 overflow-hidden rounded-t-lg">
@@ -562,6 +596,23 @@ const Groups: React.FC = () => {
                     </div>
                   </div>
                 )}
+
+                {/* Indicador visual para consumidores */}
+                {isConsumer && (
+                  <div className="mt-3 pt-3 border-t border-purple-500/20">
+                    <Button
+                      size="sm"
+                      className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleJoinGroup(group);
+                      }}
+                    >
+                      <LogIn size={14} className="mr-1" />
+                      Solicitar Entrada
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -574,7 +625,10 @@ const Groups: React.FC = () => {
               Nenhum grupo encontrado
             </h3>
             <p className="text-gray-400">
-              Tente ajustar sua busca ou crie um novo grupo
+              {isAffiliate 
+                ? "Tente ajustar sua busca ou crie um novo grupo"
+                : "Tente ajustar sua busca para encontrar grupos de seu interesse"
+              }
             </p>
           </div>
         )}

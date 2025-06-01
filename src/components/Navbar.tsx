@@ -123,16 +123,19 @@ const Navbar: React.FC = () => {
                   </Button>
                 </Link>
 
-                <Link to="/dashboard">
-                  <Button 
-                    variant={isActive('/dashboard') ? 'default' : 'ghost'} 
-                    size="sm"
-                    className="flex items-center space-x-2"
-                  >
-                    <BarChart3 size={16} />
-                    <span>Dashboard</span>
-                  </Button>
-                </Link>
+                {/* Dashboard apenas para afiliados */}
+                {isAffiliate && (
+                  <Link to="/dashboard">
+                    <Button 
+                      variant={isActive('/dashboard') ? 'default' : 'ghost'} 
+                      size="sm"
+                      className="flex items-center space-x-2"
+                    >
+                      <BarChart3 size={16} />
+                      <span>Dashboard</span>
+                    </Button>
+                  </Link>
+                )}
 
                 {/* Apenas afiliados veem a loja */}
                 {isAffiliate && (
@@ -236,12 +239,14 @@ const Navbar: React.FC = () => {
                   Feed
                 </Button>
               </Link>
-              <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                <Button variant="ghost" className="w-full justify-start">
-                  <BarChart3 size={16} className="mr-2" />
-                  Dashboard
-                </Button>
-              </Link>
+              {isAffiliate && (
+                <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <BarChart3 size={16} className="mr-2" />
+                    Dashboard
+                  </Button>
+                </Link>
+              )}
               <Link to="/marketplace" onClick={() => setIsMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
                   <ShoppingBag size={16} className="mr-2" />
