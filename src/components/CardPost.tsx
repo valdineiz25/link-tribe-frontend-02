@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { 
   Heart, 
   MessageCircle, 
@@ -9,7 +11,10 @@ import {
   ExternalLink,
   ShoppingBag,
   MoreHorizontal,
-  Bookmark
+  Bookmark,
+  Repeat,
+  BarChart3,
+  Edit
 } from 'lucide-react';
 import EditPostDialog from '@/components/EditPostDialog';
 import CommentSection from '@/components/CommentSection';
@@ -38,15 +43,23 @@ interface Post {
     affiliateScore: number;
     trendingBonus: number;
   };
+  isSponsored?: boolean;
+  isOwnProduct?: boolean;
 }
 
 interface CardPostProps {
   post: Post;
   onUpdatePost?: (updatedPost: Post) => void;
   isOwner?: boolean;
+  isAffiliateView?: boolean;
 }
 
-const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false }) => {
+const CardPost: React.FC<CardPostProps> = ({ 
+  post, 
+  onUpdatePost, 
+  isOwner = false,
+  isAffiliateView = false 
+}) => {
   const { toast } = useToast();
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
@@ -56,6 +69,7 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
   const [showComments, setShowComments] = useState(false);
   const [postComments, setPostComments] = useState<any[]>([]);
   const [showAffiBoostDetails, setShowAffiBoostDetails] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const handleLike = () => {
     const newIsLiked = !isLiked;
@@ -118,7 +132,21 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
     setIsSaved(newIsSaved);
     toast({
       title: newIsSaved ? "🔖 Post salvo!" : "🗑️ Post removido dos salvos",
-      description: newIsSaved ? "Post adicionado aos seus salvos" : "Post removido dos seus salvos",
+      description: newIsSaved ? "Post adicionado aos seus favoritos" : "Post removido dos seus favoritos",
+    });
+  };
+
+  const handleRepost = () => {
+    toast({
+      title: "🔄 Repostando...",
+      description: "Escolha os grupos onde deseja compartilhar",
+    });
+  };
+
+  const handleViewStats = () => {
+    toast({
+      title: "📊 Estatísticas",
+      description: "Visualizações: 245 | Cliques: 12 | Conversões: 3",
     });
   };
 
@@ -135,7 +163,7 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
 
   return (
     <Card className="w-full max-w-lg mx-auto mb-4 border border-gray-200 shadow-sm bg-white rounded-xl overflow-hidden">
-      {/* Header - Instagram style */}
+      {/* Header */}
       <CardHeader className="p-4 pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -158,12 +186,24 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
                 <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">
                   {currentPost.category}
                 </span>
+                {/* Tag especial para afiliados */}
+                {currentPost.isOwnProduct && (
+                  <Badge variant="secondary" className="bg-green-100 text-green-700 text-xs">
+                    Seu Produto
+                  </Badge>
+                )}
+                {/* Tag discreta para usuários comuns */}
+                {!isAffiliateView && currentPost.isSponsored && (
+                  <Badge variant="outline" className="text-xs text-gray-500">
+                    Patrocinado
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            {/* AffiBoost Score Indicator */}
-            {currentPost.affiBoostScore && (
+            {/* AffiBoost Score (apenas para afiliados) */}
+            {isAffiliateView && currentPost.affiBoostScore && (
               <div 
                 className="cursor-pointer"
                 onClick={() => setShowAffiBoostDetails(!showAffiBoostDetails)}
@@ -187,8 +227,8 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
           </div>
         </div>
 
-        {/* AffiBoost Details (expandible) */}
-        {showAffiBoostDetails && currentPost.affiBoostScore && (
+        {/* AffiBoost Details (apenas para afiliados) */}
+        {isAffiliateView && showAffiBoostDetails && currentPost.affiBoostScore && (
           <div className="mt-3">
             <AffiBoostIndicator 
               score={currentPost.affiBoostScore}
@@ -205,7 +245,7 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
           <p className="text-gray-900 text-sm leading-relaxed">{currentPost.content}</p>
         </div>
         
-        {/* Image - Instagram style */}
+        {/* Image */}
         {currentPost.image && (
           <div className="w-full">
             <img 
@@ -216,7 +256,7 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
           </div>
         )}
 
-        {/* Product info - Instagram shopping style */}
+        {/* Product info */}
         {currentPost.productName && (
           <div className="mx-4 my-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-start justify-between mb-2">
@@ -263,7 +303,7 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
         )}
       </CardContent>
 
-      {/* Footer - Instagram style actions */}
+      {/* Footer - Ações diferenciadas */}
       <CardFooter className="p-4 pt-2">
         <div className="w-full">
           {/* Action buttons */}
@@ -292,26 +332,51 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
                 <MessageCircle size={24} />
               </Button>
 
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleShare}
-                className="p-0 h-auto text-gray-700 hover:bg-transparent"
-              >
-                <Share2 size={24} />
-              </Button>
+              {/* Botão diferenciado por tipo de usuário */}
+              {isAffiliateView ? (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleShare}
+                  className="p-0 h-auto text-gray-700 hover:bg-transparent"
+                >
+                  <Share2 size={24} />
+                </Button>
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleSave}
+                  className="p-0 h-auto text-gray-700 hover:bg-transparent"
+                >
+                  <Bookmark size={24} className={isSaved ? 'fill-current' : ''} />
+                </Button>
+              )}
             </div>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSave}
-              className={`p-0 h-auto hover:bg-transparent ${
-                isSaved ? 'text-gray-900' : 'text-gray-700'
-              }`}
-            >
-              <Bookmark size={24} className={isSaved ? 'fill-current' : ''} />
-            </Button>
+            {/* Ações extras para afiliados em seus próprios produtos */}
+            {isAffiliateView && currentPost.isOwnProduct && (
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRepost}
+                  className="p-2 text-blue-600 hover:bg-blue-50"
+                  title="Repostar em grupos"
+                >
+                  <Repeat size={16} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleViewStats}
+                  className="p-2 text-green-600 hover:bg-green-50"
+                  title="Ver estatísticas"
+                >
+                  <BarChart3 size={16} />
+                </Button>
+              </div>
+            )}
           </div>
           
           {/* Likes count */}

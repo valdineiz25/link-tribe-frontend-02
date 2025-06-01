@@ -17,6 +17,8 @@ interface Post {
   currentPrice?: number;
   promotionalPrice?: number;
   storeName?: string;
+  isSponsored?: boolean;
+  isOwnProduct?: boolean;
 }
 
 interface PostListProps {
@@ -24,13 +26,15 @@ interface PostListProps {
   currentUserName?: string;
   onUpdatePost: (updatedPost: Post) => void;
   selectedCategory: string;
+  isAffiliateView?: boolean;
 }
 
 const PostList: React.FC<PostListProps> = ({ 
   posts, 
   currentUserName, 
   onUpdatePost, 
-  selectedCategory 
+  selectedCategory,
+  isAffiliateView = false
 }) => {
   const filteredPosts = selectedCategory === 'Todos' 
     ? posts 
@@ -61,6 +65,7 @@ const PostList: React.FC<PostListProps> = ({
           post={post} 
           onUpdatePost={onUpdatePost}
           isOwner={post.authorName === currentUserName}
+          isAffiliateView={isAffiliateView}
         />
       ))}
     </div>

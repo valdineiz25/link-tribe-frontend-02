@@ -1,11 +1,16 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserRole } from '@/hooks/useUserRole';
 import FeedHeader from '@/components/FeedHeader';
 import CategoryFilter from '@/components/CategoryFilter';
 import PostCreation from '@/components/PostCreation';
 import PostList from '@/components/PostList';
 import Stories from '@/components/Stories';
+import AffiliateHeader from '@/components/AffiliateHeader';
+import AffiliateStorePreview from '@/components/AffiliateStorePreview';
+import CreateStoreButton from '@/components/CreateStoreButton';
+import StoreCreationWizard from '@/components/StoreCreationWizard';
 import { AffiBoostDashboard } from '@/components/AffiBoostDashboard';
 import { useToast } from '@/hooks/use-toast';
 import { usePosts } from '@/hooks/usePosts';
@@ -17,7 +22,18 @@ const Feed: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [showAffiBoostDashboard, setShowAffiBoostDashboard] = useState(false);
+  const [showStoreWizard, setShowStoreWizard] = useState(false);
   const { posts, loading } = usePosts();
+  
+  // User role e affiliate data
+  const { 
+    userRole, 
+    affiliateStats, 
+    loading: roleLoading, 
+    isAffiliate, 
+    canCreateStore, 
+    hasStore 
+  } = useUserRole();
   
   // Aplicar algoritmo AffiBoost
   const { 
@@ -74,11 +90,55 @@ const Feed: React.FC = () => {
     });
   };
 
+  const handleNotificationClick = () => {
+    toast({
+      title: "🔔 Notificações",
+      description: "João comprou seu produto via seu link! +R$ 15,90",
+    });
+  };
+
+  const handleEditStore = () => {
+    toast({
+      title: "🏪 Editor de Loja",
+      description: "Redirecionando para o editor...",
+    });
+    // Aqui redirecionaria para /store-builder
+  };
+
+  const handleCreateStore = () => {
+    setShowStoreWizard(true);
+  };
+
+  const handleStoreCreated = () => {
+    toast({
+      title: "🎉 Loja publicada!",
+      description: "Sua loja já está disponível no feed e pode receber visitas.",
+    });
+    // Atualizar dados do usuário
+  };
+
+  const handleViewAnalytics = () => {
+    toast({
+      title: "📊 Analytics",
+      description: "Abrindo relatório detalhado...",
+    });
+  };
+
   // Usar posts ranqueados pelo AffiBoost
   const postsToShow = rankedPosts.length > 0 ? rankedPosts : posts;
 
+  // Filtrar posts baseado no tipo de usuário
+  let filteredPosts = postsToShow;
+  if (!isAffiliate) {
+    // Para usuários comuns, mostrar apenas posts orgânicos com tag discreta
+    filteredPosts = postsToShow.map(post => ({
+      ...post,
+      isSponsored: post.productLink ? true : false
+    }));
+  }
+
   // Converter posts para o formato esperado pelo PostList
-  const formattedPosts = postsToShow.map(post => ({
+  const formattedPosts = filteredPosts.map(post => ({
     id: post.id,
     authorName: post.user?.name || 'Usuário',
     authorAvatar: post.user?.avatar,
@@ -94,16 +154,20 @@ const Feed: React.FC = () => {
     promotionalPrice: post.promotionalPrice,
     storeName: post.storeName,
     affiBoostScore: (post as any).affiBoostScore,
-    rankingFactors: (post as any).rankingFactors
+    rankingFactors: (post as any).rankingFactors,
+    isSponsored: (post as any).isSponsored,
+    isOwnProduct: isAffiliate && post.user?.id === user?.id
   }));
 
-  if (loading || isRanking) {
+  if (loading || roleLoading || isRanking) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
           <p className="text-gray-600">
-            {loading ? 'Carregando feed...' : 'Aplicando AffiBoost Algorithm...'}
+            {loading ? 'Carregando feed...' : 
+             roleLoading ? 'Verificando permissões...' : 
+             'Aplicando AffiBoost Algorithm...'}
           </p>
         </div>
       </div>
@@ -113,10 +177,29 @@ const Feed: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 via-white to-gray-50 pb-16 md:pb-0">
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        <FeedHeader />
+        {/* Header diferenciado por tipo de usuário */}
+        {isAffiliate && affiliateStats ? (
+          <AffiliateHeader 
+            stats={affiliateStats}
+            onNotificationClick={handleNotificationClick}
+          />
+        ) : (
+          <FeedHeader />
+        )}
+
+        {/* Pré-visualização da loja (apenas para afiliados) */}
+        {isAffiliate && affiliateStats && (
+          <AffiliateStorePreview
+            stats={affiliateStats}
+            hasStore={hasStore}
+            onEditStore={handleEditStore}
+            onCreateStore={handleCreateStore}
+            onViewAnalytics={handleViewAnalytics}
+          />
+        )}
         
-        {/* AffiBoost Status */}
-        {algorithmStats && (
+        {/* AffiBoost Status (apenas para afiliados) */}
+        {isAffiliate && algorithmStats && (
           <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl shadow-lg border border-purple-200 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -140,8 +223,8 @@ const Feed: React.FC = () => {
           </div>
         )}
 
-        {/* AffiBoost Dashboard */}
-        {showAffiBoostDashboard && algorithmStats && (
+        {/* AffiBoost Dashboard (apenas para afiliados) */}
+        {isAffiliate && showAffiBoostDashboard && algorithmStats && (
           <div className="bg-white rounded-xl shadow-lg border border-purple-200 p-6">
             <AffiBoostDashboard
               algorithmStats={algorithmStats}
@@ -154,7 +237,7 @@ const Feed: React.FC = () => {
         {/* Stories section */}
         <Stories />
         
-        {/* Stories-like category filter */}
+        {/* Category filter */}
         <div className="bg-white rounded-xl shadow-lg border border-yellow-200 p-4">
           <CategoryFilter 
             categories={categories}
@@ -188,9 +271,25 @@ const Feed: React.FC = () => {
             currentUserName={user?.name}
             onUpdatePost={handleUpdatePost}
             selectedCategory={selectedCategory}
+            isAffiliateView={isAffiliate}
           />
         )}
       </div>
+
+      {/* Botão "Criar Loja" flutuante (apenas para afiliados) */}
+      {isAffiliate && (
+        <CreateStoreButton
+          onClick={handleCreateStore}
+          canCreate={canCreateStore}
+        />
+      )}
+
+      {/* Wizard de criação de loja */}
+      <StoreCreationWizard
+        isOpen={showStoreWizard}
+        onClose={() => setShowStoreWizard(false)}
+        onStoreCreated={handleStoreCreated}
+      />
     </div>
   );
 };
