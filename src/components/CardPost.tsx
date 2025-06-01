@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +13,7 @@ import {
 } from 'lucide-react';
 import EditPostDialog from '@/components/EditPostDialog';
 import CommentSection from '@/components/CommentSection';
+import { AffiBoostIndicator } from '@/components/AffiBoostIndicator';
 import { useToast } from '@/hooks/use-toast';
 
 interface Post {
@@ -31,6 +31,13 @@ interface Post {
   currentPrice?: number;
   promotionalPrice?: number;
   storeName?: string;
+  affiBoostScore?: number;
+  rankingFactors?: {
+    engagementScore: number;
+    conversionScore: number;
+    affiliateScore: number;
+    trendingBonus: number;
+  };
 }
 
 interface CardPostProps {
@@ -48,6 +55,7 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
   const [isSaved, setIsSaved] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [postComments, setPostComments] = useState<any[]>([]);
+  const [showAffiBoostDetails, setShowAffiBoostDetails] = useState(false);
 
   const handleLike = () => {
     const newIsLiked = !isLiked;
@@ -154,6 +162,19 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
             </div>
           </div>
           <div className="flex items-center space-x-2">
+            {/* AffiBoost Score Indicator */}
+            {currentPost.affiBoostScore && (
+              <div 
+                className="cursor-pointer"
+                onClick={() => setShowAffiBoostDetails(!showAffiBoostDetails)}
+              >
+                <AffiBoostIndicator 
+                  score={currentPost.affiBoostScore} 
+                  compact={true}
+                />
+              </div>
+            )}
+            
             {isOwner && (
               <EditPostDialog 
                 post={currentPost} 
@@ -165,6 +186,17 @@ const CardPost: React.FC<CardPostProps> = ({ post, onUpdatePost, isOwner = false
             </Button>
           </div>
         </div>
+
+        {/* AffiBoost Details (expandible) */}
+        {showAffiBoostDetails && currentPost.affiBoostScore && (
+          <div className="mt-3">
+            <AffiBoostIndicator 
+              score={currentPost.affiBoostScore}
+              rankingFactors={currentPost.rankingFactors}
+              showDetails={true}
+            />
+          </div>
+        )}
       </CardHeader>
 
       <CardContent className="p-0">
