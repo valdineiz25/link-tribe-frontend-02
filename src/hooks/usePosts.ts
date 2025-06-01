@@ -1,10 +1,13 @@
+
 import { useState, useEffect } from 'react';
 import { StorageService } from '@/services/storageService';
 import { Post } from '@/types/post';
+import { useAffiGuard } from '@/hooks/useAffiGuard';
 
 export const usePosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const { validateContent } = useAffiGuard();
 
   const fetchPosts = () => {
     try {
@@ -25,6 +28,16 @@ export const usePosts = () => {
       
       if (!post.content || !post.content.trim()) {
         throw new Error('Conteúdo é obrigatório');
+      }
+
+      // Validar conteúdo com AffiGuard
+      const isContentValid = await validateContent(
+        post.content.trim(), 
+        post.productLink
+      );
+
+      if (!isContentValid) {
+        throw new Error('Conteúdo bloqueado pelo sistema de segurança AffiGuard');
       }
 
       const postData: Post = {
@@ -84,6 +97,7 @@ export const usePosts = () => {
 export const useReels = () => {
   const [reels, setReels] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { validateContent } = useAffiGuard();
 
   const fetchReels = () => {
     try {
@@ -104,6 +118,16 @@ export const useReels = () => {
       
       if (!reel.content || !reel.content.trim()) {
         throw new Error('Conteúdo é obrigatório');
+      }
+
+      // Validar conteúdo com AffiGuard
+      const isContentValid = await validateContent(
+        reel.content.trim(), 
+        reel.productLink
+      );
+
+      if (!isContentValid) {
+        throw new Error('Conteúdo bloqueado pelo sistema de segurança AffiGuard');
       }
       
       const reelData = {
