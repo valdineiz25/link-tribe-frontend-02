@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import RoleProtectedRoute from "@/components/RoleProtectedRoute";
 import Navbar from "@/components/Navbar";
 
 // Pages
@@ -14,6 +15,8 @@ import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Feed from "@/pages/Feed";
+import ConsumerFeed from "@/pages/ConsumerFeed";
+import AffiliateFeed from "@/pages/AffiliateFeed";
 import Dashboard from "@/pages/Dashboard";
 import Marketplace from "@/pages/Marketplace";
 import Profile from "@/pages/Profile";
@@ -56,46 +59,76 @@ const App: React.FC = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
-              {/* Rotas protegidas simples */}
+              {/* Feed geral - redireciona baseado no tipo */}
               <Route path="/feed" element={
                 <ProtectedRoute>
                   <Feed />
                 </ProtectedRoute>
               } />
               
-              <Route path="/dashboard" element={
+              {/* Feed específico para consumidores */}
+              <Route path="/consumer-feed" element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <RoleProtectedRoute requiredRole="consumer" fallbackPath="/affiliate-feed">
+                    <ConsumerFeed />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               
+              {/* Feed específico para afiliados */}
+              <Route path="/affiliate-feed" element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute requiredRole="affiliate" fallbackPath="/consumer-feed">
+                    <AffiliateFeed />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              } />
+              
+              {/* Rotas específicas para afiliados */}
               <Route path="/create-post" element={
                 <ProtectedRoute>
-                  <CreatePost />
+                  <RoleProtectedRoute requiredRole="affiliate" fallbackPath="/consumer-feed">
+                    <CreatePost />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               
               <Route path="/add-product" element={
                 <ProtectedRoute>
-                  <AddProduct />
+                  <RoleProtectedRoute requiredRole="affiliate" fallbackPath="/consumer-feed">
+                    <AddProduct />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               
               <Route path="/create-store" element={
                 <ProtectedRoute>
-                  <CreateStore />
+                  <RoleProtectedRoute requiredRole="affiliate" fallbackPath="/consumer-feed">
+                    <CreateStore />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               
               <Route path="/my-store" element={
                 <ProtectedRoute>
-                  <MyStore />
+                  <RoleProtectedRoute requiredRole="affiliate" fallbackPath="/consumer-feed">
+                    <MyStore />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               } />
               
               <Route path="/store-builder" element={
                 <ProtectedRoute>
-                  <StoreBuilder />
+                  <RoleProtectedRoute requiredRole="affiliate" fallbackPath="/consumer-feed">
+                    <StoreBuilder />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              } />
+              
+              {/* Rotas compartilhadas */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
                 </ProtectedRoute>
               } />
               

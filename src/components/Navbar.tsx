@@ -22,7 +22,7 @@ import {
 
 const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { isAffiliate } = useUserRole();
+  const { isAffiliate, isConsumer } = useUserRole();
   const { stores } = useStores();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,6 +34,13 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  // Determinar o link do feed baseado no tipo de usuário
+  const getFeedLink = () => {
+    if (isAffiliate) return '/affiliate-feed';
+    if (isConsumer) return '/consumer-feed';
+    return '/feed'; // fallback
   };
 
   if (!user) {
@@ -71,7 +78,7 @@ const Navbar: React.FC = () => {
       <nav className="bg-white shadow-lg border-b border-yellow-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <Link to="/feed" className="flex items-center space-x-2">
+            <Link to={getFeedLink()} className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">AN</span>
               </div>
@@ -83,9 +90,9 @@ const Navbar: React.FC = () => {
             {/* Desktop Navigation */}
             {isAuthenticated && (
               <div className="hidden md:flex items-center space-x-4">
-                <Link to="/feed">
+                <Link to={getFeedLink()}>
                   <Button 
-                    variant={isActive('/feed') ? 'default' : 'ghost'} 
+                    variant={isActive('/affiliate-feed') || isActive('/consumer-feed') ? 'default' : 'ghost'} 
                     size="sm"
                     className="flex items-center space-x-2"
                   >
@@ -127,6 +134,7 @@ const Navbar: React.FC = () => {
                   </Button>
                 </Link>
 
+                {/* Apenas afiliados veem a loja */}
                 {isAffiliate && (
                   <Link to="/my-store">
                     <Button 
@@ -222,7 +230,7 @@ const Navbar: React.FC = () => {
         {isMenuOpen && (
           <div className="md:hidden bg-white border-t p-4">
             <div className="flex flex-col space-y-2">
-              <Link to="/feed" onClick={() => setIsMenuOpen(false)}>
+              <Link to={getFeedLink()} onClick={() => setIsMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
                   <Home size={16} className="mr-2" />
                   Feed
